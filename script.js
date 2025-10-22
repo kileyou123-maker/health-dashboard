@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
+  document.getElementById("nearbyBtn").addEventListener("click", findNearest);
 });
 
 // --- CSV 轉 JSON ---
@@ -74,14 +75,12 @@ function buildCityDistrictMap(data) {
 function populateCityList() {
   const citySelect = document.getElementById("citySelect");
   citySelect.innerHTML = '<option value="全部">全部</option>';
-
   Object.keys(cityDistrictMap).forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
     citySelect.appendChild(opt);
   });
-
   populateDistrictList();
 }
 
@@ -90,7 +89,6 @@ function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const districtSelect = document.getElementById("districtSelect");
   districtSelect.innerHTML = '<option value="全部">全部</option>';
-
   if (city !== "全部" && cityDistrictMap[city]) {
     [...cityDistrictMap[city]].forEach((d) => {
       const opt = document.createElement("option");
@@ -106,12 +104,10 @@ function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
-
   const filtered = allData.filter((d) => {
     const addr = d["醫事機構地址"];
     const name = d["醫事機構名稱"];
     const team = d["整合團隊名稱"];
-
     const matchCity = city === "全部" || (addr && addr.includes(city));
     const matchDistrict = district === "全部" || (addr && addr.includes(district));
     const matchKeyword =
@@ -119,49 +115,104 @@ function searchData() {
       (name && name.includes(keyword)) ||
       (team && team.includes(keyword)) ||
       (addr && addr.includes(keyword));
-
     return matchCity && matchDistrict && matchKeyword;
   });
-
   renderTable(filtered);
 }
 
-// --- 顯示結果表格（含 Google Maps 點擊） ---
+// --- 顯示結果表格（含 Google Maps 連結） ---
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-
   if (data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4">查無資料</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
     return;
   }
-
   data.forEach((d) => {
     const row = document.createElement("tr");
-
     const address = d["醫事機構地址"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-
+    const distance = d.distance ? `${d.distance.toFixed(2)} km` : "-";
     row.innerHTML = `
       <td>${d["醫事機構名稱"]}</td>
       <td><a href="${mapUrl}" target="_blank" class="map-link">${address}</a></td>
       <td>${d["醫事機構電話"]}</td>
       <td>${d["整合團隊名稱"]}</td>
+      <td>${distance}</td>
     `;
     tbody.appendChild(row);
   });
 }
 
+// --- 📍 取得使用者位置並依距離排序 ---
+function findNearest() {
+  const status = document.getElementById("status");
+  if (!navigator.geolocation) {
+    status.textContent = "您的瀏覽器不支援定位功能。";
+    return;
+  }
+
+  status.textContent = "正在取得您的位置...";
+  navigator.geolocation.getCurrentPosition(success, error);
+
+  async function success(position) {
+    const userLat = position.coords.latitude;
+    const userLon = position.coords.longitude;
+    status.textContent = "位置取得成功，計算距離中...";
+
+    // 使用 Google Maps API 取得座標（若你不想用API，可略）
+    const results = await Promise.all(
+      allData.map(async (d) => {
+        const addr = d["醫事機構地址"];
+        if (!addr) return d;
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}`
+          );
+          const json = await response.json();
+          if (json.length > 0) {
+            const lat = parseFloat(json[0].lat);
+            const lon = parseFloat(json[0].lon);
+            d.distance = calcDistance(userLat, userLon, lat, lon);
+          } else {
+            d.distance = Infinity;
+          }
+        } catch {
+          d.distance = Infinity;
+        }
+        return d;
+      })
+    );
+
+    const sorted = results.filter(d => d.distance !== Infinity).sort((a, b) => a.distance - b.distance);
+    status.textContent = `依距離排序（共 ${sorted.length} 筆）`;
+    renderTable(sorted.slice(0, 50)); // 限制顯示50筆以免太多
+  }
+
+  function error() {
+    status.textContent = "定位失敗，請允許存取位置或重試。";
+  }
+}
+
+// --- 計算兩點距離（Haversine） ---
+function calcDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // 地球半徑 (km)
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
 // --- 深色模式切換與記憶 ---
 const themeBtn = document.getElementById("themeToggle");
-
-// 初始化：若上次為深色則自動套用
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark");
   themeBtn.textContent = "☀️ 亮色模式";
 }
-
-// 按下按鈕切換主題
 themeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   const isDark = document.body.classList.contains("dark");

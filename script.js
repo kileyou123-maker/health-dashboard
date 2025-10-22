@@ -32,8 +32,10 @@ function buildCityDistrictMap(data) {
     const address = d["醫事機構地址"];
     if (!address) return;
 
+    // 前三個字通常是縣市名
     const city = address.substring(0, 3);
-    const districtMatch = address.match(/[\u4e00-\u9fa5]{2,3}區/); // 取出「XX區」
+    // 抓取「XX區」「XX鄉」「XX鎮」「XX市」
+    const districtMatch = address.match(/[\u4e00-\u9fa5]{2,3}(區|鎮|鄉|市)/);
     const district = districtMatch ? districtMatch[0] : "其他地區";
 
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();

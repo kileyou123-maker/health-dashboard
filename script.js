@@ -152,3 +152,11 @@ function renderTable(data) {
     tbody.appendChild(row);
   });
 }
+// --- 深色模式切換 ---
+const themeBtn = document.getElementById("themeToggle");
+themeBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  themeBtn.textContent = isDark ? "☀️ 亮色模式" : "🌙 深色模式";
+});
+

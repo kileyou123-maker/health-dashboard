@@ -1,106 +1,89 @@
-// ----------------------------
-// 內嵌模擬資料
-// ----------------------------
-const allData = [
-  {"region": "台北市", "ageGroup": "20-29", "gender": "男", "cases": 1240},
-  {"region": "台北市", "ageGroup": "30-39", "gender": "女", "cases": 870},
-  {"region": "新北市", "ageGroup": "40-49", "gender": "男", "cases": 940},
-  {"region": "新北市", "ageGroup": "50-59", "gender": "女", "cases": 1110},
-  {"region": "桃園市", "ageGroup": "60-69", "gender": "男", "cases": 1030},
-  {"region": "台中市", "ageGroup": "20-29", "gender": "女", "cases": 770},
-  {"region": "台南市", "ageGroup": "30-39", "gender": "男", "cases": 910},
-  {"region": "高雄市", "ageGroup": "40-49", "gender": "女", "cases": 1080},
-  {"region": "基隆市", "ageGroup": "50-59", "gender": "男", "cases": 720},
-  {"region": "新竹市", "ageGroup": "60-69", "gender": "女", "cases": 650}
-];
+// 讀取 CSV
+let allData = [];
 
-// ----------------------------
-// 初始化下拉選單
-// ----------------------------
-populateFilters(allData);
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("A21030000I-D2000H-001.csv")
+    .then(res => res.text())
+    .then(text => {
+      allData = csvToJson(text);
+      populateCityList(allData);
+    });
 
-function populateFilters(data) {
-  const regions = [...new Set(data.map(d => d.region))];
-  const ages = [...new Set(data.map(d => d.ageGroup))];
-  const genders = [...new Set(data.map(d => d.gender))];
-
-  fillSelect('regionSelect', regions);
-  fillSelect('ageGroupSelect', ages);
-  fillSelect('genderSelect', genders);
-}
-
-function fillSelect(id, arr) {
-  const sel = document.getElementById(id);
-  const allOpt = document.createElement('option');
-  allOpt.value = '全部';
-  allOpt.textContent = '全部';
-  sel.appendChild(allOpt);
-  arr.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v;
-    opt.textContent = v;
-    sel.appendChild(opt);
-  });
-}
-
-// ----------------------------
-// 查詢功能
-// ----------------------------
-document.getElementById('queryBtn').addEventListener('click', () => {
-  const region = document.getElementById('regionSelect').value;
-  const age = document.getElementById('ageGroupSelect').value;
-  const gender = document.getElementById('genderSelect').value;
-
-  const filtered = allData.filter(d =>
-    (region === '全部' || d.region === region) &&
-    (age === '全部' || d.ageGroup === age) &&
-    (gender === '全部' || d.gender === gender)
-  );
-
-  renderTable(filtered);
-  renderChart(filtered);
+  document.getElementById("searchBtn").addEventListener("click", searchData);
 });
 
-// ----------------------------
-// 顯示表格
-// ----------------------------
-function renderTable(data) {
-  const container = document.getElementById('resultTable');
-  if (data.length === 0) {
-    container.innerHTML = '<p>無符合資料</p>';
-    return;
-  }
-  let html = '<table><tr><th>地區</th><th>年齡層</th><th>性別</th><th>病例數</th></tr>';
-  data.forEach(d => {
-    html += `<tr><td>${d.region}</td><td>${d.ageGroup}</td><td>${d.gender}</td><td>${d.cases}</td></tr>`;
+// CSV 轉 JSON
+function csvToJson(csv) {
+  const lines = csv.split("\n").filter(line => line.trim() !== "");
+  const headers = lines[0].split(",").map(h => h.trim());
+  return lines.slice(1).map(line => {
+    const values = line.split(",");
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
+    return obj;
   });
-  html += '</table>';
-  container.innerHTML = html;
 }
 
-// ----------------------------
-// Chart.js 圖表
-// ----------------------------
-let chartInstance = null;
-function renderChart(data) {
-  const ctx = document.getElementById('chartArea');
-  const labels = data.map(d => d.region);
-  const values = data.map(d => d.cases);
-
-  if (chartInstance) chartInstance.destroy();
-
-  chartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: '病例數',
-        data: values,
-        backgroundColor: '#319795'
-      }]
-    },
-    options: {
-      scales: { y: { beginAtZero: true } }
+// 產生縣市清單
+function populateCityList(data) {
+  const citySet = new Set();
+  data.forEach(d => {
+    const address = d["醫事機構地址"];
+    if (address) {
+      const city = address.substring(0, 3); // 取前3字(例如 台北市、桃園市)
+      citySet.add(city);
     }
+  });
+
+  const select = document.getElementById("citySelect");
+  select.innerHTML = '<option value="全部">全部</option>';
+  [...citySet].forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    select.appendChild(opt);
+  });
+}
+
+// 查詢資料
+function searchData() {
+  const city = document.getElementById("citySelect").value;
+  const keyword = document.getElementById("keyword").value.trim();
+
+  const filtered = allData.filter(d => {
+    const address = d["醫事機構地址"];
+    const name = d["醫事機構名稱"];
+    const team = d["整合團隊名稱"];
+    const matchCity = city === "全部" || (address && address.includes(city));
+    const matchKeyword =
+      !keyword ||
+      (name && name.includes(keyword)) ||
+      (team && team.includes(keyword)) ||
+      (address && address.includes(keyword));
+    return matchCity && matchKeyword;
+  });
+
+  renderTable(filtered);
+}
+
+// 顯示結果
+function renderTable(data) {
+  const tbody = document.querySelector("#resultTable tbody");
+  tbody.innerHTML = "";
+
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4">查無資料</td></tr>';
+    return;
+  }
+
+  data.forEach(d => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${d["醫事機構名稱"]}</td>
+      <td>${d["醫事機構地址"]}</td>
+      <td>${d["醫事機構電話"]}</td>
+      <td>${d["整合團隊名稱"]}</td>
+    `;
+    tbody.appendChild(row);
   });
 }

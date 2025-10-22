@@ -70,7 +70,7 @@ function buildCityDistrictMap(data) {
   });
 }
 
-// --- 縣市下拉 ---
+// --- 縣市下拉選單 ---
 function populateCityList() {
   const citySelect = document.getElementById("citySelect");
   citySelect.innerHTML = '<option value="全部">全部</option>';
@@ -85,7 +85,7 @@ function populateCityList() {
   populateDistrictList();
 }
 
-// --- 地區下拉 ---
+// --- 地區下拉選單 ---
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const districtSelect = document.getElementById("districtSelect");
@@ -126,7 +126,7 @@ function searchData() {
   renderTable(filtered);
 }
 
-// --- 顯示結果表格（加 Google Maps 點擊）---
+// --- 顯示結果表格（含 Google Maps 點擊） ---
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -139,7 +139,6 @@ function renderTable(data) {
   data.forEach((d) => {
     const row = document.createElement("tr");
 
-    // Google Maps 搜尋連結
     const address = d["醫事機構地址"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
@@ -152,11 +151,20 @@ function renderTable(data) {
     tbody.appendChild(row);
   });
 }
-// --- 深色模式切換 ---
+
+// --- 深色模式切換與記憶 ---
 const themeBtn = document.getElementById("themeToggle");
+
+// 初始化：若上次為深色則自動套用
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  themeBtn.textContent = "☀️ 亮色模式";
+}
+
+// 按下按鈕切換主題
 themeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   const isDark = document.body.classList.contains("dark");
   themeBtn.textContent = isDark ? "☀️ 亮色模式" : "🌙 深色模式";
+  localStorage.setItem("theme", isDark ? "dark" : "light");
 });
-

@@ -2,44 +2,40 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>健康照護資料儀表板</title>
+  <title>居家醫療機構查詢系統</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>健康照護資料儀表板</h1>
-    <p>展示台灣各地區的健康疾病統計資料</p>
+    <h1>全台居家醫療機構查詢系統</h1>
+    <p>可依縣市與關鍵字搜尋居家醫療機構</p>
   </header>
 
-  <section>
-    <h2>查詢條件</h2>
-    <div class="filters">
-      <label>地區：</label>
-      <select id="regionSelect"></select>
-
-      <label>年齡層：</label>
-      <select id="ageGroupSelect"></select>
-
-      <label>性別：</label>
-      <select id="genderSelect"></select>
-
-      <button id="queryBtn">查詢</button>
-    </div>
+  <section id="controls">
+    <label>選擇縣市：</label>
+    <select id="citySelect"></select>
+    <label>關鍵字搜尋：</label>
+    <input type="text" id="keyword" placeholder="輸入例如：內科、醫院、診所">
+    <button id="searchBtn">查詢</button>
   </section>
 
-  <section>
+  <section id="results">
     <h2>查詢結果</h2>
-    <div id="resultTable"></div>
-  </section>
-
-  <section>
-    <h2>視覺化圖表</h2>
-    <canvas id="chartArea"></canvas>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>醫事機構名稱</th>
+          <th>地址</th>
+          <th>電話</th>
+          <th>整合團隊名稱</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
 
   <footer>
-    <p>資料來源：模擬健康開放資料（示範用）</p>
+    <p>資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）</p>
   </footer>
 
   <script src="script.js"></script>

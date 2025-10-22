@@ -5,6 +5,37 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ---------- 深色模式 ---------- */
+body.dark {
+  background: #1a202c;
+  color: #e2e8f0;
+}
+
+body.dark header {
+  background: #2d3748;
+}
+
+body.dark #controls,
+body.dark #results {
+  background: #2d3748;
+  color: #e2e8f0;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+body.dark table th {
+  background: #4a5568;
+  color: #edf2f7;
+}
+
+body.dark table td {
+  border-color: #4a5568;
+}
+
+body.dark .map-link {
+  color: #63b3ed;
 }
 
 /* ---------- 標題區 ---------- */
@@ -13,6 +44,7 @@ header {
   color: white;
   text-align: center;
   padding: 20px;
+  position: relative;
 }
 
 header h1 {
@@ -23,6 +55,23 @@ header h1 {
 header p {
   margin-top: 8px;
   font-size: 15px;
+}
+
+/* ---------- 深色模式切換按鈕 ---------- */
+#themeToggle {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: #319795;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#themeToggle:hover {
+  background: #2c7a7b;
 }
 
 /* ---------- 查詢控制區 ---------- */
@@ -143,5 +192,12 @@ footer {
   #controls input,
   #controls button {
     width: 100%;
+  }
+
+  #themeToggle {
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 13px;
   }
 }

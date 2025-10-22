@@ -108,4 +108,62 @@ function searchData() {
   const filtered = allData.filter((d) => {
     const addr = d["醫事機構地址"];
     const name = d["醫事機構名稱"];
-    const team = d["整合]()
+    const team = d["整合團隊名稱"];
+    const matchCity = city === "全部" || (addr && addr.includes(city));
+    const matchDistrict = district === "全部" || (addr && addr.includes(district));
+    const matchKeyword =
+      !keyword ||
+      (name && name.includes(keyword)) ||
+      (team && team.includes(keyword)) ||
+      (addr && addr.includes(keyword));
+    return matchCity && matchDistrict && matchKeyword;
+  });
+  renderTable(filtered);
+}
+
+// --- 快速篩選 ---
+function quickFilter(type) {
+  let filtered;
+  if (type === "全部") {
+    filtered = allData;
+  } else {
+    filtered = allData.filter((d) => d["醫事機構名稱"] && d["醫事機構名稱"].includes(type));
+  }
+  document.getElementById("status").textContent = `顯示類型：${type}`;
+  renderTable(filtered);
+}
+
+// --- 顯示結果表格（含 Google Maps 連結） ---
+function renderTable(data) {
+  const tbody = document.querySelector("#resultTable tbody");
+  tbody.innerHTML = "";
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4">查無資料</td></tr>';
+    return;
+  }
+  data.forEach((d) => {
+    const row = document.createElement("tr");
+    const address = d["醫事機構地址"];
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    row.innerHTML = `
+      <td>${d["醫事機構名稱"]}</td>
+      <td><a href="${mapUrl}" target="_blank" class="map-link">${address}</a></td>
+      <td>${d["醫事機構電話"]}</td>
+      <td>${d["整合團隊名稱"]}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// --- 深色模式切換與記憶 ---
+const themeBtn = document.getElementById("themeToggle");
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  themeBtn.textContent = "☀️ 亮色模式";
+}
+themeBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  themeBtn.textContent = isDark ? "☀️ 亮色模式" : "🌙 深色模式";
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});

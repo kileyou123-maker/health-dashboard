@@ -12,6 +12,15 @@
     <button id="themeToggle" class="theme-btn">🌙 深色模式</button>
   </header>
 
+  <!-- 🔍 快速篩選區 -->
+  <section id="quickFilter">
+    <button class="filter-btn" data-type="醫院">🏥 醫院</button>
+    <button class="filter-btn" data-type="診所">💉 診所</button>
+    <button class="filter-btn" data-type="居家護理所">🏠 居家護理所</button>
+    <button class="filter-btn" data-type="全部">🔄 全部</button>
+  </section>
+
+  <!-- 查詢條件 -->
   <section id="controls">
     <label>縣市：</label>
     <select id="citySelect"></select>
@@ -22,9 +31,9 @@
     <label>關鍵字：</label>
     <input type="text" id="keyword" placeholder="輸入例如：內科、醫院、診所">
     <button id="searchBtn">查詢</button>
-    <button id="nearbyBtn">📍 顯示離我最近</button>
   </section>
 
+  <!-- 查詢結果 -->
   <section id="results">
     <h2>查詢結果</h2>
     <p id="status"></p>
@@ -35,7 +44,6 @@
           <th>地址</th>
           <th>電話</th>
           <th>整合團隊名稱</th>
-          <th>距離</th>
         </tr>
       </thead>
       <tbody></tbody>

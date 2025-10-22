@@ -48,7 +48,7 @@ const allCities = [
   "澎湖縣","金門縣","連江縣"
 ];
 
-// --- 建立縣市→地區對應表 ---
+// --- 建立縣市 → 地區 ---
 function buildCityDistrictMap(data) {
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
@@ -57,14 +57,11 @@ function buildCityDistrictMap(data) {
     const city = allCities.find(c => addr.startsWith(c)) || "其他地區";
     const addrAfterCity = addr.replace(city, "");
 
-    // 先嘗試抓「區／鎮／鄉／市」
     let match = addrAfterCity.match(/[\u4e00-\u9fa5]{1,3}(區|鄉|鎮|市)/);
     let district = match ? match[0] : null;
 
-    // 若沒有這類結尾（例如「新北市板橋」），取前2~3個字
     if (!district) {
       district = addrAfterCity.substring(0, 3).trim();
-      // 避免空字串或數字
       if (!district || /\d/.test(district)) district = "其他地區";
     }
 
@@ -73,7 +70,7 @@ function buildCityDistrictMap(data) {
   });
 }
 
-// --- 縣市下拉選單 ---
+// --- 縣市下拉 ---
 function populateCityList() {
   const citySelect = document.getElementById("citySelect");
   citySelect.innerHTML = '<option value="全部">全部</option>';
@@ -88,7 +85,7 @@ function populateCityList() {
   populateDistrictList();
 }
 
-// --- 地區下拉選單 ---
+// --- 地區下拉 ---
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const districtSelect = document.getElementById("districtSelect");
@@ -129,7 +126,7 @@ function searchData() {
   renderTable(filtered);
 }
 
-// --- 顯示結果表格 ---
+// --- 顯示結果表格（加 Google Maps 點擊）---
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -141,9 +138,14 @@ function renderTable(data) {
 
   data.forEach((d) => {
     const row = document.createElement("tr");
+
+    // Google Maps 搜尋連結
+    const address = d["醫事機構地址"];
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+
     row.innerHTML = `
       <td>${d["醫事機構名稱"]}</td>
-      <td>${d["醫事機構地址"]}</td>
+      <td><a href="${mapUrl}" target="_blank" class="map-link">${address}</a></td>
       <td>${d["醫事機構電話"]}</td>
       <td>${d["整合團隊名稱"]}</td>
     `;

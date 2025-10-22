@@ -8,13 +8,17 @@
 <body>
   <header>
     <h1>全台居家醫療機構查詢系統</h1>
-    <p>可依縣市與關鍵字搜尋居家醫療機構</p>
+    <p>可依縣市、地區與關鍵字搜尋居家醫療機構</p>
   </header>
 
   <section id="controls">
-    <label>選擇縣市：</label>
+    <label>縣市：</label>
     <select id="citySelect"></select>
-    <label>關鍵字搜尋：</label>
+
+    <label>地區：</label>
+    <select id="districtSelect"></select>
+
+    <label>關鍵字：</label>
     <input type="text" id="keyword" placeholder="輸入例如：內科、醫院、診所">
     <button id="searchBtn">查詢</button>
   </section>

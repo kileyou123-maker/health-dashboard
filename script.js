@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.text())
     .then(text => {
       allData = csvToJson(text);
-      normalizeAddress(allData); // 統一「臺」「台」
+      normalizeAddress(allData);
       buildCityDistrictMap(allData);
       populateCityList();
     });
@@ -15,40 +15,51 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("searchBtn").addEventListener("click", searchData);
 });
 
-// --- 將 CSV 轉換成 JSON ---
+// --- CSV → JSON ---
 function csvToJson(csv) {
   const lines = csv.split("\n").filter(line => line.trim() !== "");
   const headers = lines[0].split(",").map(h => h.trim());
   return lines.slice(1).map(line => {
     const values = line.split(",");
     const obj = {};
-    headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
+    headers.forEach((h, i) => (obj[h] = values[i] ? values[i].trim() : ""));
     return obj;
   });
 }
 
-// --- 統一地址格式 ---
+// --- 統一「台／臺」 ---
 function normalizeAddress(data) {
-  data.forEach(d => {
+  data.forEach((d) => {
     if (d["醫事機構地址"]) {
       d["醫事機構地址"] = d["醫事機構地址"]
         .replaceAll("臺", "台")
-        .replaceAll("　", "") // 全形空白
+        .replaceAll("　", "")
         .trim();
     }
   });
 }
 
+// --- 全台縣市列表（精確名稱） ---
+const allCities = [
+  "台北市","新北市","桃園市","台中市","台南市","高雄市",
+  "基隆市","新竹市","嘉義市",
+  "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣",
+  "嘉義縣","屏東縣","宜蘭縣","花蓮縣","台東縣",
+  "澎湖縣","金門縣","連江縣"
+];
+
 // --- 建立縣市 → 地區 對應表 ---
 function buildCityDistrictMap(data) {
-  data.forEach(d => {
-    const address = d["醫事機構地址"];
-    if (!address) return;
+  data.forEach((d) => {
+    const addr = d["醫事機構地址"];
+    if (!addr) return;
 
-    // 取前三字作為縣市
-    const city = address.substring(0, 3);
-    // 抓「XX區」「XX鄉」「XX鎮」「XX市」
-    const match = address.match(/[\u4e00-\u9fa5]{2,3}(區|鄉|鎮|市)/);
+    // 找出屬於哪個縣市
+    const city = allCities.find(c => addr.startsWith(c)) || "其他地區";
+    const addrAfterCity = addr.replace(city, "");
+
+    // 抓取「區」「鎮」「鄉」「市」但排除城市名稱
+    const match = addrAfterCity.match(/[\u4e00-\u9fa5]{1,3}(區|鄉|鎮|市)/);
     const district = match ? match[0] : "其他地區";
 
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
@@ -56,16 +67,18 @@ function buildCityDistrictMap(data) {
   });
 }
 
-// --- 產生縣市選單 ---
+// --- 產生縣市下拉選單 ---
 function populateCityList() {
-  const select = document.getElementById("citySelect");
-  select.innerHTML = '<option value="全部">全部</option>';
-  Object.keys(cityDistrictMap).forEach(city => {
+  const citySelect = document.getElementById("citySelect");
+  citySelect.innerHTML = '<option value="全部">全部</option>';
+
+  Object.keys(cityDistrictMap).forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
-    select.appendChild(opt);
+    citySelect.appendChild(opt);
   });
+
   populateDistrictList();
 }
 
@@ -76,7 +89,7 @@ function populateDistrictList() {
   districtSelect.innerHTML = '<option value="全部">全部</option>';
 
   if (city !== "全部" && cityDistrictMap[city]) {
-    [...cityDistrictMap[city]].forEach(d => {
+    [...cityDistrictMap[city]].forEach((d) => {
       const opt = document.createElement("option");
       opt.value = d;
       opt.textContent = d;
@@ -85,13 +98,13 @@ function populateDistrictList() {
   }
 }
 
-// --- 查詢功能 ---
+// --- 查詢 ---
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
 
-  const filtered = allData.filter(d => {
+  const filtered = allData.filter((d) => {
     const addr = d["醫事機構地址"];
     const name = d["醫事機構名稱"];
     const team = d["整合團隊名稱"];
@@ -120,7 +133,7 @@ function renderTable(data) {
     return;
   }
 
-  data.forEach(d => {
+  data.forEach((d) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${d["醫事機構名稱"]}</td>

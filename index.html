@@ -22,10 +22,12 @@
     <label>關鍵字：</label>
     <input type="text" id="keyword" placeholder="輸入例如：內科、醫院、診所">
     <button id="searchBtn">查詢</button>
+    <button id="nearbyBtn">📍 顯示離我最近</button>
   </section>
 
   <section id="results">
     <h2>查詢結果</h2>
+    <p id="status"></p>
     <table id="resultTable">
       <thead>
         <tr>
@@ -33,6 +35,7 @@
           <th>地址</th>
           <th>電話</th>
           <th>整合團隊名稱</th>
+          <th>距離</th>
         </tr>
       </thead>
       <tbody></tbody>

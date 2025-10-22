@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.text())
     .then(text => {
       allData = csvToJson(text);
+      normalizeAddress(allData); // 統一「臺」「台」
       buildCityDistrictMap(allData);
       populateCityList();
     });
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("searchBtn").addEventListener("click", searchData);
 });
 
-// 將 CSV 轉換成 JSON
+// --- 將 CSV 轉換成 JSON ---
 function csvToJson(csv) {
   const lines = csv.split("\n").filter(line => line.trim() !== "");
   const headers = lines[0].split(",").map(h => h.trim());
@@ -26,24 +27,36 @@ function csvToJson(csv) {
   });
 }
 
-// 建立縣市 → 地區 對應表
+// --- 統一地址格式 ---
+function normalizeAddress(data) {
+  data.forEach(d => {
+    if (d["醫事機構地址"]) {
+      d["醫事機構地址"] = d["醫事機構地址"]
+        .replaceAll("臺", "台")
+        .replaceAll("　", "") // 全形空白
+        .trim();
+    }
+  });
+}
+
+// --- 建立縣市 → 地區 對應表 ---
 function buildCityDistrictMap(data) {
   data.forEach(d => {
     const address = d["醫事機構地址"];
     if (!address) return;
 
-    // 前三個字通常是縣市名
+    // 取前三字作為縣市
     const city = address.substring(0, 3);
-    // 抓取「XX區」「XX鄉」「XX鎮」「XX市」
-    const districtMatch = address.match(/[\u4e00-\u9fa5]{2,3}(區|鎮|鄉|市)/);
-    const district = districtMatch ? districtMatch[0] : "其他地區";
+    // 抓「XX區」「XX鄉」「XX鎮」「XX市」
+    const match = address.match(/[\u4e00-\u9fa5]{2,3}(區|鄉|鎮|市)/);
+    const district = match ? match[0] : "其他地區";
 
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
     cityDistrictMap[city].add(district);
   });
 }
 
-// 縣市下拉選單
+// --- 產生縣市選單 ---
 function populateCityList() {
   const select = document.getElementById("citySelect");
   select.innerHTML = '<option value="全部">全部</option>';
@@ -53,10 +66,10 @@ function populateCityList() {
     opt.textContent = city;
     select.appendChild(opt);
   });
-  populateDistrictList(); // 初始載入
+  populateDistrictList();
 }
 
-// 地區下拉選單
+// --- 根據縣市更新地區選單 ---
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const districtSelect = document.getElementById("districtSelect");
@@ -72,7 +85,7 @@ function populateDistrictList() {
   }
 }
 
-// 查詢功能
+// --- 查詢功能 ---
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -97,7 +110,7 @@ function searchData() {
   renderTable(filtered);
 }
 
-// 顯示結果表格
+// --- 顯示結果表格 ---
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";

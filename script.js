@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("searchBtn").addEventListener("click", searchData);
 });
 
-// --- CSV → JSON ---
+// --- CSV 轉 JSON ---
 function csvToJson(csv) {
   const lines = csv.split("\n").filter(line => line.trim() !== "");
   const headers = lines[0].split(",").map(h => h.trim());
@@ -39,7 +39,7 @@ function normalizeAddress(data) {
   });
 }
 
-// --- 全台縣市列表（精確名稱） ---
+// --- 全台縣市清單 ---
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市",
   "基隆市","新竹市","嘉義市",
@@ -48,26 +48,32 @@ const allCities = [
   "澎湖縣","金門縣","連江縣"
 ];
 
-// --- 建立縣市 → 地區 對應表 ---
+// --- 建立縣市→地區對應表 ---
 function buildCityDistrictMap(data) {
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
     if (!addr) return;
 
-    // 找出屬於哪個縣市
     const city = allCities.find(c => addr.startsWith(c)) || "其他地區";
     const addrAfterCity = addr.replace(city, "");
 
-    // 抓取「區」「鎮」「鄉」「市」但排除城市名稱
-    const match = addrAfterCity.match(/[\u4e00-\u9fa5]{1,3}(區|鄉|鎮|市)/);
-    const district = match ? match[0] : "其他地區";
+    // 先嘗試抓「區／鎮／鄉／市」
+    let match = addrAfterCity.match(/[\u4e00-\u9fa5]{1,3}(區|鄉|鎮|市)/);
+    let district = match ? match[0] : null;
+
+    // 若沒有這類結尾（例如「新北市板橋」），取前2~3個字
+    if (!district) {
+      district = addrAfterCity.substring(0, 3).trim();
+      // 避免空字串或數字
+      if (!district || /\d/.test(district)) district = "其他地區";
+    }
 
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
     cityDistrictMap[city].add(district);
   });
 }
 
-// --- 產生縣市下拉選單 ---
+// --- 縣市下拉選單 ---
 function populateCityList() {
   const citySelect = document.getElementById("citySelect");
   citySelect.innerHTML = '<option value="全部">全部</option>';
@@ -82,7 +88,7 @@ function populateCityList() {
   populateDistrictList();
 }
 
-// --- 根據縣市更新地區選單 ---
+// --- 地區下拉選單 ---
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const districtSelect = document.getElementById("districtSelect");

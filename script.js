@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
 
+  // 讓 Enter 鍵也能執行查詢
+  document.getElementById("keyword").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") searchData();
+  });
+
   // 綁定快速篩選按鈕
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -100,28 +105,37 @@ function populateDistrictList() {
   }
 }
 
-// --- 查詢 ---
+// --- 查詢（多欄位模糊搜尋） ---
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
+
   const filtered = allData.filter((d) => {
-    const addr = d["醫事機構地址"];
-    const name = d["醫事機構名稱"];
-    const team = d["整合團隊名稱"];
-    const matchCity = city === "全部" || (addr && addr.includes(city));
-    const matchDistrict = district === "全部" || (addr && addr.includes(district));
+    const addr = d["醫事機構地址"] || "";
+    const name = d["醫事機構名稱"] || "";
+    const phone = d["醫事機構電話"] || "";
+    const team = d["整合團隊名稱"] || "";
+
+    const matchCity = city === "全部" || addr.includes(city);
+    const matchDistrict = district === "全部" || addr.includes(district);
+
+    // ✅ 關鍵字同時比對名稱、地址、電話、團隊
     const matchKeyword =
       !keyword ||
-      (name && name.includes(keyword)) ||
-      (team && team.includes(keyword)) ||
-      (addr && addr.includes(keyword));
+      name.includes(keyword) ||
+      addr.includes(keyword) ||
+      phone.includes(keyword) ||
+      team.includes(keyword);
+
     return matchCity && matchDistrict && matchKeyword;
   });
+
+  document.getElementById("status").textContent = `共找到 ${filtered.length} 筆結果`;
   renderTable(filtered);
 }
 
-// --- 快速篩選 ---
+// --- 快速篩選（醫院／診所／全部） ---
 function quickFilter(type) {
   let filtered;
   if (type === "全部") {
@@ -129,7 +143,7 @@ function quickFilter(type) {
   } else {
     filtered = allData.filter((d) => d["醫事機構名稱"] && d["醫事機構名稱"].includes(type));
   }
-  document.getElementById("status").textContent = `顯示類型：${type}`;
+  document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
   renderTable(filtered);
 }
 

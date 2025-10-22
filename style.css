@@ -1,10 +1,13 @@
+/* ---------- 全域設定 ---------- */
 body {
   font-family: "Noto Sans TC", sans-serif;
   background: #f7fafc;
   color: #333;
   margin: 0;
+  padding: 0;
 }
 
+/* ---------- 標題區 ---------- */
 header {
   background: #2c7a7b;
   color: white;
@@ -12,67 +15,133 @@ header {
   padding: 20px;
 }
 
+header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+header p {
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+/* ---------- 查詢控制區 ---------- */
 #controls {
   width: 80%;
   margin: 20px auto;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
 }
 
 #controls label {
   margin-right: 5px;
+  font-weight: bold;
 }
 
 #controls select,
 #controls input {
   margin-right: 10px;
-  padding: 5px;
+  padding: 6px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 #controls button {
   background: #319795;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 #controls button:hover {
   background: #2c7a7b;
 }
 
+/* ---------- 結果區塊 ---------- */
 #results {
   width: 90%;
   margin: 20px auto;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
 }
 
+#results h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #2c7a7b;
+}
+
+/* ---------- 資料表格 ---------- */
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
+  font-size: 14px;
 }
 
 th {
   background: #e6fffa;
+  color: #2c7a7b;
+  font-weight: bold;
 }
 
+/* ---------- Google Maps 連結樣式 ---------- */
+.map-link {
+  color: #2b6cb0;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.map-link:hover {
+  color: #1a202c;
+  text-decoration: underline;
+}
+
+/* ---------- 頁尾 ---------- */
 footer {
   text-align: center;
   font-size: 13px;
   color: gray;
   margin: 20px;
+}
+
+/* ---------- 響應式 ---------- */
+@media (max-width: 768px) {
+  #controls {
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #results {
+    width: 95%;
+  }
+
+  th,
+  td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  #controls select,
+  #controls input,
+  #controls button {
+    width: 100%;
+  }
 }

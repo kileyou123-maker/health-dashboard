@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>健康照護資料儀表板</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>健康照護資料儀表板</h1>
+    <p>展示台灣各地區的健康疾病統計資料</p>
+  </header>
+
+  <section>
+    <h2>查詢條件</h2>
+    <div class="filters">
+      <label>地區：</label>
+      <select id="regionSelect"></select>
+
+      <label>年齡層：</label>
+      <select id="ageGroupSelect"></select>
+
+      <label>性別：</label>
+      <select id="genderSelect"></select>
+
+      <button id="queryBtn">查詢</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>查詢結果</h2>
+    <div id="resultTable"></div>
+  </section>
+
+  <section>
+    <h2>視覺化圖表</h2>
+    <canvas id="chartArea"></canvas>
+  </section>
+
+  <footer>
+    <p>資料來源：衛生福利部開放資料（模擬資料示範用）</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

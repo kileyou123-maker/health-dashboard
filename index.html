@@ -4,12 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>居家醫療機構查詢系統</title>
+
+  <!-- ✅ 分頁標籤圖示（favicon） -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>全台居家醫療機構查詢系統</h1>
-    <p>可依縣市、地區與關鍵字搜尋居家醫療機構</p>
+    <div class="header-container">
+      <img src="favicon.png" alt="醫療標誌" class="logo">
+      <div class="header-text">
+        <h1>全台居家醫療機構查詢系統</h1>
+        <p>可依縣市、地區與關鍵字搜尋居家醫療機構</p>
+      </div>
+    </div>
     <button id="themeToggle" class="theme-btn" type="button">🌙 深色模式</button>
   </header>
 

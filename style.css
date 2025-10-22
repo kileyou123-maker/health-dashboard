@@ -1,17 +1,16 @@
-/* ---------- 全域設定 ---------- */
 body {
   font-family: "Noto Sans TC", sans-serif;
   background: #f7fafc;
   color: #333;
   margin: 0;
   padding: 0;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.4s, color 0.4s;
 }
 
 /* ---------- 深色模式 ---------- */
 body.dark {
   background: #1a202c;
-  color: #e2e8f0;
+  color: #edf2f7;
 }
 
 body.dark header {
@@ -40,11 +39,12 @@ body.dark .map-link {
 
 /* ---------- 標題區 ---------- */
 header {
-  background: #2c7a7b;
+  background: linear-gradient(135deg, #2c7a7b, #319795);
   color: white;
   text-align: center;
-  padding: 20px;
+  padding: 25px 20px;
   position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 header h1 {
@@ -57,24 +57,36 @@ header p {
   font-size: 15px;
 }
 
-/* ---------- 深色模式切換按鈕 ---------- */
-#themeToggle {
+/* ---------- 美化深色切換按鈕 ---------- */
+.theme-btn {
   position: absolute;
-  right: 20px;
-  top: 20px;
-  background: #319795;
+  right: 25px;
+  top: 25px;
+  background: linear-gradient(135deg, #48bb78, #38a169);
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 30px;
   cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
 }
 
-#themeToggle:hover {
-  background: #2c7a7b;
+.theme-btn:hover {
+  background: linear-gradient(135deg, #2f855a, #276749);
+  transform: scale(1.05);
 }
 
-/* ---------- 查詢控制區 ---------- */
+body.dark .theme-btn {
+  background: linear-gradient(135deg, #63b3ed, #4299e1);
+}
+
+body.dark .theme-btn:hover {
+  background: linear-gradient(135deg, #2b6cb0, #2c5282);
+}
+
+/* ---------- 控制區 ---------- */
 #controls {
   width: 80%;
   margin: 20px auto;
@@ -82,6 +94,7 @@ header p {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
+  transition: background 0.4s, color 0.4s;
 }
 
 #controls label {
@@ -112,7 +125,7 @@ header p {
   background: #2c7a7b;
 }
 
-/* ---------- 結果區塊 ---------- */
+/* ---------- 結果表 ---------- */
 #results {
   width: 90%;
   margin: 20px auto;
@@ -120,6 +133,7 @@ header p {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
+  transition: background 0.4s, color 0.4s;
 }
 
 #results h2 {
@@ -128,15 +142,13 @@ header p {
   color: #2c7a7b;
 }
 
-/* ---------- 資料表格 ---------- */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
-th,
-td {
+th, td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
@@ -149,7 +161,7 @@ th {
   font-weight: bold;
 }
 
-/* ---------- Google Maps 連結樣式 ---------- */
+/* ---------- 地圖連結 ---------- */
 .map-link {
   color: #2b6cb0;
   text-decoration: none;
@@ -177,27 +189,8 @@ footer {
     flex-direction: column;
     gap: 10px;
   }
-
-  #results {
-    width: 95%;
-  }
-
-  th,
-  td {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  #controls select,
-  #controls input,
-  #controls button {
-    width: 100%;
-  }
-
-  #themeToggle {
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    font-size: 13px;
-  }
+  #results { width: 95%; }
+  th, td { font-size: 12px; padding: 6px; }
+  #controls select, #controls input, #controls button { width: 100%; }
+  .theme-btn { top: 10px; right: 10px; padding: 5px 10px; font-size: 13px; }
 }

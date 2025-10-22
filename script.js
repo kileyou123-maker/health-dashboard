@@ -1,12 +1,24 @@
-// 載入資料
-fetch('data/processed_data.json')
-  .then(res => res.json())
-  .then(data => {
-    window.allData = data;
-    populateFilters(data);
-  });
+// ----------------------------
+// 內嵌模擬資料
+// ----------------------------
+const allData = [
+  {"region": "台北市", "ageGroup": "20-29", "gender": "男", "cases": 1240},
+  {"region": "台北市", "ageGroup": "30-39", "gender": "女", "cases": 870},
+  {"region": "新北市", "ageGroup": "40-49", "gender": "男", "cases": 940},
+  {"region": "新北市", "ageGroup": "50-59", "gender": "女", "cases": 1110},
+  {"region": "桃園市", "ageGroup": "60-69", "gender": "男", "cases": 1030},
+  {"region": "台中市", "ageGroup": "20-29", "gender": "女", "cases": 770},
+  {"region": "台南市", "ageGroup": "30-39", "gender": "男", "cases": 910},
+  {"region": "高雄市", "ageGroup": "40-49", "gender": "女", "cases": 1080},
+  {"region": "基隆市", "ageGroup": "50-59", "gender": "男", "cases": 720},
+  {"region": "新竹市", "ageGroup": "60-69", "gender": "女", "cases": 650}
+];
 
-// 產生下拉選單
+// ----------------------------
+// 初始化下拉選單
+// ----------------------------
+populateFilters(allData);
+
 function populateFilters(data) {
   const regions = [...new Set(data.map(d => d.region))];
   const ages = [...new Set(data.map(d => d.ageGroup))];
@@ -31,7 +43,9 @@ function fillSelect(id, arr) {
   });
 }
 
-// 查詢按鈕功能
+// ----------------------------
+// 查詢功能
+// ----------------------------
 document.getElementById('queryBtn').addEventListener('click', () => {
   const region = document.getElementById('regionSelect').value;
   const age = document.getElementById('ageGroupSelect').value;
@@ -47,7 +61,9 @@ document.getElementById('queryBtn').addEventListener('click', () => {
   renderChart(filtered);
 });
 
+// ----------------------------
 // 顯示表格
+// ----------------------------
 function renderTable(data) {
   const container = document.getElementById('resultTable');
   if (data.length === 0) {
@@ -62,7 +78,9 @@ function renderTable(data) {
   container.innerHTML = html;
 }
 
-// 畫出 Chart.js 圖表
+// ----------------------------
+// Chart.js 圖表
+// ----------------------------
 let chartInstance = null;
 function renderChart(data) {
   const ctx = document.getElementById('chartArea');

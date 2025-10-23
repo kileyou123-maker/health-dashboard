@@ -5,67 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>全台居家醫療機構查詢系統</title>
 
-  <!-- ✅ 分頁標籤小圖示（請確認 favicon.png 與 index.html 同層） -->
+  <!-- ✅ 分頁標籤 favicon -->
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="shortcut icon" href="./favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="./favicon.png" />
 
   <link rel="stylesheet" href="style.css" />
-  <script defer src="script.js"></script>
 </head>
 <body>
   <header>
     <h1>全台居家醫療機構查詢系統</h1>
     <p>可依縣市、地區與關鍵字搜尋居家醫療機構</p>
-    <button id="themeToggle" class="theme-btn">🌙 深色模式</button>
+    <button id="themeToggle" class="theme-btn" type="button">🌙 深色模式</button>
   </header>
 
-  <main>
-    <!-- 快速篩選區 -->
-    <section id="quickFilter">
-      <button class="filter-btn" data-type="醫院">🏥 醫院</button>
-      <button class="filter-btn" data-type="診所">💉 診所</button>
-      <button class="filter-btn" data-type="全部">🌐 全部</button>
-    </section>
+  <!-- 🔍 快速篩選 -->
+  <section id="quickFilter">
+    <button type="button" class="filter-btn" data-type="醫院">🏥 醫院</button>
+    <button type="button" class="filter-btn" data-type="診所">💉 診所</button>
+    <button type="button" class="filter-btn" data-type="全部">🌐 全部</button>
+  </section>
 
-    <!-- 查詢條件 -->
-    <section id="controls">
-      <label for="city">縣市：</label>
-      <select id="city">
-        <option value="全部">全部</option>
-      </select>
+  <!-- 查詢條件 -->
+  <section id="controls">
+    <label>縣市：</label>
+    <select id="citySelect"></select>
 
-      <label for="district">地區：</label>
-      <select id="district">
-        <option value="全部">全部</option>
-      </select>
+    <label>地區：</label>
+    <select id="districtSelect"></select>
 
-      <label for="keyword">關鍵字：</label>
-      <input type="text" id="keyword" placeholder="輸入關鍵字，如：內科、醫院、診所" />
-      <button id="searchBtn" class="main-btn"> 查詢</button>
-    </section>
+    <label>關鍵字：</label>
+    <input type="text" id="keyword" placeholder="輸入例如：內科、醫院、診所">
+    <button id="searchBtn" type="button" class="main-btn">🔍 查詢</button>
+  </section>
 
-    <!-- 查詢結果 -->
-    <section id="results">
-      <h2>查詢結果</h2>
-      <p id="status"></p>
-      <table>
-        <thead>
-          <tr>
-            <th>醫事機構名稱</th>
-            <th>地址</th>
-            <th>電話</th>
-            <th>整合團隊名稱</th>
-          </tr>
-        </thead>
-        <tbody id="dataBody"></tbody>
-      </table>
-    </section>
-  </main>
+  <!-- 查詢結果 -->
+  <section id="results">
+    <h2>查詢結果</h2>
+    <p id="status"></p>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>醫事機構名稱</th>
+          <th>地址</th>
+          <th>電話</th>
+          <th>整合團隊名稱</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
 
   <footer>
-    資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）
+    <p>資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）</p>
   </footer>
+
+  <!-- ✅ 放在 body 結尾，確保載入順序正確 -->
+  <script src="script.js"></script>
 </body>
 </html>
-

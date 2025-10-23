@@ -16,16 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("keyword").addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchData();
   });
-
   document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const type = btn.getAttribute("data-type");
-      quickFilter(type);
-    });
+    btn.addEventListener("click", () => quickFilter(btn.getAttribute("data-type")));
   });
+
+  initTheme();
 });
 
-// --- CSV 轉 JSON ---
 function csvToJson(csv) {
   const lines = csv.split("\n").filter(line => line.trim() !== "");
   const headers = lines[0].split(",").map(h => h.trim());
@@ -37,7 +34,6 @@ function csvToJson(csv) {
   });
 }
 
-// --- 正常化地址（臺 → 台）---
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"]) {
@@ -46,7 +42,6 @@ function normalizeAddress(data) {
   });
 }
 
-// --- 所有縣市列表 ---
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市",
   "基隆市","新竹市","嘉義市",
@@ -55,7 +50,6 @@ const allCities = [
   "澎湖縣","金門縣","連江縣"
 ];
 
-// --- 建立縣市 → 地區 ---
 function buildCityDistrictMap(data) {
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
@@ -69,7 +63,6 @@ function buildCityDistrictMap(data) {
   });
 }
 
-// --- 縣市選單 ---
 function populateCityList() {
   const citySel = document.getElementById("citySelect");
   citySel.innerHTML = '<option value="全部">全部</option>';
@@ -82,7 +75,6 @@ function populateCityList() {
   populateDistrictList();
 }
 
-// --- 地區選單 ---
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const districtSel = document.getElementById("districtSelect");
@@ -97,7 +89,6 @@ function populateDistrictList() {
   }
 }
 
-// --- 查詢 ---
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -125,7 +116,6 @@ function searchData() {
   renderTable(filtered);
 }
 
-// --- 篩選 ---
 function quickFilter(type) {
   let filtered;
   if (type === "全部") filtered = allData;
@@ -134,7 +124,6 @@ function quickFilter(type) {
   renderTable(filtered);
 }
 
-// --- 顯示結果表格 ---
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -156,15 +145,24 @@ function renderTable(data) {
   });
 }
 
-// --- 深色模式 ---
-const themeBtn = document.getElementById("themeToggle");
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  themeBtn.textContent = "☀️ 亮色模式";
+/* === 主題切換 === */
+function initTheme() {
+  const themeBtn = document.getElementById("themeToggle");
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    themeBtn.textContent = "☀️ 亮色模式";
+  } else {
+    themeBtn.textContent = "🌙 深色模式";
+  }
+
+  themeBtn.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark");
+    themeBtn.textContent = isDark ? "☀️ 亮色模式" : "🌙 深色模式";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+
+    themeBtn.style.transform = "scale(1.2)";
+    setTimeout(() => themeBtn.style.transform = "scale(1)", 150);
+  });
 }
-themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-  themeBtn.textContent = isDark ? "☀️ 亮色模式" : "🌙 深色模式";
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-});

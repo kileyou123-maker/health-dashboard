@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
       normalizeAddress(allData);
       buildCityDistrictMap(allData);
       populateCityList();
+      setupAutocomplete(); // ← 新增自動提示初始化
     });
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
 });
 
+/* === CSV 轉 JSON === */
 function csvToJson(csv) {
   const lines = csv.split("\n").filter(line => line.trim() !== "");
   const headers = lines[0].split(",").map(h => h.trim());
@@ -34,6 +36,7 @@ function csvToJson(csv) {
   });
 }
 
+/* === 地址格式化（臺→台） === */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"]) {
@@ -89,6 +92,7 @@ function populateDistrictList() {
   }
 }
 
+/* === 查詢 === */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -116,6 +120,7 @@ function searchData() {
   renderTable(filtered);
 }
 
+/* === 篩選 === */
 function quickFilter(type) {
   let filtered;
   if (type === "全部") filtered = allData;
@@ -124,6 +129,7 @@ function quickFilter(type) {
   renderTable(filtered);
 }
 
+/* === 顯示結果表格 === */
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -134,11 +140,14 @@ function renderTable(data) {
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+    const phoneLink = d["醫事機構電話"]
+      ? `<a href="tel:${d["醫事機構電話"]}" class="phone-link">${d["醫事機構電話"]}</a>`
+      : "";
     const row = `
       <tr>
         <td>${d["醫事機構名稱"]}</td>
         <td><a href="${mapUrl}" target="_blank" class="map-link">${addr}</a></td>
-        <td>${d["醫事機構電話"]}</td>
+        <td>${phoneLink}</td>
         <td>${d["整合團隊名稱"]}</td>
       </tr>`;
     tbody.insertAdjacentHTML("beforeend", row);
@@ -164,5 +173,60 @@ function initTheme() {
 
     themeBtn.style.transform = "rotate(180deg)";
     setTimeout(() => themeBtn.style.transform = "rotate(0deg)", 200);
+  });
+}
+
+/* === 🔠 自動提示功能 === */
+function setupAutocomplete() {
+  const input = document.getElementById("keyword");
+  const suggestionBox = document.createElement("div");
+  suggestionBox.id = "suggestionBox";
+  suggestionBox.style.position = "absolute";
+  suggestionBox.style.background = "#fff";
+  suggestionBox.style.border = "1px solid #ccc";
+  suggestionBox.style.borderRadius = "5px";
+  suggestionBox.style.zIndex = "100";
+  suggestionBox.style.display = "none";
+  suggestionBox.style.maxHeight = "200px";
+  suggestionBox.style.overflowY = "auto";
+  suggestionBox.style.fontSize = "14px";
+  suggestionBox.style.width = input.offsetWidth + "px";
+  document.body.appendChild(suggestionBox);
+
+  input.addEventListener("input", () => {
+    const val = input.value.trim();
+    if (!val) {
+      suggestionBox.style.display = "none";
+      return;
+    }
+    const matches = allData
+      .map(d => d["醫事機構名稱"])
+      .filter(name => name && name.includes(val))
+      .slice(0, 8); // 只顯示前8筆
+    if (matches.length === 0) {
+      suggestionBox.style.display = "none";
+      return;
+    }
+
+    const rect = input.getBoundingClientRect();
+    suggestionBox.style.left = rect.left + "px";
+    suggestionBox.style.top = rect.bottom + window.scrollY + "px";
+    suggestionBox.innerHTML = matches.map(name => `<div class="suggest-item">${name}</div>`).join("");
+    suggestionBox.style.display = "block";
+
+    document.querySelectorAll(".suggest-item").forEach(el => {
+      el.style.padding = "6px 10px";
+      el.style.cursor = "pointer";
+      el.addEventListener("mouseover", () => el.style.background = "#e6fffa");
+      el.addEventListener("mouseout", () => el.style.background = "#fff");
+      el.addEventListener("click", () => {
+        input.value = el.textContent;
+        suggestionBox.style.display = "none";
+      });
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target !== input) suggestionBox.style.display = "none";
   });
 }

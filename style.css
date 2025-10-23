@@ -200,3 +200,23 @@ body.dark .map-link { color: #63b3ed; }
   th, td { padding: 6px; }
   #quickFilter { margin: 10px 0; }
 }
+/* === 響應式設計（手機） === */
+@media (max-width: 600px) {
+  header h1 { font-size: 20px; }
+  header p { font-size: 12px; }
+  .theme-btn, .main-btn, .filter-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  #controls { width: 95%; padding: 10px; }
+  table { font-size: 12px; }
+  th, td { padding: 6px; }
+  #quickFilter { margin: 10px 0; }
+
+  /* ✅ Logo 在手機縮小 */
+  header img.logo {
+    width: 40px;
+    height: 40px;
+  }
+}
+

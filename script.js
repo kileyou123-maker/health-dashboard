@@ -152,17 +152,17 @@ function initTheme() {
 
   if (savedTheme === "dark") {
     document.body.classList.add("dark");
-    themeBtn.textContent = "☀️ 亮色模式";
+    themeBtn.textContent = "☀️";
   } else {
-    themeBtn.textContent = "🌙 深色模式";
+    themeBtn.textContent = "🌙";
   }
 
   themeBtn.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark");
-    themeBtn.textContent = isDark ? "☀️ 亮色模式" : "🌙 深色模式";
+    themeBtn.textContent = isDark ? "☀️" : "🌙";
     localStorage.setItem("theme", isDark ? "dark" : "light");
 
-    themeBtn.style.transform = "scale(1.2)";
-    setTimeout(() => themeBtn.style.transform = "scale(1)", 150);
+    themeBtn.style.transform = "rotate(180deg)";
+    setTimeout(() => themeBtn.style.transform = "rotate(0deg)", 200);
   });
 }

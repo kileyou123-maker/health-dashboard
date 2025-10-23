@@ -1,4 +1,3 @@
-/* === 全域設定 === */
 body {
   font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
   margin: 0;
@@ -7,138 +6,113 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* === 固定標題列 === */
+/* === Header === */
 header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
   background: linear-gradient(135deg, #2b7a78, #3aafa9);
   color: white;
   text-align: center;
   padding: 20px 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+header p {
+  margin: 6px 0 12px;
+  font-size: 14px;
 }
 
-/* === Logo 與標題 === */
-.header-container {
-  display: flex;
-  flex-direction: column; /* 讓 Logo 與文字垂直排列 */
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 8px;
-}
-
-.logo {
-  width: 120px;
-  height: auto;
-  max-width: 25vw; /* 桌機不超過螢幕寬度 25% */
-  object-fit: contain;
-  transition: all 0.3s ease;
-}
-
-.header-text { text-align: center; }
-header h1 { margin: 0; font-size: 24px; }
-header p { margin: 6px 0 10px; font-size: 14px; }
-
-/* === 深色模式切換按鈕 === */
+/* === 深色模式按鈕 === */
 .theme-btn {
-  background: linear-gradient(135deg, #2c7a7b, #319795);
-  color: white;
+  background: #319795;
   border: none;
-  padding: 8px 15px;
-  border-radius: 30px;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: all 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 .theme-btn:hover {
-  transform: scale(1.05);
-  background: linear-gradient(135deg, #319795, #38b2ac);
+  transform: scale(1.1);
+  background: #2c7a7b;
 }
 
-/* === 快速篩選按鈕 === */
+/* === 篩選按鈕 === */
 #quickFilter {
   text-align: center;
   margin: 15px 0;
 }
 .filter-btn {
-  background: linear-gradient(135deg, #38b2ac, #319795);
+  background: #38b2ac;
   color: white;
   border: none;
   padding: 10px 18px;
-  margin: 6px;
+  margin: 5px;
   border-radius: 30px;
   cursor: pointer;
   font-size: 15px;
-  font-weight: bold;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
 }
 .filter-btn:hover {
-  background: linear-gradient(135deg, #2c7a7b, #285e61);
+  background: #285e61;
   transform: translateY(-3px);
 }
-body.dark .filter-btn {
-  background: linear-gradient(135deg, #4fd1c5, #2c7a7b);
-}
 
-/* === 查詢主按鈕 === */
+/* === 查詢區 === */
+#controls {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin: 15px auto;
+  width: 90%;
+  max-width: 900px;
+  text-align: center;
+}
+#controls select,
+#controls input {
+  padding: 8px;
+  margin: 5px;
+  border: 1px solid #cbd5e0;
+  border-radius: 5px;
+  font-size: 14px;
+}
 .main-btn {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 25px;
-  font-size: 14px;
-  font-weight: bold;
   cursor: pointer;
+  font-weight: bold;
   transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 .main-btn:hover {
   background: linear-gradient(135deg, #5a67d8, #6b46c1);
   transform: scale(1.05);
 }
 
-/* === 查詢條件區塊 === */
-#controls {
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 15px;
-  margin: 15px auto;
-  width: 90%;
-  max-width: 900px;
-}
-#controls label { margin: 0 5px; font-weight: bold; }
-#controls select,
-#controls input {
-  padding: 7px 9px;
-  margin: 3px;
-  border: 1px solid #cbd5e0;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-/* === 查詢結果區 === */
+/* === 結果區 === */
 #results {
   background-color: white;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 15px;
   margin: 15px auto 30px;
   width: 90%;
   max-width: 1000px;
 }
-#results h2 { text-align: center; color: #2c7a7b; }
+#results h2 {
+  text-align: center;
+  color: #2c7a7b;
+}
 #status {
   text-align: center;
-  font-size: 14px;
   color: #319795;
   font-weight: bold;
-  margin-bottom: 8px;
 }
 
 /* === 表格 === */
@@ -149,108 +123,68 @@ table {
 }
 th, td {
   border: 1px solid #e2e8f0;
-  padding: 8px 10px;
+  padding: 8px;
   text-align: left;
 }
 th {
   background-color: #e6fffa;
   color: #2c7a7b;
 }
-tr:nth-child(even) { background-color: #f7fafc; }
-tr:hover { background-color: #edf2f7; }
-
-/* === Google Maps 連結 === */
+tr:nth-child(even) {
+  background-color: #f7fafc;
+}
+tr:hover {
+  background-color: #edf2f7;
+}
 .map-link {
   color: #2b6cb0;
   text-decoration: none;
 }
-.map-link:hover { text-decoration: underline; }
-
-/* === 頁尾 === */
-footer {
-  text-align: center;
-  padding: 12px;
-  font-size: 13px;
-  color: #4a5568;
+.map-link:hover {
+  text-decoration: underline;
 }
 
 /* === 深色模式 === */
 body.dark {
-  background-color: #121212;
-  color: #e0e0e0;
+  background-color: #1a202c;
+  color: #e2e8f0;
 }
 body.dark header {
   background: linear-gradient(135deg, #2c5282, #2b6cb0);
 }
-body.dark #controls,
-body.dark #results {
+body.dark #controls, body.dark #results {
   background-color: #2d3748;
-  box-shadow: 0 2px 6px rgba(255,255,255,0.1);
 }
 body.dark th {
   background-color: #2c5282;
   color: #bee3f8;
 }
-body.dark td { border-color: #4a5568; }
-body.dark tr:nth-child(even) { background-color: #2a2f3a; }
-body.dark tr:hover { background-color: #3a4453; }
-body.dark .map-link { color: #63b3ed; }
-
-/* === 回頂部按鈕 === */
-.back-top {
-  position: fixed;
-  bottom: 25px;
-  right: 20px;
-  padding: 10px;
-  border-radius: 50%;
-  border: none;
-  background: #319795;
-  color: white;
-  cursor: pointer;
-  display: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: all 0.3s;
+body.dark tr:nth-child(even) {
+  background-color: #2a2f3a;
 }
-.back-top:hover {
-  background: #2c7a7b;
-  transform: scale(1.1);
+body.dark tr:hover {
+  background-color: #3a4453;
+}
+body.dark .filter-btn {
+  background: #4fd1c5;
+  color: #1a202c;
+}
+body.dark .main-btn {
+  background: #805ad5;
 }
 
-/* === 響應式（手機） === */
+/* === 響應式 === */
 @media (max-width: 768px) {
-  .logo {
-    width: 80px;
-    height: auto;
-    max-width: none;
-  }
-
   header h1 {
     font-size: 20px;
   }
-
   header p {
     font-size: 12px;
   }
-
-  .theme-btn, .main-btn, .filter-btn {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-
   #controls {
     width: 95%;
-    padding: 10px;
   }
-
   table {
     font-size: 12px;
-  }
-
-  th, td {
-    padding: 6px;
-  }
-
-  #quickFilter {
-    margin: 10px 0;
   }
 }

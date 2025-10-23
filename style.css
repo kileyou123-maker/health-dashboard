@@ -19,7 +19,20 @@ header {
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
-/* === 標題 === */
+/* === Logo 與標題 === */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+.header-text { text-align: center; }
 header h1 { margin: 0; font-size: 24px; }
 header p { margin: 6px 0 10px; font-size: 14px; }
 
@@ -62,7 +75,9 @@ header p { margin: 6px 0 10px; font-size: 14px; }
   background: linear-gradient(135deg, #2c7a7b, #285e61);
   transform: translateY(-3px);
 }
-body.dark .filter-btn { background: linear-gradient(135deg, #4fd1c5, #2c7a7b); }
+body.dark .filter-btn {
+  background: linear-gradient(135deg, #4fd1c5, #2c7a7b);
+}
 
 /* === 查詢主按鈕 === */
 .main-btn {
@@ -113,7 +128,13 @@ body.dark .filter-btn { background: linear-gradient(135deg, #4fd1c5, #2c7a7b); }
   max-width: 1000px;
 }
 #results h2 { text-align: center; color: #2c7a7b; }
-#status { text-align: center; font-size: 14px; color: #319795; font-weight: bold; margin-bottom: 8px; }
+#status {
+  text-align: center;
+  font-size: 14px;
+  color: #319795;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
 
 /* === 表格 === */
 table {
@@ -133,7 +154,7 @@ th {
 tr:nth-child(even) { background-color: #f7fafc; }
 tr:hover { background-color: #edf2f7; }
 
-/* === 地圖連結 === */
+/* === Google Maps 連結 === */
 .map-link {
   color: #2b6cb0;
   text-decoration: none;
@@ -185,38 +206,45 @@ body.dark .map-link { color: #63b3ed; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   transition: all 0.3s;
 }
-.back-top:hover { background: #2c7a7b; transform: scale(1.1); }
-
-/* === 響應式設計（手機） === */
-@media (max-width: 600px) {
-  header h1 { font-size: 20px; }
-  header p { font-size: 12px; }
-  .theme-btn, .main-btn, .filter-btn {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  #controls { width: 95%; padding: 10px; }
-  table { font-size: 12px; }
-  th, td { padding: 6px; }
-  #quickFilter { margin: 10px 0; }
+.back-top:hover {
+  background: #2c7a7b;
+  transform: scale(1.1);
 }
-/* === 響應式設計（手機） === */
-@media (max-width: 600px) {
-  header h1 { font-size: 20px; }
-  header p { font-size: 12px; }
-  .theme-btn, .main-btn, .filter-btn {
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-  #controls { width: 95%; padding: 10px; }
-  table { font-size: 12px; }
-  th, td { padding: 6px; }
-  #quickFilter { margin: 10px 0; }
 
-  /* ✅ Logo 在手機縮小 */
-  header img.logo {
+/* === 響應式（手機） === */
+@media (max-width: 600px) {
+  .logo {
     width: 40px;
     height: 40px;
   }
-}
 
+  header h1 {
+    font-size: 20px;
+  }
+
+  header p {
+    font-size: 12px;
+  }
+
+  .theme-btn, .main-btn, .filter-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  #controls {
+    width: 95%;
+    padding: 10px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 6px;
+  }
+
+  #quickFilter {
+    margin: 10px 0;
+  }
+}

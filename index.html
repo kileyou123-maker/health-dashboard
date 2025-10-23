@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>全台居家醫療機構查詢系統</title>
 
-  <!-- 分頁標籤上的小圖示（favicon） -->
-  <link rel="icon" type="image/png" href="e7a9bba4-7c0b-4ea3-9689-06096eb8ae42.png" />
+  <!-- ✅ 分頁標籤小圖示（請確認 favicon.png 與 index.html 同層） -->
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="shortcut icon" href="./favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./favicon.png" />
 
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
@@ -19,12 +21,14 @@
   </header>
 
   <main>
+    <!-- 快速篩選區 -->
     <section id="quickFilter">
       <button class="filter-btn" data-type="醫院">🏥 醫院</button>
       <button class="filter-btn" data-type="診所">💉 診所</button>
       <button class="filter-btn" data-type="全部">🌐 全部</button>
     </section>
 
+    <!-- 查詢條件 -->
     <section id="controls">
       <label for="city">縣市：</label>
       <select id="city">
@@ -38,9 +42,10 @@
 
       <label for="keyword">關鍵字：</label>
       <input type="text" id="keyword" placeholder="輸入關鍵字，如：內科、醫院、診所" />
-      <button id="searchBtn" class="main-btn"> 查詢</button>
+      <button id="searchBtn" class="main-btn">🔍 查詢</button>
     </section>
 
+    <!-- 查詢結果 -->
     <section id="results">
       <h2>查詢結果</h2>
       <p id="status"></p>
@@ -63,4 +68,3 @@
   </footer>
 </body>
 </html>
-

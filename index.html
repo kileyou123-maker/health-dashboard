@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>全台居家醫療機構查詢系統</title>
 
-  <!-- ✅ 分頁標籤 favicon -->
+  <!-- 分頁標籤 favicon -->
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="shortcut icon" href="./favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="./favicon.png" />
@@ -17,14 +17,16 @@
   <header>
     <h1>全台居家醫療機構查詢系統</h1>
     <p>可依縣市、地區與關鍵字搜尋居家醫療機構</p>
-    <button id="themeToggle" class="theme-btn" type="button">🌙 深色模式</button>
   </header>
 
-  <!-- 🔍 快速篩選 -->
+  <!-- 固定右上角主題切換按鈕 -->
+  <button id="themeToggle" class="theme-toggle-btn" title="切換主題">🌙</button>
+
+  <!-- 篩選 -->
   <section id="quickFilter">
-    <button type="button" class="filter-btn" data-type="醫院">🏥 醫院</button>
-    <button type="button" class="filter-btn" data-type="診所">💉 診所</button>
-    <button type="button" class="filter-btn" data-type="全部">🌐 全部</button>
+    <button type="button" class="filter-btn" data-type="醫院">醫院</button>
+    <button type="button" class="filter-btn" data-type="診所">診所</button>
+    <button type="button" class="filter-btn" data-type="全部">全部</button>
   </section>
 
   <!-- 查詢條件 -->
@@ -37,7 +39,7 @@
 
     <label>關鍵字：</label>
     <input type="text" id="keyword" placeholder="輸入例如：內科、醫院、診所">
-    <button id="searchBtn" type="button" class="main-btn"> 查詢</button>
+    <button id="searchBtn" type="button" class="main-btn">查詢</button>
   </section>
 
   <!-- 查詢結果 -->
@@ -62,4 +64,3 @@
   </footer>
 </body>
 </html>
-

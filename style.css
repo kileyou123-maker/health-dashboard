@@ -22,16 +22,21 @@ header {
 /* === Logo 與標題 === */
 .header-container {
   display: flex;
+  flex-direction: column; /* 讓 Logo 與文字垂直排列 */
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  text-align: center;
+  gap: 8px;
 }
+
 .logo {
-  width: 60px;
-  height: 60px;
+  width: 120px;
+  height: auto;
+  max-width: 25vw; /* 桌機不超過螢幕寬度 25% */
   object-fit: contain;
   transition: all 0.3s ease;
 }
+
 .header-text { text-align: center; }
 header h1 { margin: 0; font-size: 24px; }
 header p { margin: 6px 0 10px; font-size: 14px; }
@@ -212,10 +217,11 @@ body.dark .map-link { color: #63b3ed; }
 }
 
 /* === 響應式（手機） === */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .logo {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: auto;
+    max-width: none;
   }
 
   header h1 {

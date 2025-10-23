@@ -44,8 +44,6 @@ header p {
   transform: scale(1.1);
   background: #319795;
 }
-
-/* 深色模式時的按鈕 */
 body.dark .theme-toggle-btn {
   background: #f6ad55;
   color: #2d3748;
@@ -155,6 +153,17 @@ tr:hover {
   text-decoration: underline;
 }
 
+/* === Footer 置中固定樣式 === */
+footer {
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 13px;
+  color: #4a5568;
+  background: transparent;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 /* 深色模式 */
 body.dark {
   background-color: #1a202c;
@@ -198,5 +207,9 @@ body.dark .main-btn {
     font-size: 18px;
     top: 10px;
     right: 10px;
+  }
+  footer {
+    font-size: 12px;
+    padding: 15px 5px;
   }
 }

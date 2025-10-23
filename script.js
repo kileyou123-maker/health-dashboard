@@ -13,13 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
-
-  // 讓 Enter 鍵也能執行查詢
   document.getElementById("keyword").addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchData();
   });
 
-  // 綁定快速篩選按鈕
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const type = btn.getAttribute("data-type");
@@ -40,19 +37,16 @@ function csvToJson(csv) {
   });
 }
 
-// --- 統一「台／臺」 ---
+// --- 正常化地址（臺 → 台）---
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"]) {
-      d["醫事機構地址"] = d["醫事機構地址"]
-        .replaceAll("臺", "台")
-        .replaceAll("　", "")
-        .trim();
+      d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
     }
   });
 }
 
-// --- 全台縣市清單 ---
+// --- 所有縣市列表 ---
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市",
   "基隆市","新竹市","嘉義市",
@@ -66,46 +60,44 @@ function buildCityDistrictMap(data) {
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
     if (!addr) return;
-
-    const city = allCities.find(c => addr.startsWith(c)) || "其他地區";
-    const addrAfterCity = addr.replace(city, "");
-    let match = addrAfterCity.match(/[\u4e00-\u9fa5]{1,3}(區|鄉|鎮|市)/);
-    let district = match ? match[0] : "其他地區";
-
+    const city = allCities.find(c => addr.startsWith(c)) || "其他";
+    const after = addr.replace(city, "");
+    const match = after.match(/[\u4e00-\u9fa5]{1,3}(區|鎮|鄉|市)/);
+    const district = match ? match[0] : "其他";
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
     cityDistrictMap[city].add(district);
   });
 }
 
-// --- 縣市下拉選單 ---
+// --- 縣市選單 ---
 function populateCityList() {
-  const citySelect = document.getElementById("citySelect");
-  citySelect.innerHTML = '<option value="全部">全部</option>';
+  const citySel = document.getElementById("citySelect");
+  citySel.innerHTML = '<option value="全部">全部</option>';
   Object.keys(cityDistrictMap).forEach((city) => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
-    citySelect.appendChild(opt);
+    citySel.appendChild(opt);
   });
   populateDistrictList();
 }
 
-// --- 地區下拉選單 ---
+// --- 地區選單 ---
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
-  const districtSelect = document.getElementById("districtSelect");
-  districtSelect.innerHTML = '<option value="全部">全部</option>';
+  const districtSel = document.getElementById("districtSelect");
+  districtSel.innerHTML = '<option value="全部">全部</option>';
   if (city !== "全部" && cityDistrictMap[city]) {
     [...cityDistrictMap[city]].forEach((d) => {
       const opt = document.createElement("option");
       opt.value = d;
       opt.textContent = d;
-      districtSelect.appendChild(opt);
+      districtSel.appendChild(opt);
     });
   }
 }
 
-// --- 查詢（多欄位模糊搜尋） ---
+// --- 查詢 ---
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -119,8 +111,6 @@ function searchData() {
 
     const matchCity = city === "全部" || addr.includes(city);
     const matchDistrict = district === "全部" || addr.includes(district);
-
-    // ✅ 關鍵字同時比對名稱、地址、電話、團隊
     const matchKeyword =
       !keyword ||
       name.includes(keyword) ||
@@ -135,19 +125,16 @@ function searchData() {
   renderTable(filtered);
 }
 
-// --- 快速篩選（醫院／診所／全部） ---
+// --- 篩選 ---
 function quickFilter(type) {
   let filtered;
-  if (type === "全部") {
-    filtered = allData;
-  } else {
-    filtered = allData.filter((d) => d["醫事機構名稱"] && d["醫事機構名稱"].includes(type));
-  }
+  if (type === "全部") filtered = allData;
+  else filtered = allData.filter((d) => d["醫事機構名稱"]?.includes(type));
   document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
   renderTable(filtered);
 }
 
-// --- 顯示結果表格（含 Google Maps 連結） ---
+// --- 顯示結果表格 ---
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -156,20 +143,20 @@ function renderTable(data) {
     return;
   }
   data.forEach((d) => {
-    const row = document.createElement("tr");
-    const address = d["醫事機構地址"];
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-    row.innerHTML = `
-      <td>${d["醫事機構名稱"]}</td>
-      <td><a href="${mapUrl}" target="_blank" class="map-link">${address}</a></td>
-      <td>${d["醫事機構電話"]}</td>
-      <td>${d["整合團隊名稱"]}</td>
-    `;
-    tbody.appendChild(row);
+    const addr = d["醫事機構地址"];
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+    const row = `
+      <tr>
+        <td>${d["醫事機構名稱"]}</td>
+        <td><a href="${mapUrl}" target="_blank" class="map-link">${addr}</a></td>
+        <td>${d["醫事機構電話"]}</td>
+        <td>${d["整合團隊名稱"]}</td>
+      </tr>`;
+    tbody.insertAdjacentHTML("beforeend", row);
   });
 }
 
-// --- 深色模式切換與記憶 ---
+// --- 深色模式 ---
 const themeBtn = document.getElementById("themeToggle");
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark");

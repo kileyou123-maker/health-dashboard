@@ -321,3 +321,34 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
+// 其他功能程式碼（搜尋、篩選、深色模式等）
+// ------------------------------
+
+// 顯示提示框
+function showSuggestions(suggestions) {
+  suggestionBox.innerHTML = '';
+  if (suggestions.length === 0) {
+    suggestionBox.classList.remove('active');
+    return;
+  }
+
+  suggestions.forEach(s => {
+    const div = document.createElement('div');
+    div.textContent = s;
+    div.addEventListener('click', () => {
+      keywordInput.value = s;
+      suggestionBox.classList.remove('active');
+    });
+    suggestionBox.appendChild(div);
+  });
+
+  suggestionBox.classList.add('active');
+}
+
+// 點擊輸入外部時自動關閉提示框
+document.addEventListener('click', e => {
+  if (!e.target.closest('#keywordInput') && !e.target.closest('#suggestionBox')) {
+    suggestionBox.classList.remove('active');
+  }
+});
+

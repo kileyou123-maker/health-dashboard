@@ -33,14 +33,6 @@ header {
 .theme-toggle-btn:hover { transform: scale(1.1); background: #319795; }
 body.dark .theme-toggle-btn { background: #f6ad55; color: #2d3748; }
 
-#quickFilter { text-align: center; margin: 15px 0; }
-.filter-btn {
-  background: #38b2ac; color: white; border: none;
-  padding: 10px 18px; margin: 5px; border-radius: 30px;
-  cursor: pointer; transition: all 0.3s;
-}
-.filter-btn:hover { background: #285e61; transform: translateY(-3px); }
-
 #controls {
   background: white; border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);

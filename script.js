@@ -1,5 +1,6 @@
 let allData = [];
 let cityDistrictMap = {};
+let suggestionBox;
 
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildCityDistrictMap(allData);
   populateCityList();
   setupModal();
+  setupAutocomplete();
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
@@ -50,28 +52,9 @@ function normalizeAddress(data) {
 }
 
 const allCities = [
-  "台北市",
-  "新北市",
-  "桃園市",
-  "台中市",
-  "台南市",
-  "高雄市",
-  "基隆市",
-  "新竹市",
-  "嘉義市",
-  "新竹縣",
-  "苗栗縣",
-  "彰化縣",
-  "南投縣",
-  "雲林縣",
-  "嘉義縣",
-  "屏東縣",
-  "宜蘭縣",
-  "花蓮縣",
-  "台東縣",
-  "澎湖縣",
-  "金門縣",
-  "連江縣",
+  "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
+  "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
+  "台東縣","澎湖縣","金門縣","連江縣",
 ];
 
 function buildCityDistrictMap(data) {
@@ -242,5 +225,59 @@ function initTheme() {
     const isDark = document.body.classList.toggle("dark");
     themeBtn.textContent = isDark ? "☀️" : "🌙";
     localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+}
+
+/* ---------------- 自動提示 ---------------- */
+function setupAutocomplete() {
+  const input = document.getElementById("keyword");
+  suggestionBox = document.createElement("div");
+  suggestionBox.id = "suggestionBox";
+  suggestionBox.style.position = "absolute";
+  suggestionBox.style.background = "white";
+  suggestionBox.style.border = "1px solid #ccc";
+  suggestionBox.style.width = input.offsetWidth + "px";
+  suggestionBox.style.zIndex = "99";
+  suggestionBox.style.display = "none";
+  document.body.appendChild(suggestionBox);
+
+  input.addEventListener("input", () => {
+    const val = input.value.trim();
+    suggestionBox.innerHTML = "";
+    if (!val) {
+      suggestionBox.style.display = "none";
+      return;
+    }
+    const matches = allData
+      .map((d) => d["醫事機構名稱"])
+      .filter((n) => n && n.includes(val));
+    const uniqueMatches = [...new Set(matches)].slice(0, 5);
+
+    uniqueMatches.forEach((name) => {
+      const div = document.createElement("div");
+      div.textContent = name;
+      div.style.padding = "5px";
+      div.style.cursor = "pointer";
+      div.addEventListener("click", () => {
+        input.value = name;
+        suggestionBox.style.display = "none";
+        searchData();
+      });
+      suggestionBox.appendChild(div);
+    });
+
+    if (uniqueMatches.length > 0) {
+      const rect = input.getBoundingClientRect();
+      suggestionBox.style.left = rect.left + "px";
+      suggestionBox.style.top = rect.bottom + "px";
+      suggestionBox.style.width = rect.width + "px";
+      suggestionBox.style.display = "block";
+    } else {
+      suggestionBox.style.display = "none";
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target !== input) suggestionBox.style.display = "none";
   });
 }

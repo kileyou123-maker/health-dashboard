@@ -342,5 +342,77 @@ body.dark #suggestionBox div:hover,
 html.dark #suggestionBox div:hover {
   background-color: rgba(245, 158, 11, 0.25) !important;
 }
+/* ======== 🔍 專業版自動提示框 ======== */
+#suggestionBox {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: var(--suggestion-bg, #fff);
+  color: var(--suggestion-text, #222);
+  border: 1px solid var(--suggestion-border, #ddd);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  max-height: 240px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  z-index: 9999;
+  backdrop-filter: blur(6px);
+  font-size: 15px;
+}
 
+/* 當提示框顯示時 */
+#suggestionBox.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
 
+/* 提示項目樣式 */
+#suggestionBox div {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#suggestionBox div:last-child {
+  border-bottom: none;
+}
+
+/* 滑過時變化 */
+#suggestionBox div:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+}
+
+/* ======== 🌙 深色模式 ======== */
+body.dark #suggestionBox {
+  --suggestion-bg: #1e293b;
+  --suggestion-text: #f8fafc;
+  --suggestion-border: #475569;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+}
+
+body.dark #suggestionBox div {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.dark #suggestionBox div:hover {
+  background-color: rgba(245, 158, 11, 0.25);
+  color: #fff;
+}
+
+/* ======== 手機優化 ======== */
+@media (max-width: 768px) {
+  #suggestionBox {
+    font-size: 14px;
+    max-height: 200px;
+    border-radius: 8px;
+  }
+  #suggestionBox div {
+    padding: 12px;
+  }
+}

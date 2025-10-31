@@ -416,3 +416,104 @@ body.dark #suggestionBox div:hover {
     padding: 12px;
   }
 }
+/* ======== 📱 手機專用優化 ======== */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 20px;
+    line-height: 1.4;
+    padding: 0 8px;
+  }
+
+  main {
+    padding: 10px;
+  }
+
+  /* 🔹 搜尋區塊改為直向排列 */
+  #controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  #controls select,
+  #controls input,
+  #controls button {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  #filterSection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .filter-btn {
+    flex: 1 1 45%;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  /* 🔹 表格可橫向滑動 */
+  #resultTable {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    font-size: 14px;
+  }
+
+  #resultTable th,
+  #resultTable td {
+    padding: 8px 6px;
+    word-break: break-word;
+  }
+
+  /* 🔹 彈窗調整 */
+  .modal-content {
+    width: 92%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 18px;
+    font-size: 15px;
+  }
+
+  .close {
+    font-size: 26px;
+  }
+
+  /* 🔹 提示框位置與大小微調 */
+  #suggestionBox {
+    font-size: 15px;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* 🔹 深色模式在手機上對比更強 */
+  body.dark #resultTable tr:hover {
+    background-color: rgba(245, 158, 11, 0.3);
+  }
+
+  /* 🔹 分頁按鈕居中且更大 */
+  #pagination {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  #pagination button {
+    padding: 10px 16px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  footer {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+}
+

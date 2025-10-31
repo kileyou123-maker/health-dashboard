@@ -351,4 +351,55 @@ document.addEventListener('click', e => {
     suggestionBox.classList.remove('active');
   }
 });
+/* ------------------ 🔍 自動提示功能 ------------------ */
+const keywordInput = document.getElementById("keyword");
+const suggestionBox = document.createElement("div");
+suggestionBox.id = "suggestionBox";
+keywordInput.parentNode.style.position = "relative"; // 讓提示框跟著輸入框
+keywordInput.parentNode.appendChild(suggestionBox);
 
+// 輸入時觸發提示
+keywordInput.addEventListener("input", () => {
+  const val = keywordInput.value.trim();
+  if (!val) {
+    suggestionBox.classList.remove("active");
+    return;
+  }
+
+  // 從資料中抓前5個符合名稱的機構
+  const matches = allData
+    .map((d) => d["醫事機構名稱"])
+    .filter((n) => n && n.includes(val));
+
+  const unique = [...new Set(matches)].slice(0, 5);
+  showSuggestions(unique);
+});
+
+// 顯示提示框
+function showSuggestions(suggestions) {
+  suggestionBox.innerHTML = "";
+  if (suggestions.length === 0) {
+    suggestionBox.classList.remove("active");
+    return;
+  }
+
+  suggestions.forEach((s) => {
+    const div = document.createElement("div");
+    div.innerHTML = `🔍 ${s}`;
+    div.addEventListener("click", () => {
+      keywordInput.value = s;
+      suggestionBox.classList.remove("active");
+      searchData(); // 直接執行搜尋
+    });
+    suggestionBox.appendChild(div);
+  });
+
+  suggestionBox.classList.add("active");
+}
+
+// 點擊輸入框以外區域自動關閉
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#keyword") && !e.target.closest("#suggestionBox")) {
+    suggestionBox.classList.remove("active");
+  }
+});

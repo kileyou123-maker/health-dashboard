@@ -1,5 +1,6 @@
 let allData = [];
 let cityDistrictMap = {};
+let suggestionBox;
 
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
@@ -213,7 +214,7 @@ function showDetails(d) {
   modal.style.display = "block";
 }
 
-/* ---------------- 深/淺色模式 ---------------- */
+/* ---------------- 主題切換 ---------------- */
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");
@@ -228,19 +229,27 @@ function initTheme() {
   });
 }
 
-/* ---------------- 手機相容自動提示 ---------------- */
+/* ---------------- 改良後浮動自動提示 ---------------- */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
-  const suggestionArea = document.createElement("div");
-  suggestionArea.id = "suggestionArea";
-  suggestionArea.style.marginTop = "5px";
-  suggestionArea.style.textAlign = "left";
-  document.getElementById("controls").appendChild(suggestionArea);
+  suggestionBox = document.createElement("div");
+  suggestionBox.id = "suggestionBox";
+  suggestionBox.style.position = "fixed";
+  suggestionBox.style.background = "white";
+  suggestionBox.style.border = "1px solid #ccc";
+  suggestionBox.style.borderRadius = "5px";
+  suggestionBox.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  suggestionBox.style.zIndex = "999";
+  suggestionBox.style.display = "none";
+  document.body.appendChild(suggestionBox);
 
   input.addEventListener("input", () => {
     const val = input.value.trim();
-    suggestionArea.innerHTML = "";
-    if (!val) return;
+    suggestionBox.innerHTML = "";
+    if (!val) {
+      suggestionBox.style.display = "none";
+      return;
+    }
 
     const matches = allData
       .map((d) => d["醫事機構名稱"])
@@ -248,22 +257,33 @@ function setupAutocomplete() {
     const uniqueMatches = [...new Set(matches)].slice(0, 5);
 
     uniqueMatches.forEach((name) => {
-      const btn = document.createElement("button");
-      btn.textContent = name;
-      btn.style.display = "block";
-      btn.style.width = "100%";
-      btn.style.textAlign = "left";
-      btn.style.background = "#edf2f7";
-      btn.style.border = "1px solid #cbd5e0";
-      btn.style.borderRadius = "5px";
-      btn.style.padding = "6px";
-      btn.style.margin = "2px 0";
-      btn.addEventListener("click", () => {
+      const div = document.createElement("div");
+      div.textContent = name;
+      div.style.padding = "8px";
+      div.style.cursor = "pointer";
+      div.addEventListener("click", () => {
         input.value = name;
-        suggestionArea.innerHTML = "";
+        suggestionBox.style.display = "none";
         searchData();
       });
-      suggestionArea.appendChild(btn);
+      suggestionBox.appendChild(div);
     });
+
+    if (uniqueMatches.length > 0) {
+      const rect = input.getBoundingClientRect();
+      suggestionBox.style.left = rect.left + "px";
+      suggestionBox.style.top = rect.bottom + window.scrollY + "px";
+      suggestionBox.style.width = rect.width + "px";
+      suggestionBox.style.display = "block";
+    } else {
+      suggestionBox.style.display = "none";
+    }
+  });
+
+  // 手機輸入法會影響焦點，使用這個方式保留提示框
+  document.addEventListener("click", (e) => {
+    if (e.target !== input && e.target.parentNode !== suggestionBox) {
+      suggestionBox.style.display = "none";
+    }
   });
 }

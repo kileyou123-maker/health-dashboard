@@ -137,7 +137,6 @@ function searchData() {
 /* 快速篩選 */
 function quickFilter(type) {
   let filtered;
-
   if (type === "全部") filtered = allData;
   else {
     const keywords = {
@@ -145,7 +144,6 @@ function quickFilter(type) {
       診所: ["診所", "醫療"],
       護理之家: ["護理", "安養", "養護"],
     }[type] || [];
-
     filtered = allData.filter((d) =>
       keywords.some((k) => (d["醫事機構名稱"] || "").includes(k))
     );
@@ -210,7 +208,10 @@ function renderPagination() {
   prev.disabled = currentPage === 1;
   prev.onclick = () => {
     currentPage--;
-    smoothRender(renderTablePage);
+    smoothRender(() => {
+      renderTablePage();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   };
 
   const next = document.createElement("button");
@@ -218,7 +219,10 @@ function renderPagination() {
   next.disabled = currentPage === pageCount;
   next.onclick = () => {
     currentPage++;
-    smoothRender(renderTablePage);
+    smoothRender(() => {
+      renderTablePage();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   };
 
   const pageInfo = document.createElement("span");

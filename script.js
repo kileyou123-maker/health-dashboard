@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 });
 
+/* ---------------- CSV 處理 ---------------- */
 function csvToJson(csv) {
   const lines = csv.split("\n").filter((l) => l.trim());
   const headers = lines[0].split(",").map((h) => h.trim());
@@ -54,6 +55,7 @@ function normalizeAddress(data) {
   });
 }
 
+/* ---------------- 城市 / 地區 ---------------- */
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
   "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
@@ -123,12 +125,15 @@ function searchData() {
 
   currentPage = 1;
   document.getElementById("status").textContent = `共找到 ${currentData.length} 筆結果`;
-  renderTablePage();
+
+  // 增加滑順動畫效果
+  smoothRender(renderTablePage);
 }
 
 /* ---------------- 分頁渲染 ---------------- */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
+  const table = document.getElementById("resultTable");
   tbody.innerHTML = "";
 
   if (currentData.length === 0) {
@@ -156,6 +161,15 @@ function renderTablePage() {
   }
 
   renderPagination();
+
+  // 表格淡入效果
+  table.style.opacity = "0";
+  table.style.transform = "translateY(10px)";
+  requestAnimationFrame(() => {
+    table.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+    table.style.opacity = "1";
+    table.style.transform = "translateY(0)";
+  });
 }
 
 /* ---------------- 分頁控制 ---------------- */
@@ -171,7 +185,7 @@ function renderPagination() {
   prev.disabled = currentPage === 1;
   prev.onclick = () => {
     currentPage--;
-    renderTablePage();
+    smoothRender(renderTablePage);
   };
 
   const next = document.createElement("button");
@@ -179,7 +193,7 @@ function renderPagination() {
   next.disabled = currentPage === pageCount;
   next.onclick = () => {
     currentPage++;
-    renderTablePage();
+    smoothRender(renderTablePage);
   };
 
   const pageInfo = document.createElement("span");
@@ -188,6 +202,17 @@ function renderPagination() {
   pagination.appendChild(prev);
   pagination.appendChild(pageInfo);
   pagination.appendChild(next);
+}
+
+/* ---------------- 動畫輔助函式 ---------------- */
+function smoothRender(callback) {
+  const table = document.getElementById("resultTable");
+  table.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+  table.style.opacity = "0";
+  table.style.transform = "translateY(15px)";
+  setTimeout(() => {
+    callback();
+  }, 250);
 }
 
 /* ---------------- 詳細資料彈窗 ---------------- */

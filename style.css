@@ -22,10 +22,6 @@ body.dark {
   --accent: #f59e0b;
 }
 
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
-}
-
 body {
   font-family: "Microsoft JhengHei", sans-serif;
   margin: 0;
@@ -33,13 +29,13 @@ body {
   color: var(--text-color);
   text-align: center;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header {
   background-color: var(--header-bg);
   color: white;
   padding: 20px 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 #themeToggle {
@@ -55,21 +51,57 @@ header {
   font-size: 20px;
   cursor: pointer;
   z-index: 1000;
-  transition: all 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
 #themeToggle:hover {
-  transform: rotate(20deg) scale(1.08);
+  transform: rotate(15deg) scale(1.08);
 }
 
-/* Table */
+/* --- Controls --- */
+#controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+#controls select,
+#controls input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.main-btn {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.filter-btn {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 3px;
+}
+
+/* --- Table --- */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
   background: var(--table-bg);
   border-radius: 10px;
-  margin-top: 20px;
-  display: table;
 }
 
 #resultTable th,
@@ -84,16 +116,12 @@ header {
   color: white;
 }
 
-#resultTable tr:hover {
-  background-color: rgba(49, 151, 149, 0.15);
-}
-
-/* Pagination */
+/* --- Pagination --- */
 #pagination {
-  margin: 20px 0;
+  margin: 15px 0;
 }
 
-/* Footer */
+/* --- Footer --- */
 footer {
   background-color: var(--footer-bg);
   color: white;
@@ -101,7 +129,7 @@ footer {
   font-size: 14px;
 }
 
-/* 🔍 Autocomplete */
+/* --- Autocomplete --- */
 #suggestionBox {
   position: absolute;
   width: 100%;
@@ -124,38 +152,10 @@ footer {
   background-color: rgba(49, 151, 149, 0.15);
 }
 
-/* 📱 Mobile Card View */
+/* ======== 📱 手機卡片版 ======== */
 @media (max-width: 768px) {
   #resultTable {
     display: none;
-  }
-
-  .search-bar {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background-color: var(--table-bg);
-    border-radius: 12px;
-    padding: 10px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-  }
-
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .filter-btn {
-    flex: 1 1 45%;
-    background-color: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px;
-    font-size: 15px;
   }
 
   #resultCards {
@@ -186,9 +186,5 @@ footer {
 
   .card a {
     color: var(--link-color);
-  }
-
-  footer {
-    font-size: 13px;
   }
 }

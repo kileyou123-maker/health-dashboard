@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
   document.getElementById("keyword").addEventListener("keypress", (e) => { if (e.key === "Enter") searchData(); });
+  document.querySelectorAll(".filter-btn").forEach(btn => btn.addEventListener("click", () => quickFilter(btn.dataset.type)));
 });
 
 function csvToJson(csv) {
@@ -103,6 +104,24 @@ function searchData() {
   renderTable(filtered);
 }
 
+function quickFilter(type) {
+  let filtered;
+  if (type === "全部") {
+    filtered = allData;
+  } else {
+    const keywords = {
+      "醫院": ["醫院"],
+      "診所": ["診所", "醫療"],
+      "護理之家": ["護理", "養護", "安養"]
+    }[type] || [];
+    filtered = allData.filter(d =>
+      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
+    );
+  }
+  document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
+  renderTable(filtered);
+}
+
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -125,7 +144,6 @@ function renderTable(data) {
   });
 }
 
-/* 詳細資料 */
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -145,7 +163,6 @@ function showDetails(d) {
   document.getElementById("detailModal").style.display = "block";
 }
 
-/* 主題切換 */
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");

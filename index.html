@@ -3,60 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>全台醫療機構資料查詢</title>
+  <title>全台居家醫療查詢系統</title>
+  <!-- ✅ 分頁標籤小圖示 -->
+  <link rel="icon" type="image/png" href="e7a9bba4-7c0b-4ea3-9689-06096eb8ae42.png">
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+  <!-- 主題切換按鈕 -->
   <button id="themeToggle" class="theme-toggle-btn">🌙</button>
 
   <header>
-    <h1>全台醫療機構查詢系統</h1>
+    <h1>全台居家醫療查詢系統</h1>
   </header>
 
-  <section id="quickFilter">
-    <button class="filter-btn" data-type="全部">全部</button>
-    <button class="filter-btn" data-type="醫院">醫院</button>
-    <button class="filter-btn" data-type="診所">診所</button>
-    <button class="filter-btn" data-type="護理之家">護理之家</button>
-  </section>
+  <main>
+    <!-- 篩選按鈕 -->
+    <section id="filterSection">
+      <button class="filter-btn" data-type="全部">全部</button>
+      <button class="filter-btn" data-type="醫院">醫院</button>
+      <button class="filter-btn" data-type="診所">診所</button>
+      <button class="filter-btn" data-type="護理之家">護理之家</button>
+    </section>
 
-  <section id="controls">
-    <select id="citySelect"></select>
-    <select id="districtSelect"></select>
-    <input id="keyword" type="text" placeholder="輸入關鍵字查詢（名稱、地址、電話...）" />
-    <button id="searchBtn" class="main-btn">查詢</button>
-  </section>
+    <!-- 查詢區 -->
+    <section id="controls">
+      <select id="citySelect"></select>
+      <select id="districtSelect"></select>
+      <input id="keyword" type="text" placeholder="輸入關鍵字查詢（名稱、地址、電話...）" />
+      <button id="searchBtn" class="main-btn">查詢</button>
+    </section>
 
-  <section id="results">
-    <h2>查詢結果</h2>
-    <p id="status">尚未查詢</p>
-    <table id="resultTable">
-      <thead>
-        <tr>
-          <th>醫事機構名稱</th>
-          <th>地址</th>
-          <th>電話</th>
-          <th>整合團隊名稱</th>
-          <th>來源</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+    <p id="status">請選擇條件或輸入關鍵字查詢</p>
+
+    <!-- 查詢結果 -->
+    <section id="resultSection">
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>醫事機構名稱</th>
+            <th>地址</th>
+            <th>電話</th>
+            <th>整合團隊名稱</th>
+            <th>來源</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
 
   <footer>
-    資料來源：衛生福利部開放資料（A21030000I-D2000H-001、A21030000I-D2000I-001）
+    <p>資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv, A21030000I-D2000I-001.csv）</p>
   </footer>
 
+  <!-- 詳細資料彈窗 -->
   <div id="detailModal" class="modal">
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
-      <h3 id="modalTitle"></h3>
-      <p>代碼：<span id="modalCode"></span></p>
-      <p>整合團隊：<span id="modalTeam"></span></p>
-      <p>地址：<span id="modalAddr"></span></p>
-      <p>電話：<span id="modalPhone"></span></p>
-      <p>來源：<span id="modalSource"></span></p>
+      <h2 id="modalTitle">醫事機構名稱</h2>
+      <p><strong>代碼：</strong><span id="modalCode"></span></p>
+      <p><strong>整合團隊：</strong><span id="modalTeam"></span></p>
+      <p><strong>地址：</strong><span id="modalAddr"></span></p>
+      <p><strong>電話：</strong><span id="modalPhone"></span></p>
+      <p><strong>來源：</strong><span id="modalSource"></span></p>
     </div>
   </div>
 

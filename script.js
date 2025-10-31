@@ -4,14 +4,14 @@ let cityDistrictMap = {};
 document.addEventListener("DOMContentLoaded", async () => {
   const files = [
     { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
-    { path: "A21030000I-D2000I-001.csv", source: "安寧照護機構" },
+    { path: "A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
   ];
-  
+
   let merged = [];
   for (const f of files) {
     const res = await fetch(f.path);
     const text = await res.text();
-    const json = csvToJson(text).map(item => ({ ...item, 來源: f.source }));
+    const json = csvToJson(text).map((item) => ({ ...item, 來源: f.source }));
     merged = merged.concat(json);
   }
   allData = merged;
@@ -23,34 +23,61 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
-  document.getElementById("keyword").addEventListener("keypress", (e) => { if (e.key === "Enter") searchData(); });
-  document.querySelectorAll(".filter-btn").forEach(btn => btn.addEventListener("click", () => quickFilter(btn.dataset.type)));
+  document.getElementById("keyword").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") searchData();
+  });
+  document.querySelectorAll(".filter-btn").forEach((btn) =>
+    btn.addEventListener("click", () => quickFilter(btn.dataset.type))
+  );
 });
 
 function csvToJson(csv) {
-  const lines = csv.split("\n").filter(l => l.trim());
-  const headers = lines[0].split(",").map(h => h.trim());
-  return lines.slice(1).map(line => {
+  const lines = csv.split("\n").filter((l) => l.trim());
+  const headers = lines[0].split(",").map((h) => h.trim());
+  return lines.slice(1).map((line) => {
     const values = line.split(",");
     const obj = {};
-    headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
+    headers.forEach((h, i) => (obj[h] = values[i] ? values[i].trim() : ""));
     return obj;
   });
 }
 
 function normalizeAddress(data) {
-  data.forEach(d => {
+  data.forEach((d) => {
     if (d["醫事機構地址"]) d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
   });
 }
 
-const allCities = ["台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市","新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣","台東縣","澎湖縣","金門縣","連江縣"];
+const allCities = [
+  "台北市",
+  "新北市",
+  "桃園市",
+  "台中市",
+  "台南市",
+  "高雄市",
+  "基隆市",
+  "新竹市",
+  "嘉義市",
+  "新竹縣",
+  "苗栗縣",
+  "彰化縣",
+  "南投縣",
+  "雲林縣",
+  "嘉義縣",
+  "屏東縣",
+  "宜蘭縣",
+  "花蓮縣",
+  "台東縣",
+  "澎湖縣",
+  "金門縣",
+  "連江縣",
+];
 
 function buildCityDistrictMap(data) {
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
     if (!addr) return;
-    const city = allCities.find(c => addr.startsWith(c)) || "其他";
+    const city = allCities.find((c) => addr.startsWith(c)) || "其他";
     const after = addr.replace(city, "");
     const match = after.match(/[\u4e00-\u9fa5]{1,3}(區|鎮|鄉|市)/);
     const district = match ? match[0] : "其他";
@@ -97,7 +124,11 @@ function searchData() {
     return (
       (city === "全部" || addr.includes(city)) &&
       (district === "全部" || addr.includes(district)) &&
-      (!keyword || name.includes(keyword) || addr.includes(keyword) || phone.includes(keyword) || team.includes(keyword))
+      (!keyword ||
+        name.includes(keyword) ||
+        addr.includes(keyword) ||
+        phone.includes(keyword) ||
+        team.includes(keyword))
     );
   });
   document.getElementById("status").textContent = `共找到 ${filtered.length} 筆結果`;
@@ -110,12 +141,12 @@ function quickFilter(type) {
     filtered = allData;
   } else {
     const keywords = {
-      "醫院": ["醫院"],
-      "診所": ["診所", "醫療"],
-      "護理之家": ["護理", "養護", "安養"]
+      醫院: ["醫院"],
+      診所: ["診所", "醫療"],
+      護理之家: ["護理", "養護", "安養"],
     }[type] || [];
-    filtered = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
+    filtered = allData.filter((d) =>
+      keywords.some((k) => (d["醫事機構名稱"] || "").includes(k))
     );
   }
   document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
@@ -148,19 +179,54 @@ function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
   closeBtn.onclick = () => (modal.style.display = "none");
-  window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+  window.onclick = (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  };
 }
 
 function showDetails(d) {
+  const modal = document.getElementById("detailModal");
   document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
   document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
   document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
-  document.getElementById("modalStart").textContent = d["生效起日"] || "無";
-  document.getElementById("modalEnd").textContent = d["註銷日期"] || "無";
   document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
   document.getElementById("modalPhone").textContent = d["醫事機構電話"] || "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
-  document.getElementById("detailModal").style.display = "block";
+
+  const detailsContainer = document.createElement("div");
+  detailsContainer.innerHTML = "";
+
+  if (d["來源"].includes("護理之家")) {
+    const careFields = [
+      "居家醫療",
+      "重度居家醫療",
+      "安寧療護",
+      "居家呼吸照護",
+      "居家中醫醫療",
+      "居家藥事照護",
+      "在宅急症照護",
+      "近三個月有收案",
+    ];
+
+    let html = `<h4>提供服務項目</h4><table style="width:100%; border-collapse:collapse;">`;
+    html += "<tr>" + careFields.map((f) => `<th>${f}</th>`).join("") + "</tr><tr>";
+    html += careFields
+      .map((f) => {
+        const val = d[f] && d[f].includes("1") ? "✓" : d[f] ? d[f] : "✗";
+        return `<td style="text-align:center;">${val}</td>`;
+      })
+      .join("");
+    html += "</tr></table>";
+    detailsContainer.innerHTML = html;
+  } else {
+    detailsContainer.innerHTML = `<p><em>此機構無其他延伸服務資料。</em></p>`;
+  }
+
+  const modalContent = modal.querySelector(".modal-content");
+  modalContent.querySelectorAll("table,h4,em").forEach((el) => el.remove());
+  modalContent.appendChild(detailsContainer);
+
+  modal.style.display = "block";
 }
 
 function initTheme() {

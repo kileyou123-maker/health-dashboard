@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>全台居家醫療機構查詢系統</title>
 
-  <!-- 分頁標籤 favicon -->
   <link rel="icon" type="image/png" href="./favicon.png" />
-  <link rel="shortcut icon" href="./favicon.png" type="image/png" />
-  <link rel="apple-touch-icon" href="./favicon.png" />
-
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
 </head>
@@ -19,17 +15,14 @@
     <p>可依縣市、地區與關鍵字搜尋居家醫療機構</p>
   </header>
 
-  <!-- 固定右上角主題切換按鈕 -->
   <button id="themeToggle" class="theme-toggle-btn" title="切換主題">🌙</button>
 
-  <!-- 篩選 -->
   <section id="quickFilter">
     <button type="button" class="filter-btn" data-type="醫院">醫院</button>
     <button type="button" class="filter-btn" data-type="診所">診所</button>
     <button type="button" class="filter-btn" data-type="全部">全部</button>
   </section>
 
-  <!-- 查詢條件 -->
   <section id="controls">
     <label>縣市：</label>
     <select id="citySelect"></select>
@@ -42,7 +35,6 @@
     <button id="searchBtn" type="button" class="main-btn">查詢</button>
   </section>
 
-  <!-- 查詢結果 -->
   <section id="results">
     <h2>查詢結果</h2>
     <p id="status"></p>
@@ -59,8 +51,22 @@
     </table>
   </section>
 
+  <!-- 詳細資料彈出區 -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h3 id="modalTitle"></h3>
+      <p><strong>醫事機構代碼：</strong> <span id="modalCode"></span></p>
+      <p><strong>整合團隊名稱：</strong> <span id="modalTeam"></span></p>
+      <p><strong>生效起日：</strong> <span id="modalStart"></span></p>
+      <p><strong>註銷日期：</strong> <span id="modalEnd"></span></p>
+      <p><strong>地址：</strong> <span id="modalAddr"></span></p>
+      <p><strong>電話：</strong> <span id="modalPhone"></span></p>
+    </div>
+  </div>
+
   <footer>
-    <p>資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）</p>
+    <p>資料來源：衛生福利部開放資料（A21030000I-D2000I-001.csv）</p>
   </footer>
 </body>
 </html>

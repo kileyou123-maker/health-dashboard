@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderResponsive();
 });
 
+/* --- 基礎功能 --- */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"])
@@ -94,6 +95,7 @@ function populateDistrictList() {
   }
 }
 
+/* --- 搜尋與篩選 --- */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -133,15 +135,11 @@ function quickFilter(type) {
   renderResponsive();
 }
 
-function renderResponsive() {
-  if (window.innerWidth <= 768) renderMobileCards(currentData);
-  else renderTablePage(currentData);
-}
-
-function renderTablePage(data) {
+/* --- 桌機表格 --- */
+function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-  data.slice(0, 50).forEach((d) => {
+  currentData.slice(0, 50).forEach((d) => {
     const addr = d["醫事機構地址"];
     const tel = d["醫事機構電話"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
@@ -156,10 +154,11 @@ function renderTablePage(data) {
   });
 }
 
-function renderMobileCards(data) {
+/* --- 手機卡片 --- */
+function renderMobileCards() {
   const container = document.getElementById("resultCards");
   container.innerHTML = "";
-  data.forEach((d) => {
+  currentData.forEach((d) => {
     const addr = d["醫事機構地址"];
     const tel = d["醫事機構電話"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
@@ -176,7 +175,16 @@ function renderMobileCards(data) {
   });
 }
 
-/* 深色模式 */
+/* --- 自動切換 --- */
+function renderResponsive() {
+  if (window.innerWidth <= 768) {
+    renderMobileCards();
+  } else {
+    renderTablePage();
+  }
+}
+
+/* --- 深色模式 --- */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
   if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
@@ -189,7 +197,7 @@ function initTheme() {
   });
 }
 
-/* 🔍 自動提示 */
+/* --- 自動提示 --- */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const box = document.createElement("div");

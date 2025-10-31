@@ -271,3 +271,38 @@ footer {
     width: 90%;
   }
 }
+/* 🔍 關鍵字自動提示框 */
+#suggestionBox {
+  background-color: #ffffff;
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#suggestionBox div {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#suggestionBox div:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+}
+
+/* 🌙 深色模式下樣式 */
+body.dark #suggestionBox {
+  background-color: #1f2937;
+  color: #f1f5f9;
+  border: 1px solid #475569;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+body.dark #suggestionBox div:hover {
+  background-color: rgba(245, 158, 11, 0.25);
+}
+

@@ -2,6 +2,8 @@ let allData = [];
 let cityDistrictMap = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
+  initTheme();
+
   const files = [
     { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
     { path: "A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
@@ -19,7 +21,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildCityDistrictMap(allData);
   populateCityList();
   setupModal();
-  initTheme();
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
@@ -207,13 +208,14 @@ function showDetails(d) {
       "在宅急症照護",
       "近三個月有收案",
     ];
-
+    const positiveWords = ["1", "是", "有", "Y", "V", "√", "✓"];
     let html = `<h4>提供服務項目</h4><table style="width:100%; border-collapse:collapse;">`;
     html += "<tr>" + careFields.map((f) => `<th>${f}</th>`).join("") + "</tr><tr>";
     html += careFields
       .map((f) => {
-        const val = d[f] && d[f].includes("1") ? "✓" : d[f] ? d[f] : "✗";
-        return `<td style="text-align:center;">${val}</td>`;
+        const val = d[f] || "";
+        const mark = positiveWords.some((w) => val.includes(w)) ? "✓" : "✗";
+        return `<td style="text-align:center;">${mark}</td>`;
       })
       .join("");
     html += "</tr></table>";

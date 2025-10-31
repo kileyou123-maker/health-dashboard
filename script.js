@@ -156,7 +156,7 @@ function renderTable(data) {
     row.innerHTML = `
       <td class="clickable">${d["醫事機構名稱"]}</td>
       <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td>${d["醫事機構電話"]}</td>
+      <td><a href="tel:${d["醫事機構電話"]}" style="color:#2b6cb0;text-decoration:none;">${d["醫事機構電話"]}</a></td>
       <td>${d["整合團隊名稱"]}</td>
       <td>${d["來源"]}</td>`;
     row.addEventListener("click", () => showDetails(d));
@@ -180,7 +180,9 @@ function showDetails(d) {
   document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
   document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
   document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
-  document.getElementById("modalPhone").textContent = d["醫事機構電話"] || "無";
+  document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
+    ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
+    : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
 
   const detailsContainer = document.createElement("div");
@@ -280,11 +282,9 @@ function setupAutocomplete() {
     }
   });
 
-  // 手機輸入法會影響焦點，使用這個方式保留提示框
   document.addEventListener("click", (e) => {
     if (e.target !== input && e.target.parentNode !== suggestionBox) {
       suggestionBox.style.display = "none";
     }
   });
 }
-

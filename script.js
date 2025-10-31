@@ -385,7 +385,7 @@ function showSuggestions(suggestions) {
 
   suggestions.forEach((s) => {
     const div = document.createElement("div");
-    div.innerHTML = `🔍 ${s}`;
+    div.innerHTML = `${s}`;
     div.addEventListener("click", () => {
       keywordInput.value = s;
       suggestionBox.classList.remove("active");
@@ -403,3 +403,4 @@ document.addEventListener("click", (e) => {
     suggestionBox.classList.remove("active");
   }
 });
+

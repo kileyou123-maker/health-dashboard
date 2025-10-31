@@ -1,8 +1,8 @@
 :root {
   --bg-color: #f4f8fb;
-  --text-color: #333;
+  --text-color: #222;
   --header-bg: #2c7a7b;
-  --table-bg: #ffffff;
+  --table-bg: #fff;
   --table-th-bg: #319795;
   --table-border: #e2e8f0;
   --link-color: #2b6cb0;
@@ -10,20 +10,19 @@
   --accent: #319795;
 }
 
-/* 改良深色主題 */
 body.dark {
-  --bg-color: #111827;        /* 更深背景 */
-  --text-color: #f1f5f9;      /* 高亮文字 */
+  --bg-color: #0f172a;
+  --text-color: #f1f5f9;
   --header-bg: #1e293b;
-  --table-bg: #1f2937;
+  --table-bg: #1e293b;
   --table-th-bg: #334155;
   --table-border: #475569;
-  --link-color: #63b3ed;
+  --link-color: #60a5fa;
   --footer-bg: #1e293b;
-  --accent: #f6ad55;
+  --accent: #f59e0b;
 }
 
-/* 過渡動畫 */
+/* 過渡 */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
 }
@@ -34,6 +33,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   text-align: center;
+  overflow-x: hidden;
 }
 
 /* Header */
@@ -44,27 +44,15 @@ header {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-/* 按鈕 */
-.filter-btn,
-.main-btn {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin: 5px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+/* 控制區 */
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
 }
 
-.filter-btn:hover,
-.main-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-}
-
-/* 下拉與輸入 */
 #controls select,
 #controls input {
   padding: 10px;
@@ -80,17 +68,29 @@ body.dark #controls input {
   border: 1px solid #475569;
 }
 
-#controls select:focus,
-#controls input:focus {
-  border-color: var(--accent);
-  outline: none;
+/* 按鈕 */
+.filter-btn,
+.main-btn {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+
+.filter-btn:hover,
+.main-btn:hover {
+  transform: scale(1.05);
 }
 
 /* 表格 */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
   background: var(--table-bg);
   border-radius: 10px;
   overflow: hidden;
@@ -112,27 +112,64 @@ body.dark #controls input {
 
 #resultTable tr:hover {
   background-color: rgba(49, 151, 149, 0.15);
-  transition: background-color 0.3s ease;
 }
 
-/* 連結顏色 */
+/* 連結 */
 a {
   color: var(--link-color);
   text-decoration: none;
 }
 
 a:hover {
-  color: #90cdf4;
+  color: #93c5fd;
+}
+
+/* 分頁 */
+#pagination {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
 /* 彈窗 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 80px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
 .modal-content {
   background-color: var(--table-bg);
   color: var(--text-color);
+  margin: auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 600px;
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
   border: 1px solid var(--table-border);
 }
 
-/* 主題切換按鈕 */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--accent);
+}
+
+/* 深色模式按鈕 */
 .theme-toggle-btn {
   position: fixed;
   top: 15px;
@@ -146,17 +183,24 @@ a:hover {
   font-size: 20px;
   cursor: pointer;
   z-index: 1000;
-  transition: transform 0.25s ease;
 }
 
-.theme-toggle-btn:hover {
-  transform: rotate(20deg) scale(1.08);
-}
-
-/* Footer */
 footer {
   background-color: var(--footer-bg);
   color: white;
   padding: 10px 0;
   margin-top: 20px;
+}
+
+/* 手機 */
+@media (max-width: 600px) {
+  #controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  #controls select,
+  #controls input,
+  .main-btn {
+    width: 90%;
+  }
 }

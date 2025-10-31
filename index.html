@@ -15,23 +15,22 @@
 
   <button id="themeToggle" class="theme-toggle-btn">🌗</button>
 
-  <main>
-    <section id="filterSection">
+  <main id="mobileLayout">
+    <div class="search-bar">
+      <select id="citySelect"></select>
+      <select id="districtSelect"></select>
+      <input type="text" id="keyword" placeholder="搜尋醫院、診所、電話..." />
+      <button id="searchBtn">搜尋</button>
+    </div>
+
+    <div class="filter-chips">
       <button class="filter-btn" data-type="全部">全部</button>
       <button class="filter-btn" data-type="醫院">醫院</button>
       <button class="filter-btn" data-type="診所">診所</button>
       <button class="filter-btn" data-type="護理之家">護理之家</button>
-    </section>
+    </div>
 
-    <section id="controls">
-      <select id="citySelect"></select>
-      <select id="districtSelect"></select>
-      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱／地址／電話）">
-      <button id="searchBtn" class="main-btn">搜尋</button>
-    </section>
-
-    <div id="status"></div>
-
+    <!-- 桌機表格 -->
     <table id="resultTable">
       <thead>
         <tr>
@@ -45,25 +44,15 @@
       <tbody></tbody>
     </table>
 
+    <!-- 手機卡片 -->
+    <div id="resultCards"></div>
+
     <div id="pagination"></div>
   </main>
 
   <footer>
     資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）
   </footer>
-
-  <!-- 詳細資料彈窗 -->
-  <div id="detailModal" class="modal">
-    <div class="modal-content">
-      <span id="closeModal" class="close">&times;</span>
-      <h2 id="modalTitle"></h2>
-      <p><strong>機構代碼：</strong><span id="modalCode"></span></p>
-      <p><strong>整合團隊：</strong><span id="modalTeam"></span></p>
-      <p><strong>地址：</strong><span id="modalAddr"></span></p>
-      <p><strong>電話：</strong><span id="modalPhone"></span></p>
-      <p><strong>來源：</strong><span id="modalSource"></span></p>
-    </div>
-  </div>
 
   <script src="script.js"></script>
 </body>

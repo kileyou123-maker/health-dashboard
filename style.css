@@ -305,4 +305,42 @@ body.dark #suggestionBox {
 body.dark #suggestionBox div:hover {
   background-color: rgba(245, 158, 11, 0.25);
 }
+/* 🔍 關鍵字自動提示框修正版 */
+#suggestionBox {
+  background-color: #ffffff;
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  max-height: 220px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 9999 !important;
+}
+
+#suggestionBox div {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#suggestionBox div:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 🌙 深色模式 */
+body.dark #suggestionBox,
+html.dark #suggestionBox,
+:root.dark #suggestionBox {
+  background-color: #1e293b !important;  /* 深灰底 */
+  color: #f1f5f9 !important;             /* 白字 */
+  border: 1px solid #475569 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+body.dark #suggestionBox div:hover,
+html.dark #suggestionBox div:hover {
+  background-color: rgba(245, 158, 11, 0.25) !important;
+}
+
 

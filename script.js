@@ -24,9 +24,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   normalizeAddress(allData);
   buildCityDistrictMap(allData);
   populateCityList();
+  populateDistrictList();
   setupModal();
   setupAutocomplete();
 
+  // 初始顯示所有資料
+  currentData = allData;
+  renderTablePage();
+
+  // 事件註冊
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
   document.getElementById("keyword").addEventListener("keypress", (e) => {
@@ -49,6 +55,7 @@ function csvToJson(csv) {
   });
 }
 
+/* 地址清理 */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"]) d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
@@ -84,7 +91,6 @@ function populateCityList() {
     opt.textContent = city;
     citySel.appendChild(opt);
   });
-  populateDistrictList();
 }
 
 function populateDistrictList() {
@@ -151,7 +157,7 @@ function quickFilter(type) {
   smoothRender(renderTablePage);
 }
 
-/* 分頁渲染 */
+/* 分頁顯示 */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -202,4 +208,112 @@ function renderPagination() {
   const prev = document.createElement("button");
   prev.textContent = "← 上一頁";
   prev.disabled = currentPage === 1;
-  prev.onclick =
+  prev.onclick = () => {
+    currentPage--;
+    smoothRender(renderTablePage);
+  };
+
+  const next = document.createElement("button");
+  next.textContent = "下一頁 →";
+  next.disabled = currentPage === pageCount;
+  next.onclick = () => {
+    currentPage++;
+    smoothRender(renderTablePage);
+  };
+
+  const pageInfo = document.createElement("span");
+  pageInfo.textContent = `第 ${currentPage} / ${pageCount} 頁`;
+
+  pagination.appendChild(prev);
+  pagination.appendChild(pageInfo);
+  pagination.appendChild(next);
+}
+
+/* 動畫過渡 */
+function smoothRender(callback) {
+  const table = document.getElementById("resultTable");
+  table.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+  table.style.opacity = "0";
+  table.style.transform = "translateY(15px)";
+  setTimeout(callback, 250);
+}
+
+/* 詳細資料 */
+function setupModal() {
+  const modal = document.getElementById("detailModal");
+  const closeBtn = document.getElementById("closeModal");
+  closeBtn.onclick = () => (modal.style.display = "none");
+  window.onclick = (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  };
+}
+
+function showDetails(d) {
+  const modal = document.getElementById("detailModal");
+  document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
+  document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
+  document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
+  document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
+  document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
+    ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
+    : "無";
+  document.getElementById("modalSource").textContent = d["來源"] || "無";
+  modal.style.display = "block";
+}
+
+/* 主題切換 */
+function initTheme() {
+  const themeBtn = document.getElementById("themeToggle");
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") document.body.classList.add("dark");
+  themeBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+  });
+}
+
+/* 自動提示 */
+function setupAutocomplete() {
+  const input = document.getElementById("keyword");
+  const suggestionBox = document.createElement("div");
+  suggestionBox.id = "suggestionBox";
+  suggestionBox.style.position = "fixed";
+  suggestionBox.style.background = "white";
+  suggestionBox.style.border = "1px solid #ccc";
+  suggestionBox.style.borderRadius = "5px";
+  suggestionBox.style.zIndex = "999";
+  suggestionBox.style.display = "none";
+  document.body.appendChild(suggestionBox);
+
+  input.addEventListener("input", () => {
+    const val = input.value.trim();
+    suggestionBox.innerHTML = "";
+    if (!val) return (suggestionBox.style.display = "none");
+    const matches = allData.map((d) => d["醫事機構名稱"]).filter((n) => n && n.includes(val));
+    const unique = [...new Set(matches)].slice(0, 5);
+    unique.forEach((name) => {
+      const div = document.createElement("div");
+      div.textContent = name;
+      div.style.padding = "8px";
+      div.style.cursor = "pointer";
+      div.addEventListener("click", () => {
+        input.value = name;
+        suggestionBox.style.display = "none";
+        searchData();
+      });
+      suggestionBox.appendChild(div);
+    });
+    if (unique.length) {
+      const rect = input.getBoundingClientRect();
+      suggestionBox.style.left = rect.left + "px";
+      suggestionBox.style.top = rect.bottom + window.scrollY + "px";
+      suggestionBox.style.width = rect.width + "px";
+      suggestionBox.style.display = "block";
+    } else suggestionBox.style.display = "none";
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target !== input && e.target.parentNode !== suggestionBox)
+      suggestionBox.style.display = "none";
+  });
+}

@@ -2,7 +2,7 @@
   --bg-color: #f4f8fb;
   --text-color: #333;
   --header-bg: #2c7a7b;
-  --table-bg: white;
+  --table-bg: #ffffff;
   --table-th-bg: #319795;
   --table-border: #e2e8f0;
   --link-color: #2b6cb0;
@@ -10,19 +10,20 @@
   --accent: #319795;
 }
 
+/* 改良深色主題 */
 body.dark {
-  --bg-color: #1a202c;
-  --text-color: #e2e8f0;
-  --header-bg: #2d3748;
-  --table-bg: #2d3748;
-  --table-th-bg: #4a5568;
-  --table-border: #4a5568;
+  --bg-color: #111827;        /* 更深背景 */
+  --text-color: #f1f5f9;      /* 高亮文字 */
+  --header-bg: #1e293b;
+  --table-bg: #1f2937;
+  --table-th-bg: #334155;
+  --table-border: #475569;
   --link-color: #63b3ed;
-  --footer-bg: #2d3748;
+  --footer-bg: #1e293b;
   --accent: #f6ad55;
 }
 
-/* 平滑過渡 */
+/* 過渡動畫 */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
 }
@@ -33,34 +34,17 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   text-align: center;
-  overflow-x: hidden;
 }
 
+/* Header */
 header {
   background-color: var(--header-bg);
   color: white;
   padding: 20px 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  animation: fadeSlide 0.4s ease;
 }
 
-@keyframes fadeSlide {
-  from {opacity: 0; transform: translateY(-20px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-
-main {
-  padding: 20px;
-  max-width: 900px;
-  margin: auto;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
-
+/* 按鈕 */
 .filter-btn,
 .main-btn {
   background-color: var(--accent);
@@ -78,17 +62,9 @@ main {
 .filter-btn:hover,
 .main-btn:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
-#controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
+/* 下拉與輸入 */
 #controls select,
 #controls input {
   padding: 10px;
@@ -97,13 +73,20 @@ main {
   font-size: 15px;
 }
 
+body.dark #controls select,
+body.dark #controls input {
+  background-color: #1f2937;
+  color: #f1f5f9;
+  border: 1px solid #475569;
+}
+
 #controls select:focus,
 #controls input:focus {
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 6px rgba(50, 151, 149, 0.35);
 }
 
+/* 表格 */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
@@ -119,6 +102,7 @@ main {
   border: 1px solid var(--table-border);
   padding: 10px;
   text-align: center;
+  color: var(--text-color);
 }
 
 #resultTable th {
@@ -131,69 +115,21 @@ main {
   transition: background-color 0.3s ease;
 }
 
-#pagination {
-  margin: 15px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
+/* 連結顏色 */
+a {
+  color: var(--link-color);
+  text-decoration: none;
 }
 
-#pagination button {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: transform 0.25s ease;
-}
-
-#pagination button:hover {
-  transform: scale(1.05);
+a:hover {
+  color: #90cdf4;
 }
 
 /* 彈窗 */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  padding-top: 80px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
 .modal-content {
   background-color: var(--table-bg);
   color: var(--text-color);
-  margin: auto;
-  padding: 20px;
-  border-radius: 12px;
-  width: 80%;
-  max-width: 600px;
-  text-align: left;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  transform: translateY(20px);
-  animation: slideUp 0.3s ease forwards;
-}
-
-@keyframes slideUp {
-  to { transform: translateY(0); }
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  cursor: pointer;
-  transition: color 0.25s ease;
-}
-
-.close:hover {
-  color: var(--accent);
+  border: 1px solid var(--table-border);
 }
 
 /* 主題切換按鈕 */
@@ -217,18 +153,10 @@ main {
   transform: rotate(20deg) scale(1.08);
 }
 
-/* 手機 */
-@media (max-width: 600px) {
-  #controls {
-    flex-direction: column;
-    align-items: center;
-  }
-  #controls select,
-  #controls input,
-  .main-btn {
-    width: 90%;
-  }
-  .modal-content {
-    width: 90%;
-  }
+/* Footer */
+footer {
+  background-color: var(--footer-bg);
+  color: white;
+  padding: 10px 0;
+  margin-top: 20px;
 }

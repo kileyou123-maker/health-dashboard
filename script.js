@@ -1,36 +1,38 @@
 let allData = [];
 let cityDistrictMap = {};
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("A21030000I-D2000I-001.csv")
-    .then(res => res.text())
-    .then(text => {
-      allData = csvToJson(text);
-      normalizeAddress(allData);
-      buildCityDistrictMap(allData);
-      populateCityList();
-      setupModal();
-    });
+document.addEventListener("DOMContentLoaded", async () => {
+  const files = [
+    { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
+    { path: "A21030000I-D2000I-001.csv", source: "安寧照護機構" },
+  ];
+  
+  let merged = [];
+  for (const f of files) {
+    const res = await fetch(f.path);
+    const text = await res.text();
+    const json = csvToJson(text).map(item => ({ ...item, 來源: f.source }));
+    merged = merged.concat(json);
+  }
+  allData = merged;
+  normalizeAddress(allData);
+  buildCityDistrictMap(allData);
+  populateCityList();
+  setupModal();
+  initTheme();
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
-  document.getElementById("keyword").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") searchData();
-  });
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => quickFilter(btn.getAttribute("data-type")));
-  });
-
-  initTheme();
+  document.getElementById("keyword").addEventListener("keypress", (e) => { if (e.key === "Enter") searchData(); });
 });
 
 function csvToJson(csv) {
-  const lines = csv.split("\n").filter(line => line.trim() !== "");
+  const lines = csv.split("\n").filter(l => l.trim());
   const headers = lines[0].split(",").map(h => h.trim());
   return lines.slice(1).map(line => {
     const values = line.split(",");
     const obj = {};
-    headers.forEach((h, i) => (obj[h] = values[i] ? values[i].trim() : ""));
+    headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
     return obj;
   });
 }
@@ -86,7 +88,6 @@ function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
-
   const filtered = allData.filter((d) => {
     const addr = d["醫事機構地址"] || "";
     const name = d["醫事機構名稱"] || "";
@@ -95,35 +96,21 @@ function searchData() {
     return (
       (city === "全部" || addr.includes(city)) &&
       (district === "全部" || addr.includes(district)) &&
-      (!keyword ||
-        name.includes(keyword) ||
-        addr.includes(keyword) ||
-        phone.includes(keyword) ||
-        team.includes(keyword))
+      (!keyword || name.includes(keyword) || addr.includes(keyword) || phone.includes(keyword) || team.includes(keyword))
     );
   });
-
   document.getElementById("status").textContent = `共找到 ${filtered.length} 筆結果`;
   renderTable(filtered);
 }
 
-function quickFilter(type) {
-  let filtered;
-  if (type === "全部") filtered = allData;
-  else filtered = allData.filter((d) => d["醫事機構名稱"]?.includes(type));
-  document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
-  renderTable(filtered);
-}
-
-/* === 顯示結果表格 === */
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
   if (data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4">查無資料</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
     return;
   }
-  data.forEach((d, i) => {
+  data.forEach((d) => {
     const addr = d["醫事機構地址"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const row = document.createElement("tr");
@@ -131,13 +118,14 @@ function renderTable(data) {
       <td class="clickable">${d["醫事機構名稱"]}</td>
       <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
       <td>${d["醫事機構電話"]}</td>
-      <td>${d["整合團隊名稱"]}</td>`;
+      <td>${d["整合團隊名稱"]}</td>
+      <td>${d["來源"]}</td>`;
     row.addEventListener("click", () => showDetails(d));
     tbody.appendChild(row);
   });
 }
 
-/* === 詳細資料 Modal === */
+/* 詳細資料 */
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -153,10 +141,11 @@ function showDetails(d) {
   document.getElementById("modalEnd").textContent = d["註銷日期"] || "無";
   document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
   document.getElementById("modalPhone").textContent = d["醫事機構電話"] || "無";
+  document.getElementById("modalSource").textContent = d["來源"] || "無";
   document.getElementById("detailModal").style.display = "block";
 }
 
-/* === 主題切換 === */
+/* 主題切換 */
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");
@@ -168,7 +157,5 @@ function initTheme() {
     const isDark = document.body.classList.toggle("dark");
     themeBtn.textContent = isDark ? "☀️" : "🌙";
     localStorage.setItem("theme", isDark ? "dark" : "light");
-    themeBtn.style.transform = "rotate(180deg)";
-    setTimeout(() => themeBtn.style.transform = "rotate(0deg)", 200);
   });
 }

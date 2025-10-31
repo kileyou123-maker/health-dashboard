@@ -15,20 +15,22 @@
 
   <button id="themeToggle" class="theme-toggle-btn">🌗</button>
 
-  <main id="mobileLayout">
-    <div class="search-bar">
-      <select id="citySelect"></select>
-      <select id="districtSelect"></select>
-      <input type="text" id="keyword" placeholder="搜尋醫院、診所、電話..." />
-      <button id="searchBtn">搜尋</button>
-    </div>
-
-    <div class="filter-chips">
+  <main>
+    <section id="filterSection">
       <button class="filter-btn" data-type="全部">全部</button>
       <button class="filter-btn" data-type="醫院">醫院</button>
       <button class="filter-btn" data-type="診所">診所</button>
       <button class="filter-btn" data-type="護理之家">護理之家</button>
-    </div>
+    </section>
+
+    <section id="controls">
+      <select id="citySelect"></select>
+      <select id="districtSelect"></select>
+      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱／地址／電話）">
+      <button id="searchBtn" class="main-btn">搜尋</button>
+    </section>
+
+    <div id="status"></div>
 
     <!-- 桌機表格 -->
     <table id="resultTable">

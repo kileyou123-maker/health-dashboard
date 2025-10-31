@@ -1,6 +1,8 @@
 let allData = [];
 let cityDistrictMap = {};
-let suggestionBox;
+let currentPage = 1;
+const pageSize = 50;
+let currentData = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
@@ -35,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 });
 
-/* ---------------- CSV 處理 ---------------- */
 function csvToJson(csv) {
   const lines = csv.split("\n").filter((l) => l.trim());
   const headers = lines[0].split(",").map((h) => h.trim());
@@ -53,7 +54,6 @@ function normalizeAddress(data) {
   });
 }
 
-/* ---------------- 城市 / 地區 ---------------- */
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
   "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
@@ -99,12 +99,13 @@ function populateDistrictList() {
   }
 }
 
-/* ---------------- 搜尋與篩選 ---------------- */
+/* ---------------- 搜尋 ---------------- */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
-  const filtered = allData.filter((d) => {
+
+  currentData = allData.filter((d) => {
     const addr = d["醫事機構地址"] || "";
     const name = d["醫事機構名稱"] || "";
     const phone = d["醫事機構電話"] || "";
@@ -119,37 +120,28 @@ function searchData() {
         team.includes(keyword))
     );
   });
-  document.getElementById("status").textContent = `共找到 ${filtered.length} 筆結果`;
-  renderTable(filtered);
+
+  currentPage = 1;
+  document.getElementById("status").textContent = `共找到 ${currentData.length} 筆結果`;
+  renderTablePage();
 }
 
-function quickFilter(type) {
-  let filtered;
-  if (type === "全部") {
-    filtered = allData;
-  } else {
-    const keywords = {
-      醫院: ["醫院"],
-      診所: ["診所", "醫療"],
-      護理之家: ["護理", "養護", "安養"],
-    }[type] || [];
-    filtered = allData.filter((d) =>
-      keywords.some((k) => (d["醫事機構名稱"] || "").includes(k))
-    );
-  }
-  document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
-  renderTable(filtered);
-}
-
-/* ---------------- 顯示結果 ---------------- */
-function renderTable(data) {
+/* ---------------- 分頁渲染 ---------------- */
+function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-  if (data.length === 0) {
+
+  if (currentData.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
+    document.getElementById("pagination").innerHTML = "";
     return;
   }
-  data.forEach((d) => {
+
+  const start = (currentPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, currentData.length);
+  const pageData = currentData.slice(start, end);
+
+  for (const d of pageData) {
     const addr = d["醫事機構地址"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const row = document.createElement("tr");
@@ -161,7 +153,41 @@ function renderTable(data) {
       <td>${d["來源"]}</td>`;
     row.addEventListener("click", () => showDetails(d));
     tbody.appendChild(row);
-  });
+  }
+
+  renderPagination();
+}
+
+/* ---------------- 分頁控制 ---------------- */
+function renderPagination() {
+  const pageCount = Math.ceil(currentData.length / pageSize);
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
+
+  if (pageCount <= 1) return;
+
+  const prev = document.createElement("button");
+  prev.textContent = "← 上一頁";
+  prev.disabled = currentPage === 1;
+  prev.onclick = () => {
+    currentPage--;
+    renderTablePage();
+  };
+
+  const next = document.createElement("button");
+  next.textContent = "下一頁 →";
+  next.disabled = currentPage === pageCount;
+  next.onclick = () => {
+    currentPage++;
+    renderTablePage();
+  };
+
+  const pageInfo = document.createElement("span");
+  pageInfo.textContent = `第 ${currentPage} / ${pageCount} 頁`;
+
+  pagination.appendChild(prev);
+  pagination.appendChild(pageInfo);
+  pagination.appendChild(next);
 }
 
 /* ---------------- 詳細資料彈窗 ---------------- */
@@ -184,35 +210,6 @@ function showDetails(d) {
     ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
     : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
-
-  const detailsContainer = document.createElement("div");
-  detailsContainer.innerHTML = "";
-
-  if (d["來源"].includes("護理之家")) {
-    const careFields = [
-      "居家醫療","重度居家醫療","安寧療護","居家呼吸照護",
-      "居家中醫醫療","居家藥事照護","在宅急症照護","近三個月有收案",
-    ];
-    const positiveWords = ["1", "是", "有", "Y", "V", "√", "✓"];
-    let html = `<h4>提供服務項目</h4><table style="width:100%; border-collapse:collapse;">`;
-    html += "<tr>" + careFields.map((f) => `<th>${f}</th>`).join("") + "</tr><tr>";
-    html += careFields
-      .map((f) => {
-        const val = d[f] || "";
-        const mark = positiveWords.some((w) => val.includes(w)) ? "✓" : "✗";
-        return `<td style="text-align:center;">${mark}</td>`;
-      })
-      .join("");
-    html += "</tr></table>";
-    detailsContainer.innerHTML = html;
-  } else {
-    detailsContainer.innerHTML = `<p><em>此機構無其他延伸服務資料。</em></p>`;
-  }
-
-  const modalContent = modal.querySelector(".modal-content");
-  modalContent.querySelectorAll("table,h4,em").forEach((el) => el.remove());
-  modalContent.appendChild(detailsContainer);
-
   modal.style.display = "block";
 }
 
@@ -220,27 +217,22 @@ function showDetails(d) {
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark");
-    themeBtn.textContent = "☀️";
-  } else themeBtn.textContent = "🌙";
+  if (savedTheme === "dark") document.body.classList.add("dark");
   themeBtn.addEventListener("click", () => {
-    const isDark = document.body.classList.toggle("dark");
-    themeBtn.textContent = isDark ? "☀️" : "🌙";
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
   });
 }
 
-/* ---------------- 改良後浮動自動提示 ---------------- */
+/* ---------------- 自動提示 ---------------- */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
-  suggestionBox = document.createElement("div");
+  const suggestionBox = document.createElement("div");
   suggestionBox.id = "suggestionBox";
   suggestionBox.style.position = "fixed";
   suggestionBox.style.background = "white";
   suggestionBox.style.border = "1px solid #ccc";
   suggestionBox.style.borderRadius = "5px";
-  suggestionBox.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
   suggestionBox.style.zIndex = "999";
   suggestionBox.style.display = "none";
   document.body.appendChild(suggestionBox);
@@ -248,17 +240,10 @@ function setupAutocomplete() {
   input.addEventListener("input", () => {
     const val = input.value.trim();
     suggestionBox.innerHTML = "";
-    if (!val) {
-      suggestionBox.style.display = "none";
-      return;
-    }
-
-    const matches = allData
-      .map((d) => d["醫事機構名稱"])
-      .filter((n) => n && n.includes(val));
-    const uniqueMatches = [...new Set(matches)].slice(0, 5);
-
-    uniqueMatches.forEach((name) => {
+    if (!val) return (suggestionBox.style.display = "none");
+    const matches = allData.map((d) => d["醫事機構名稱"]).filter((n) => n && n.includes(val));
+    const unique = [...new Set(matches)].slice(0, 5);
+    unique.forEach((name) => {
       const div = document.createElement("div");
       div.textContent = name;
       div.style.padding = "8px";
@@ -270,21 +255,17 @@ function setupAutocomplete() {
       });
       suggestionBox.appendChild(div);
     });
-
-    if (uniqueMatches.length > 0) {
+    if (unique.length) {
       const rect = input.getBoundingClientRect();
       suggestionBox.style.left = rect.left + "px";
       suggestionBox.style.top = rect.bottom + window.scrollY + "px";
       suggestionBox.style.width = rect.width + "px";
       suggestionBox.style.display = "block";
-    } else {
-      suggestionBox.style.display = "none";
-    }
+    } else suggestionBox.style.display = "none";
   });
 
   document.addEventListener("click", (e) => {
-    if (e.target !== input && e.target.parentNode !== suggestionBox) {
+    if (e.target !== input && e.target.parentNode !== suggestionBox)
       suggestionBox.style.display = "none";
-    }
   });
 }

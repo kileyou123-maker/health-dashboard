@@ -6,14 +6,50 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* 深色模式 */
+body.dark {
+  background: #1a202c;
+  color: #e2e8f0;
+}
+body.dark header {
+  background: linear-gradient(135deg, #1f2937, #2d3748);
+}
+body.dark #controls,
+body.dark #results {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+body.dark th {
+  background: #4a5568;
+  color: #f7fafc;
+}
+body.dark td,
+body.dark select,
+body.dark input {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+body.dark tr:hover {
+  background: #4a5568;
+}
+body.dark .main-btn {
+  background: linear-gradient(135deg, #805ad5, #9f7aea);
+}
+body.dark footer {
+  color: #cbd5e0;
+}
+
+/* Header */
 header {
   background: linear-gradient(135deg, #2b7a78, #3aafa9);
   color: white;
   text-align: center;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
+/* 主題切換按鈕 */
 .theme-toggle-btn {
   position: fixed;
   top: 15px;
@@ -26,13 +62,20 @@ header {
   height: 45px;
   font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  transition: background 0.3s, transform 0.2s;
   z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: background 0.3s, transform 0.2s;
 }
-.theme-toggle-btn:hover { transform: scale(1.1); background: #319795; }
-body.dark .theme-toggle-btn { background: #f6ad55; color: #2d3748; }
+.theme-toggle-btn:hover {
+  transform: scale(1.1);
+  background: #319795;
+}
+body.dark .theme-toggle-btn {
+  background: #f6ad55;
+  color: #1a202c;
+}
 
+/* 快速篩選 */
 #quickFilter {
   text-align: center;
   margin: 15px 0;
@@ -52,18 +95,24 @@ body.dark .theme-toggle-btn { background: #f6ad55; color: #2d3748; }
   background: #285e61;
   transform: translateY(-3px);
 }
+body.dark .filter-btn {
+  background: #4fd1c5;
+  color: #1a202c;
+}
 
+/* 查詢區 */
 #controls {
   background: white;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 15px;
   margin: 15px auto;
   width: 90%;
   max-width: 900px;
   text-align: center;
 }
-#controls select, #controls input {
+#controls select,
+#controls input {
   padding: 8px;
   margin: 5px;
   border: 1px solid #cbd5e0;
@@ -83,32 +132,56 @@ body.dark .theme-toggle-btn { background: #f6ad55; color: #2d3748; }
   background: linear-gradient(135deg, #5a67d8, #6b46c1);
 }
 
+/* 結果區 */
 #results {
   background: white;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 15px;
   margin: 15px auto 30px;
   width: 90%;
   max-width: 1000px;
 }
-#results h2 { text-align: center; color: #2c7a7b; }
-#status { text-align: center; color: #319795; font-weight: bold; }
+#results h2 {
+  text-align: center;
+  color: #2c7a7b;
+}
+#status {
+  text-align: center;
+  color: #319795;
+  font-weight: bold;
+}
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
-th { background: #e6fffa; color: #2c7a7b; }
-tr:hover { background: #edf2f7; cursor: pointer; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th,
+td {
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+  text-align: left;
+}
+th {
+  background: #e6fffa;
+  color: #2c7a7b;
+}
+tr:hover {
+  background: #edf2f7;
+  cursor: pointer;
+}
 
-/* Modal */
+/* 詳細資料彈窗 */
 .modal {
   display: none;
   position: fixed;
   z-index: 200;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 .modal-content {
   background-color: #fff;
@@ -117,7 +190,7 @@ tr:hover { background: #edf2f7; cursor: pointer; }
   border-radius: 10px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 .close {
   float: right;
@@ -126,11 +199,17 @@ tr:hover { background: #edf2f7; cursor: pointer; }
   color: #666;
   cursor: pointer;
 }
-.close:hover { color: #000; }
+.close:hover {
+  color: #000;
+}
 
+/* Footer */
 footer {
   text-align: center;
   padding: 20px;
   font-size: 13px;
   color: #4a5568;
+}
+body.dark footer {
+  color: #cbd5e0;
 }

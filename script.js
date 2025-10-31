@@ -1,6 +1,5 @@
 let allData = [];
 let cityDistrictMap = {};
-let suggestionBox;
 
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
@@ -17,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const json = csvToJson(text).map((item) => ({ ...item, 來源: f.source }));
     merged = merged.concat(json);
   }
+
   allData = merged;
   normalizeAddress(allData);
   buildCityDistrictMap(allData);
@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 });
 
+/* ---------------- CSV 處理 ---------------- */
 function csvToJson(csv) {
   const lines = csv.split("\n").filter((l) => l.trim());
   const headers = lines[0].split(",").map((h) => h.trim());
@@ -51,6 +52,7 @@ function normalizeAddress(data) {
   });
 }
 
+/* ---------------- 城市 / 地區 ---------------- */
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
   "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
@@ -96,6 +98,7 @@ function populateDistrictList() {
   }
 }
 
+/* ---------------- 搜尋與篩選 ---------------- */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -137,6 +140,7 @@ function quickFilter(type) {
   renderTable(filtered);
 }
 
+/* ---------------- 顯示結果 ---------------- */
 function renderTable(data) {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -159,6 +163,7 @@ function renderTable(data) {
   });
 }
 
+/* ---------------- 詳細資料彈窗 ---------------- */
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -182,14 +187,8 @@ function showDetails(d) {
 
   if (d["來源"].includes("護理之家")) {
     const careFields = [
-      "居家醫療",
-      "重度居家醫療",
-      "安寧療護",
-      "居家呼吸照護",
-      "居家中醫醫療",
-      "居家藥事照護",
-      "在宅急症照護",
-      "近三個月有收案",
+      "居家醫療","重度居家醫療","安寧療護","居家呼吸照護",
+      "居家中醫醫療","居家藥事照護","在宅急症照護","近三個月有收案",
     ];
     const positiveWords = ["1", "是", "有", "Y", "V", "√", "✓"];
     let html = `<h4>提供服務項目</h4><table style="width:100%; border-collapse:collapse;">`;
@@ -214,6 +213,7 @@ function showDetails(d) {
   modal.style.display = "block";
 }
 
+/* ---------------- 深/淺色模式 ---------------- */
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");
@@ -228,56 +228,42 @@ function initTheme() {
   });
 }
 
-/* ---------------- 自動提示 ---------------- */
+/* ---------------- 手機相容自動提示 ---------------- */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
-  suggestionBox = document.createElement("div");
-  suggestionBox.id = "suggestionBox";
-  suggestionBox.style.position = "absolute";
-  suggestionBox.style.background = "white";
-  suggestionBox.style.border = "1px solid #ccc";
-  suggestionBox.style.width = input.offsetWidth + "px";
-  suggestionBox.style.zIndex = "99";
-  suggestionBox.style.display = "none";
-  document.body.appendChild(suggestionBox);
+  const suggestionArea = document.createElement("div");
+  suggestionArea.id = "suggestionArea";
+  suggestionArea.style.marginTop = "5px";
+  suggestionArea.style.textAlign = "left";
+  document.getElementById("controls").appendChild(suggestionArea);
 
   input.addEventListener("input", () => {
     const val = input.value.trim();
-    suggestionBox.innerHTML = "";
-    if (!val) {
-      suggestionBox.style.display = "none";
-      return;
-    }
+    suggestionArea.innerHTML = "";
+    if (!val) return;
+
     const matches = allData
       .map((d) => d["醫事機構名稱"])
       .filter((n) => n && n.includes(val));
     const uniqueMatches = [...new Set(matches)].slice(0, 5);
 
     uniqueMatches.forEach((name) => {
-      const div = document.createElement("div");
-      div.textContent = name;
-      div.style.padding = "5px";
-      div.style.cursor = "pointer";
-      div.addEventListener("click", () => {
+      const btn = document.createElement("button");
+      btn.textContent = name;
+      btn.style.display = "block";
+      btn.style.width = "100%";
+      btn.style.textAlign = "left";
+      btn.style.background = "#edf2f7";
+      btn.style.border = "1px solid #cbd5e0";
+      btn.style.borderRadius = "5px";
+      btn.style.padding = "6px";
+      btn.style.margin = "2px 0";
+      btn.addEventListener("click", () => {
         input.value = name;
-        suggestionBox.style.display = "none";
+        suggestionArea.innerHTML = "";
         searchData();
       });
-      suggestionBox.appendChild(div);
+      suggestionArea.appendChild(btn);
     });
-
-    if (uniqueMatches.length > 0) {
-      const rect = input.getBoundingClientRect();
-      suggestionBox.style.left = rect.left + "px";
-      suggestionBox.style.top = rect.bottom + "px";
-      suggestionBox.style.width = rect.width + "px";
-      suggestionBox.style.display = "block";
-    } else {
-      suggestionBox.style.display = "none";
-    }
-  });
-
-  document.addEventListener("click", (e) => {
-    if (e.target !== input) suggestionBox.style.display = "none";
   });
 }

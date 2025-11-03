@@ -1,41 +1,17 @@
 :root {
-  --bg-color: #f4f8fb;
-  --text-color: #222;
-  --header-bg: #2c7a7b;
-  --table-bg: #fff;
-  --table-th-bg: #319795;
-  --table-border: #e2e8f0;
-  --link-color: #2b6cb0;
-  --footer-bg: #2c7a7b;
-  --accent: #319795;
+  --text-color: #1a1a1a;
+  --bg-color: #f9f9f9;
+  --table-bg: #ffffff;
+  --table-border: #ddd;
   --shadow: rgba(0, 0, 0, 0.15);
-}
-
-body.dark {
-  --bg-color: #0f172a;
-  --text-color: #f1f5f9;
-  --header-bg: #1e293b;
-  --table-bg: #1e293b;
-  --table-th-bg: #334155;
-  --table-border: #475569;
-  --link-color: #60a5fa;
-  --footer-bg: #1e293b;
-  --accent: #f59e0b;
-  --shadow: rgba(255, 255, 255, 0.15);
+  --highlight: #319795;
 }
 
 body {
-  font-family: "Microsoft JhengHei", sans-serif;
   margin: 0;
-  background-color: var(--bg-color);
+  font-family: "Microsoft JhengHei", sans-serif;
+  background: var(--bg-color);
   color: var(--text-color);
-  text-align: center;
-  overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* === 頁面刷新淡入動畫 === */
-body {
   opacity: 0;
   transition: opacity 0.8s ease;
 }
@@ -43,225 +19,168 @@ body.loaded {
   opacity: 1;
 }
 
-/* === Header === */
+/* 標題與主題切換 */
 header {
-  background-color: var(--header-bg);
-  color: white;
-  padding: 20px 10px;
-  box-shadow: 0 2px 8px var(--shadow);
+  text-align: center;
+  padding: 15px 10px;
+  background: var(--highlight);
+  color: #fff;
+  position: relative;
 }
-
-/* === 深色模式按鈕 === */
 #themeToggle {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  background-color: var(--accent);
-  color: white;
+  position: absolute;
+  right: 20px;
+  top: 18px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 20px;
+  background: #fff;
   cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 3px 6px var(--shadow);
-  transition: all 0.3s ease;
+  transition: transform 0.3s;
 }
-#themeToggle:hover {
-  transform: rotate(20deg) scale(1.1);
-}
+#themeToggle:hover { transform: rotate(30deg); }
 
-/* === 篩選區 === */
-#filterSection {
-  margin: 15px 0;
-}
-.filter-btn {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  font-size: 15px;
-  margin: 3px;
-  transition: transform 0.15s ease, box-shadow 0.25s ease;
-}
-.filter-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 3px 6px var(--shadow);
-}
+main { padding: 20px; }
 
-/* === 搜尋區 === */
-#controls {
+/* 搜尋區 */
+.search-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 12px;
 }
-#controls select,
-#controls input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-}
-.main-btn {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: all 0.25s ease;
-}
-.main-btn:hover {
-  box-shadow: 0 4px 10px var(--shadow);
-  transform: translateY(-2px);
-}
-
-/* === Table === */
-#resultTable {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--table-bg);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px var(--shadow);
-}
-#resultTable th,
-#resultTable td {
+#citySelect, #districtSelect, #searchBtn {
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid var(--table-border);
-  padding: 10px;
-  text-align: center;
-}
-#resultTable th {
-  background-color: var(--table-th-bg);
-  color: white;
-}
-#resultTable tr:hover {
-  background-color: rgba(49, 151, 149, 0.15);
-  transition: background-color 0.2s ease;
-}
-
-/* === 手機卡片 === */
-#resultCards {
-  display: none;
-}
-.card {
-  background-color: var(--table-bg);
-  border-radius: 12px;
-  box-shadow: 0 2px 6px var(--shadow);
-  padding: 12px;
-  text-align: left;
-  margin: 8px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s ease-out;
-}
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.card h3 {
-  margin: 0 0 6px;
-  color: var(--text-color);
-}
-.card p {
-  margin: 3px 0;
   font-size: 14px;
-  color: var(--text-color);
 }
-.card a {
-  color: var(--link-color);
-  transition: color 0.25s;
+#searchBtn {
+  background: var(--highlight);
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.card a:hover {
-  color: var(--accent);
+#searchBtn:hover { background: #2c7a7b; }
+
+/* 關鍵字輸入框 */
+.keyword-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 230px;
+}
+#keyword {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--table-border);
+  font-size: 14px;
+  outline: none;
+}
+#keyword:focus {
+  border-color: var(--highlight);
+  box-shadow: 0 0 5px rgba(49,151,149,0.3);
 }
 
-/* 關鍵字提示框（與輸入框等寬） */
+/* 提示框 */
 #suggestionBox {
   position: absolute;
-  top: 100%;              /* 緊貼輸入框底部 */
-  left: 0;                /* 與輸入框左對齊 */
-  right: 0;               /* 與輸入框右對齊 */
-  background-color: var(--table-bg);
+  top: calc(100% + 2px);
+  left: 0;
+  width: 100%;
+  background: var(--table-bg);
   color: var(--text-color);
   border-radius: 6px;
   border: 1px solid var(--table-border);
-  box-shadow: 0 2px 5px var(--shadow);
-  overflow-y: auto;
-  max-height: 120px;
+  box-shadow: 0 3px 8px var(--shadow);
   display: none;
-  z-index: 10000;
+  max-height: 120px;
+  overflow-y: auto;
   font-size: 13px;
-  line-height: 1.4;
+  z-index: 9999;
+  animation: fadeIn 0.15s ease-in-out;
 }
-
-/* 單筆提示樣式 */
 #suggestionBox div {
   padding: 6px 10px;
-  cursor: pointer;
   border-bottom: 1px solid var(--table-border);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background-color: var(--table-bg);
+  cursor: pointer;
 }
-
-/* 滑過時變化 */
 #suggestionBox div:hover {
-  background-color: rgba(49, 151, 149, 0.15);
+  background: rgba(49,151,149,0.15);
 }
 
+/* 表格 */
+#resultTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: var(--table-bg);
+  box-shadow: 0 2px 5px var(--shadow);
+}
+#resultTable th, #resultTable td {
+  border: 1px solid var(--table-border);
+  padding: 8px;
+  text-align: center;
+}
+#resultTable a { color: var(--highlight); text-decoration: none; }
 
-/* === Footer === */
-footer {
-  background-color: var(--footer-bg);
-  color: white;
-  padding: 10px 0;
-  font-size: 14px;
-  box-shadow: 0 -2px 6px var(--shadow);
+/* 卡片 */
+#resultCards {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+.card {
+  background: var(--table-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 5px var(--shadow);
+  padding: 10px;
+  transition: transform 0.2s ease, opacity 0.2s;
+}
+.card:hover { transform: scale(1.02); }
+
+/* 分頁 */
+#pagination {
+  text-align: center;
+  margin-top: 15px;
+}
+#pagination button {
+  margin: 0 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: var(--highlight);
+  color: #fff;
+  cursor: pointer;
+}
+#pagination button:disabled {
+  background: #999;
+  cursor: default;
 }
 
-/* === 手機樣式 === */
-@media (max-width: 768px) {
-  #resultTable {
-    display: none;
-  }
-  #resultCards {
-    display: flex;
-    flex-direction: column;
-    margin: 10px;
-  }
+/* 動畫 */
+.hidden { opacity: 0; transform: translateY(20px); transition: all 0.5s ease-out; }
+.visible { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* === 滾動動畫 === */
-.hidden {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s ease-out;
-}
-.visible {
-  opacity: 1;
-  transform: translateY(0);
+/* 深色模式 */
+body.dark {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
+  --table-bg: #1f1f1f;
+  --table-border: #333;
+  --shadow: rgba(255,255,255,0.1);
 }
 
-/* === 頁面載入滑入動畫 === */
-.fade-in-up {
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInUp 0.8s ease forwards;
+/* 手機 */
+@media (max-width:768px){
+  .search-container{flex-direction:column;align-items:center;}
+  #citySelect,#districtSelect,#searchBtn,.keyword-wrapper{width:90%;}
+  #suggestionBox{max-height:90px;font-size:12.5px;}
 }
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-
-
+footer{text-align:center;padding:15px 0;font-size:14px;}

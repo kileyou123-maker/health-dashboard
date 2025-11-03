@@ -1,7 +1,5 @@
 let allData = [];
 let currentData = [];
-let currentPage = 1;
-const pageSize = 50;
 let cityDistrictMap = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -42,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderResponsive();
 });
 
-/* --- 基礎功能 --- */
+/* ===== 功能區 ===== */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"])
@@ -95,7 +93,7 @@ function populateDistrictList() {
   }
 }
 
-/* --- 搜尋與篩選 --- */
+/* 搜尋 */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -120,6 +118,7 @@ function searchData() {
   renderResponsive();
 }
 
+/* 快速篩選 */
 function quickFilter(type) {
   if (type === "全部") currentData = allData;
   else {
@@ -135,7 +134,7 @@ function quickFilter(type) {
   renderResponsive();
 }
 
-/* --- 桌機表格 --- */
+/* 桌機表格 */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -144,6 +143,7 @@ function renderTablePage() {
     const tel = d["醫事機構電話"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const row = document.createElement("tr");
+    row.classList.add("hidden");
     row.innerHTML = `
       <td>${d["醫事機構名稱"]}</td>
       <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
@@ -152,9 +152,10 @@ function renderTablePage() {
       <td>${d["來源"]}</td>`;
     tbody.appendChild(row);
   });
+  initScrollAnimation();
 }
 
-/* --- 手機卡片 --- */
+/* 手機卡片 */
 function renderMobileCards() {
   const container = document.getElementById("resultCards");
   container.innerHTML = "";
@@ -163,28 +164,25 @@ function renderMobileCards() {
     const tel = d["醫事機構電話"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = "card hidden";
     card.innerHTML = `
       <h3>${d["醫事機構名稱"]}</h3>
       <p>📍 <a href="${mapUrl}" target="_blank">${addr}</a></p>
       <p>📞 <a href="tel:${tel}">${tel}</a></p>
       <p>🏥 ${d["整合團隊名稱"] || "未提供"}</p>
-      <p class="src">資料來源：${d["來源"]}</p>
-    `;
+      <p class="src">資料來源：${d["來源"]}</p>`;
     container.appendChild(card);
   });
+  initScrollAnimation();
 }
 
-/* --- 自動切換 --- */
+/* 自動切換 */
 function renderResponsive() {
-  if (window.innerWidth <= 768) {
-    renderMobileCards();
-  } else {
-    renderTablePage();
-  }
+  if (window.innerWidth <= 768) renderMobileCards();
+  else renderTablePage();
 }
 
-/* --- 深色模式 --- */
+/* 深色模式 */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
   if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
@@ -197,7 +195,7 @@ function initTheme() {
   });
 }
 
-/* --- 自動提示 --- */
+/* 自動提示 */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const box = document.createElement("div");
@@ -236,3 +234,5 @@ function setupAutocomplete() {
       box.style.display = "none";
   });
 }
+
+/*

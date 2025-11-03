@@ -1,46 +1,94 @@
 let allData = [];
 let currentData = [];
 let cityDistrictMap = {};
+let currentPage = 1;
+const itemsPerPage = 50;
+
+/* === 頁面淡入動畫 === */
+window.addEventListener("load", () => {
+  document.body.classList.add("loaded");
+  document.querySelectorAll("header, main, footer").forEach(el => {
+    el.classList.add("fade-in-up");
+  });
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
+  showLoadingMessage("資料載入中...");
 
-  const files = [
-    { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
-    { path: "A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
-  ];
+  try {
+    const files = [
+      { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
+      { path: "A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
+    ];
 
-  for (const f of files) {
-    const res = await fetch(f.path);
-    const text = await res.text();
-    const lines = text.split("\n").filter((l) => l.trim());
-    const headers = lines[0].split(",");
-    const json = lines.slice(1).map((l) => {
-      const vals = l.split(",");
-      const obj = {};
-      headers.forEach((h, i) => (obj[h] = vals[i] || ""));
-      obj["來源"] = f.source;
-      return obj;
-    });
-    allData = allData.concat(json);
+    for (const f of files) {
+      try {
+        const res = await fetch(f.path);
+        if (!res.ok) throw new Error(`無法讀取 ${f.path}`);
+        const text = await res.text();
+        if (!text.trim()) throw new Error(`${f.path} 是空的`);
+        const lines = text.split("\n").filter((l) => l.trim());
+        const headers = lines[0].split(",");
+        const json = lines.slice(1).map((l) => {
+          const vals = l.split(",");
+          const obj = {};
+          headers.forEach((h, i) => (obj[h] = vals[i] || ""));
+          obj["來源"] = f.source;
+          return obj;
+        });
+        allData = allData.concat(json);
+      } catch (err) {
+        console.warn(err.message);
+      }
+    }
+
+    if (!allData.length) {
+      showLoadingMessage("⚠️ 未載入任何資料，請確認 CSV 檔案位置是否正確。");
+      return;
+    }
+
+    console.log("載入資料筆數：", allData.length);
+
+    normalizeAddress(allData);
+    buildCityDistrictMap(allData);
+    populateCityList();
+    populateDistrictList();
+
+    document.getElementById("searchBtn").addEventListener("click", searchData);
+    document.querySelectorAll(".filter-btn").forEach((btn) =>
+      btn.addEventListener("click", () => quickFilter(btn.dataset.type))
+    );
+
+    setupAutocomplete();
+    currentData = allData;
+    renderResponsive();
+    hideLoadingMessage();
+
+  } catch (e) {
+    console.error("重大錯誤：", e);
+    showLoadingMessage("⚠️ 載入過程發生錯誤，請重新整理或檢查資料。");
   }
-
-  normalizeAddress(allData);
-  buildCityDistrictMap(allData);
-  populateCityList();
-  populateDistrictList();
-
-  document.getElementById("searchBtn").addEventListener("click", searchData);
-  document.querySelectorAll(".filter-btn").forEach((btn) =>
-    btn.addEventListener("click", () => quickFilter(btn.dataset.type))
-  );
-
-  setupAutocomplete();
-  currentData = allData;
-  renderResponsive();
 });
 
-/* === 工具函式 === */
+/* === 載入中顯示 === */
+function showLoadingMessage(msg) {
+  let box = document.getElementById("status");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "status";
+    box.style.margin = "20px";
+    box.style.fontWeight = "bold";
+    document.body.prepend(box);
+  }
+  box.textContent = msg;
+}
+function hideLoadingMessage() {
+  const box = document.getElementById("status");
+  if (box) box.textContent = "";
+}
+
+/* === 工具 === */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"])
@@ -56,6 +104,7 @@ const allCities = [
 ];
 
 function buildCityDistrictMap(data) {
+  cityDistrictMap = {};
   data.forEach((d) => {
     const addr = d["醫事機構地址"];
     if (!addr) return;
@@ -96,6 +145,7 @@ function populateDistrictList() {
 
 /* === 搜尋 === */
 function searchData() {
+  currentPage = 1;
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
@@ -119,8 +169,9 @@ function searchData() {
   renderResponsive();
 }
 
-/* === 快速篩選 === */
+/* === 篩選 === */
 function quickFilter(type) {
+  currentPage = 1;
   if (type === "全部") currentData = allData;
   else {
     const keywords = {
@@ -135,11 +186,15 @@ function quickFilter(type) {
   renderResponsive();
 }
 
-/* === 桌機顯示 === */
+/* === 桌機表格 === */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-  currentData.slice(0, 50).forEach((d) => {
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const pageData = currentData.slice(start, end);
+
+  pageData.forEach((d) => {
     const addr = d["醫事機構地址"];
     const tel = d["醫事機構電話"];
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
@@ -153,10 +208,42 @@ function renderTablePage() {
       <td>${d["來源"]}</td>`;
     tbody.appendChild(row);
   });
+  renderPagination();
   initScrollAnimation();
 }
 
-/* === 手機顯示 === */
+/* === 分頁 === */
+function renderPagination() {
+  const totalPages = Math.ceil(currentData.length / itemsPerPage);
+  const container = document.getElementById("pagination");
+  container.innerHTML = "";
+  if (totalPages <= 1) return;
+
+  const prev = document.createElement("button");
+  prev.textContent = "上一頁";
+  prev.disabled = currentPage === 1;
+  prev.onclick = () => {
+    currentPage--;
+    renderResponsive();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const next = document.createElement("button");
+  next.textContent = "下一頁";
+  next.disabled = currentPage === totalPages;
+  next.onclick = () => {
+    currentPage++;
+    renderResponsive();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const info = document.createElement("span");
+  info.textContent = `第 ${currentPage} / ${totalPages} 頁`;
+
+  container.append(prev, info, next);
+}
+
+/* === 手機卡片 === */
 function renderMobileCards() {
   const container = document.getElementById("resultCards");
   container.innerHTML = "";
@@ -177,22 +264,27 @@ function renderMobileCards() {
   initScrollAnimation();
 }
 
-/* === 滾動動畫 === */
+/* === 動畫 === */
 function initScrollAnimation() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-      }
+      if (entry.isIntersecting) entry.target.classList.add("visible");
     });
   }, { threshold: 0.1 });
   document.querySelectorAll(".hidden").forEach((el) => observer.observe(el));
 }
 
-/* === 自動切換 === */
+/* === 響應顯示 === */
 function renderResponsive() {
-  if (window.innerWidth <= 768) renderMobileCards();
-  else renderTablePage();
+  if (window.innerWidth <= 768) {
+    document.getElementById("resultTable").style.display = "none";
+    document.getElementById("resultCards").style.display = "flex";
+    renderMobileCards();
+  } else {
+    document.getElementById("resultCards").style.display = "none";
+    document.getElementById("resultTable").style.display = "table";
+    renderTablePage();
+  }
 }
 
 /* === 深色模式 === */

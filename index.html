@@ -16,6 +16,7 @@
   <button id="themeToggle" class="theme-toggle-btn">🌗</button>
 
   <main>
+    <!-- 篩選 -->
     <section id="filterSection">
       <button class="filter-btn" data-type="全部">全部</button>
       <button class="filter-btn" data-type="醫院">醫院</button>
@@ -23,13 +24,15 @@
       <button class="filter-btn" data-type="護理之家">護理之家</button>
     </section>
 
+    <!-- 搜尋 -->
     <section id="controls">
       <select id="citySelect"></select>
       <select id="districtSelect"></select>
-      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱／地址／電話）">
+      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱／地址／電話）" />
       <button id="searchBtn" class="main-btn">搜尋</button>
     </section>
 
+    <!-- 桌機表格 -->
     <table id="resultTable">
       <thead>
         <tr>
@@ -43,7 +46,9 @@
       <tbody></tbody>
     </table>
 
+    <!-- 手機卡片 -->
     <div id="resultCards"></div>
+
     <div id="pagination"></div>
   </main>
 

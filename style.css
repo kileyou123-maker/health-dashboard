@@ -181,35 +181,41 @@ header {
   color: var(--accent);
 }
 
+/* 關鍵字提示框（與輸入框等寬） */
 #suggestionBox {
   position: absolute;
-  top: calc(100% + 2px); /* 貼近輸入框底部 */
-  left: 0;
-  width: 100%; /* ✅ 跟輸入框一樣寬 */
+  top: 100%;              /* 緊貼輸入框底部 */
+  left: 0;                /* 與輸入框左對齊 */
+  right: 0;               /* 與輸入框右對齊 */
   background-color: var(--table-bg);
   color: var(--text-color);
   border-radius: 6px;
-  box-shadow: 0 2px 6px var(--shadow);
+  border: 1px solid var(--table-border);
+  box-shadow: 0 2px 5px var(--shadow);
   overflow-y: auto;
   max-height: 120px;
   display: none;
-  z-index: 9999;
-  font-size: 13.5px;
+  z-index: 10000;
+  font-size: 13px;
   line-height: 1.4;
 }
 
+/* 單筆提示樣式 */
 #suggestionBox div {
-  padding: 6px 8px;
+  padding: 6px 10px;
   cursor: pointer;
   border-bottom: 1px solid var(--table-border);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  background-color: var(--table-bg);
 }
 
+/* 滑過時變化 */
 #suggestionBox div:hover {
   background-color: rgba(49, 151, 149, 0.15);
 }
+
 
 /* === Footer === */
 footer {
@@ -255,5 +261,6 @@ footer {
     transform: translateY(0);
   }
 }
+
 
 

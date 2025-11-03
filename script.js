@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderResponsive();
 });
 
-/* ===== 功能區 ===== */
+/* === 工具函式 === */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"])
@@ -77,6 +77,7 @@ function populateCityList() {
     opt.textContent = c;
     citySel.appendChild(opt);
   });
+  citySel.addEventListener("change", populateDistrictList);
 }
 
 function populateDistrictList() {
@@ -93,7 +94,7 @@ function populateDistrictList() {
   }
 }
 
-/* 搜尋 */
+/* === 搜尋 === */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -118,7 +119,7 @@ function searchData() {
   renderResponsive();
 }
 
-/* 快速篩選 */
+/* === 快速篩選 === */
 function quickFilter(type) {
   if (type === "全部") currentData = allData;
   else {
@@ -134,7 +135,7 @@ function quickFilter(type) {
   renderResponsive();
 }
 
-/* 桌機表格 */
+/* === 桌機顯示 === */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -155,7 +156,7 @@ function renderTablePage() {
   initScrollAnimation();
 }
 
-/* 手機卡片 */
+/* === 手機顯示 === */
 function renderMobileCards() {
   const container = document.getElementById("resultCards");
   container.innerHTML = "";
@@ -176,13 +177,25 @@ function renderMobileCards() {
   initScrollAnimation();
 }
 
-/* 自動切換 */
+/* === 滾動動畫 === */
+function initScrollAnimation() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll(".hidden").forEach((el) => observer.observe(el));
+}
+
+/* === 自動切換 === */
 function renderResponsive() {
   if (window.innerWidth <= 768) renderMobileCards();
   else renderTablePage();
 }
 
-/* 深色模式 */
+/* === 深色模式 === */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
   if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
@@ -195,7 +208,7 @@ function initTheme() {
   });
 }
 
-/* 自動提示 */
+/* === 自動提示 === */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const box = document.createElement("div");
@@ -234,5 +247,3 @@ function setupAutocomplete() {
       box.style.display = "none";
   });
 }
-
-/*

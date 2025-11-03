@@ -24,10 +24,6 @@ body.dark {
   --shadow: rgba(255, 255, 255, 0.15);
 }
 
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
-}
-
 body {
   font-family: "Microsoft JhengHei", sans-serif;
   margin: 0;
@@ -35,6 +31,7 @@ body {
   color: var(--text-color);
   text-align: center;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header */
@@ -45,7 +42,7 @@ header {
   box-shadow: 0 2px 8px var(--shadow);
 }
 
-/* 深色模式按鈕 */
+/* Theme toggle */
 #themeToggle {
   position: fixed;
   top: 15px;
@@ -63,10 +60,10 @@ header {
   transition: all 0.3s ease;
 }
 #themeToggle:hover {
-  transform: rotate(20deg) scale(1.15);
+  transform: rotate(20deg) scale(1.1);
 }
 
-/* 篩選按鈕 */
+/* 篩選 */
 #filterSection {
   margin: 15px 0;
 }
@@ -86,7 +83,7 @@ header {
   box-shadow: 0 3px 6px var(--shadow);
 }
 
-/* 搜尋區塊 */
+/* 搜尋列 */
 #controls {
   display: flex;
   justify-content: center;
@@ -116,7 +113,7 @@ header {
   transform: translateY(-2px);
 }
 
-/* 表格樣式 */
+/* Table */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
@@ -139,7 +136,7 @@ header {
   transition: background-color 0.2s ease;
 }
 
-/* 卡片樣式 */
+/* 手機卡片 */
 #resultCards {
   display: none;
 }
@@ -205,7 +202,7 @@ footer {
   box-shadow: 0 -2px 6px var(--shadow);
 }
 
-/* 手機樣式 */
+/* 手機 */
 @media (max-width: 768px) {
   #resultTable {
     display: none;
@@ -215,15 +212,4 @@ footer {
     flex-direction: column;
     margin: 10px;
   }
-}
-
-/* 滾動動畫初始狀態 */
-.hidden {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s ease-out;
-}
-.visible {
-  opacity: 1;
-  transform: translateY(0);
 }

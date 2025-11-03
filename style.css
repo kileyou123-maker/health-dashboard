@@ -8,6 +8,7 @@
   --link-color: #2b6cb0;
   --footer-bg: #2c7a7b;
   --accent: #319795;
+  --shadow: rgba(0, 0, 0, 0.15);
 }
 
 body.dark {
@@ -20,6 +21,11 @@ body.dark {
   --link-color: #60a5fa;
   --footer-bg: #1e293b;
   --accent: #f59e0b;
+  --shadow: rgba(255, 255, 255, 0.15);
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
 }
 
 body {
@@ -29,13 +35,13 @@ body {
   color: var(--text-color);
   text-align: center;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header {
   background-color: var(--header-bg);
   color: white;
   padding: 20px 10px;
+  box-shadow: 0 2px 8px var(--shadow);
 }
 
 #themeToggle {
@@ -51,14 +57,38 @@ header {
   font-size: 20px;
   cursor: pointer;
   z-index: 1000;
-  transition: transform 0.25s ease;
+  box-shadow: 0 3px 6px var(--shadow);
+  transition: all 0.3s ease;
 }
 
 #themeToggle:hover {
-  transform: rotate(15deg) scale(1.08);
+  transform: rotate(20deg) scale(1.15);
 }
 
-/* --- Controls --- */
+/* ---- Filter Buttons ---- */
+#filterSection {
+  margin: 15px 0;
+}
+.filter-btn {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 3px;
+  transition: transform 0.15s ease, box-shadow 0.25s ease;
+}
+.filter-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 6px var(--shadow);
+}
+.filter-btn:active {
+  transform: scale(0.95);
+}
+
+/* ---- Controls ---- */
 #controls {
   display: flex;
   justify-content: center;
@@ -83,25 +113,24 @@ header {
   padding: 10px 16px;
   cursor: pointer;
   font-size: 15px;
+  transition: all 0.25s ease;
+}
+.main-btn:hover {
+  box-shadow: 0 4px 10px var(--shadow);
+  transform: translateY(-2px);
+}
+.main-btn:active {
+  transform: scale(0.95);
 }
 
-.filter-btn {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  font-size: 15px;
-  margin: 3px;
-}
-
-/* --- Table --- */
+/* ---- Table ---- */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
   background: var(--table-bg);
   border-radius: 10px;
+  box-shadow: 0 2px 8px var(--shadow);
+  animation: fadeIn 0.4s ease-in;
 }
 
 #resultTable th,
@@ -116,75 +145,96 @@ header {
   color: white;
 }
 
-/* --- Pagination --- */
-#pagination {
-  margin: 15px 0;
+#resultTable tr:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+  transition: background-color 0.2s ease;
 }
 
-/* --- Footer --- */
-footer {
-  background-color: var(--footer-bg);
-  color: white;
-  padding: 10px 0;
+/* ---- Cards ---- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#resultCards {
+  display: none;
+}
+
+.card {
+  background-color: var(--table-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px var(--shadow);
+  padding: 12px;
+  text-align: left;
+  margin: 8px;
+  animation: fadeIn 0.4s ease-in;
+}
+.card:hover {
+  transform: scale(1.01);
+  transition: transform 0.2s ease;
+}
+.card h3 {
+  margin: 0 0 6px;
+  color: var(--text-color);
+}
+.card p {
+  margin: 3px 0;
   font-size: 14px;
+  color: var(--text-color);
+}
+.card a {
+  color: var(--link-color);
+  transition: color 0.25s;
+}
+.card a:hover {
+  color: var(--accent);
 }
 
-/* --- Autocomplete --- */
+/* ---- Autocomplete ---- */
 #suggestionBox {
   position: absolute;
   width: 100%;
   background-color: var(--table-bg);
   color: var(--text-color);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--shadow);
   overflow-y: auto;
   max-height: 200px;
   display: none;
   z-index: 9999;
+  animation: fadeIn 0.2s ease-in;
 }
 
 #suggestionBox div {
   padding: 10px;
   cursor: pointer;
 }
-
 #suggestionBox div:hover {
   background-color: rgba(49, 151, 149, 0.15);
 }
 
-/* ======== 📱 手機卡片版 ======== */
+/* ---- Pagination ---- */
+#pagination {
+  margin: 20px 0;
+}
+
+/* ---- Footer ---- */
+footer {
+  background-color: var(--footer-bg);
+  color: white;
+  padding: 10px 0;
+  font-size: 14px;
+  box-shadow: 0 -2px 6px var(--shadow);
+}
+
+/* ---- Responsive ---- */
 @media (max-width: 768px) {
   #resultTable {
     display: none;
   }
-
   #resultCards {
     display: flex;
     flex-direction: column;
-    gap: 10px;
     margin: 10px;
-  }
-
-  .card {
-    background-color: var(--table-bg);
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 12px;
-    text-align: left;
-  }
-
-  .card h3 {
-    margin: 0 0 6px;
-    color: var(--text-color);
-  }
-
-  .card p {
-    margin: 3px 0;
-    font-size: 14px;
-    color: var(--text-color);
-  }
-
-  .card a {
-    color: var(--link-color);
   }
 }

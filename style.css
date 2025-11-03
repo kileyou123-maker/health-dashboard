@@ -34,7 +34,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Header */
+/* === 頁面刷新淡入動畫 === */
+body {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+body.loaded {
+  opacity: 1;
+}
+
+/* === Header === */
 header {
   background-color: var(--header-bg);
   color: white;
@@ -42,7 +51,7 @@ header {
   box-shadow: 0 2px 8px var(--shadow);
 }
 
-/* Theme toggle */
+/* === 深色模式按鈕 === */
 #themeToggle {
   position: fixed;
   top: 15px;
@@ -63,7 +72,7 @@ header {
   transform: rotate(20deg) scale(1.1);
 }
 
-/* 篩選 */
+/* === 篩選區 === */
 #filterSection {
   margin: 15px 0;
 }
@@ -83,7 +92,7 @@ header {
   box-shadow: 0 3px 6px var(--shadow);
 }
 
-/* 搜尋列 */
+/* === 搜尋區 === */
 #controls {
   display: flex;
   justify-content: center;
@@ -113,7 +122,7 @@ header {
   transform: translateY(-2px);
 }
 
-/* Table */
+/* === Table === */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
@@ -136,7 +145,7 @@ header {
   transition: background-color 0.2s ease;
 }
 
-/* 手機卡片 */
+/* === 手機卡片 === */
 #resultCards {
   display: none;
 }
@@ -172,7 +181,7 @@ header {
   color: var(--accent);
 }
 
-/* 自動提示 */
+/* === 自動提示 === */
 #suggestionBox {
   position: absolute;
   width: 100%;
@@ -193,7 +202,7 @@ header {
   background-color: rgba(49, 151, 149, 0.15);
 }
 
-/* Footer */
+/* === Footer === */
 footer {
   background-color: var(--footer-bg);
   color: white;
@@ -202,7 +211,7 @@ footer {
   box-shadow: 0 -2px 6px var(--shadow);
 }
 
-/* 手機 */
+/* === 手機樣式 === */
 @media (max-width: 768px) {
   #resultTable {
     display: none;
@@ -211,5 +220,29 @@ footer {
     display: flex;
     flex-direction: column;
     margin: 10px;
+  }
+}
+
+/* === 滾動動畫 === */
+.hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === 頁面載入滑入動畫 === */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

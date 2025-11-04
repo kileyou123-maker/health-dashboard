@@ -1,186 +1,155 @@
-:root {
-  --text-color: #1a1a1a;
-  --bg-color: #f9f9f9;
-  --table-bg: #ffffff;
-  --table-border: #ddd;
-  --shadow: rgba(0, 0, 0, 0.15);
-  --highlight: #319795;
-}
-
 body {
+  font-family: "Noto Sans TC", sans-serif;
   margin: 0;
-  font-family: "Microsoft JhengHei", sans-serif;
-  background: var(--bg-color);
-  color: var(--text-color);
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-body.loaded {
-  opacity: 1;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
-/* 標題與主題切換 */
-header {
-  text-align: center;
-  padding: 15px 10px;
-  background: var(--highlight);
-  color: #fff;
-  position: relative;
-}
-#themeToggle {
-  position: absolute;
-  right: 20px;
-  top: 18px;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  background: #fff;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-#themeToggle:hover { transform: rotate(30deg); }
-
-main { padding: 20px; }
-
-/* 搜尋區 */
-.search-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-#citySelect, #districtSelect, #searchBtn {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--table-border);
-  font-size: 14px;
-}
-#searchBtn {
-  background: var(--highlight);
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-}
-#searchBtn:hover { background: #2c7a7b; }
-
-/* 關鍵字輸入框 */
-.keyword-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 230px;
-}
-#keyword {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--table-border);
-  font-size: 14px;
-  outline: none;
-}
-#keyword:focus {
-  border-color: var(--highlight);
-  box-shadow: 0 0 5px rgba(49,151,149,0.3);
+:root {
+  --bg: #f4f7f8;
+  --text: #222;
+  --card: #fff;
+  --button: #1aa39a;
+  --button-hover: #128277;
+  --shadow: rgba(0, 0, 0, 0.15);
 }
 
-/* 提示框 */
-#suggestionBox {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
-  width: 100%;
-  background: var(--table-bg);
-  color: var(--text-color);
-  border-radius: 6px;
-  border: 1px solid var(--table-border);
-  box-shadow: 0 3px 8px var(--shadow);
-  display: none;
-  max-height: 120px;
-  overflow-y: auto;
-  font-size: 13px;
-  z-index: 9999;
-  animation: fadeIn 0.15s ease-in-out;
-}
-#suggestionBox div {
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--table-border);
-  cursor: pointer;
-}
-#suggestionBox div:hover {
-  background: rgba(49,151,149,0.15);
+body.dark {
+  --bg: #101820;
+  --text: #f2f2f2;
+  --card: #18222b;
+  --button: #2b8a84;
+  --button-hover: #40c0ba;
+  --shadow: rgba(255, 255, 255, 0.1);
 }
 
-/* 表格 */
-#resultTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-  background: var(--table-bg);
-  box-shadow: 0 2px 5px var(--shadow);
-}
-#resultTable th, #resultTable td {
-  border: 1px solid var(--table-border);
-  padding: 8px;
-  text-align: center;
-}
-#resultTable a { color: var(--highlight); text-decoration: none; }
-
-/* 卡片 */
-#resultCards {
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-}
-.card {
-  background: var(--table-bg);
-  border-radius: 10px;
-  box-shadow: 0 2px 5px var(--shadow);
-  padding: 10px;
-  transition: transform 0.2s ease, opacity 0.2s;
-}
-.card:hover { transform: scale(1.02); }
-
-/* 分頁 */
-#pagination {
-  text-align: center;
-  margin-top: 15px;
-}
-#pagination button {
-  margin: 0 5px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: var(--highlight);
-  color: #fff;
-  cursor: pointer;
-}
-#pagination button:disabled {
-  background: #999;
-  cursor: default;
-}
-
-/* 動畫 */
-.hidden { opacity: 0; transform: translateY(20px); transition: all 0.5s ease-out; }
-.visible { opacity: 1; transform: translateY(0); }
+/* 頁面淡入動畫 */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-/* 深色模式 */
-body.dark {
-  --bg-color: #121212;
-  --text-color: #f5f5f5;
-  --table-bg: #1f1f1f;
-  --table-border: #333;
-  --shadow: rgba(255,255,255,0.1);
+body {
+  animation: fadeIn 0.7s ease-in-out;
 }
 
-/* 手機 */
-@media (max-width:768px){
-  .search-container{flex-direction:column;align-items:center;}
-  #citySelect,#districtSelect,#searchBtn,.keyword-wrapper{width:90%;}
-  #suggestionBox{max-height:90px;font-size:12.5px;}
+/* 頁首樣式 */
+header {
+  background: var(--button);
+  padding: 25px;
+  color: white;
+  text-align: center;
+  position: relative;
 }
-footer{text-align:center;padding:15px 0;font-size:14px;}
+
+/* 深色模式切換按鈕 */
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: white;
+  transition: transform 0.3s ease;
+}
+.theme-toggle:hover { transform: scale(1.15); }
+
+/* 篩選按鈕 */
+.filter-btns {
+  text-align: center;
+  margin: 20px 0;
+}
+.filter-btns button {
+  border: none;
+  padding: 10px 18px;
+  margin: 5px;
+  border-radius: 10px;
+  background: var(--button);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 8px var(--shadow);
+  transition: all 0.3s ease;
+}
+.filter-btns button:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+/* 下拉與搜尋列 */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+select, input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 14px;
+}
+
+/* 關鍵字提示框 */
+#suggestions {
+  position: absolute;
+  background: var(--card);
+  width: 220px;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px var(--shadow);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.suggestion-item {
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.suggestion-item:hover {
+  background: var(--button-hover);
+  color: #fff;
+}
+
+/* 表格樣式 */
+table {
+  width: 95%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+  transition: background 0.3s;
+}
+tr:hover { background: rgba(0, 0, 0, 0.03); }
+
+a {
+  color: var(--button);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+footer {
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+  margin-top: 25px;
+  padding-bottom: 15px;
+}
+
+/* 響應式 */
+@media (max-width: 768px) {
+  .controls { flex-direction: column; align-items: center; }
+  table { font-size: 13px; width: 100%; }
+  .filter-btns button { padding: 8px 14px; }
+}

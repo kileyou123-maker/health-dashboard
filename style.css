@@ -95,25 +95,40 @@ body.dark #controls input {
   outline: none;
 }
 
-/* 按鈕 */
+/* 美化按鈕 */
 .filter-btn,
 .main-btn {
-  background-color: var(--accent);
-  color: white;
+  background: linear-gradient(135deg, var(--accent), #2b6cb0);
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 10px 18px;
   margin: 5px;
   cursor: pointer;
   font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+body.dark .filter-btn,
+body.dark .main-btn {
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  color: #fffbea;
+  box-shadow: 0 3px 10px rgba(255, 180, 0, 0.25);
 }
 
 .filter-btn:hover,
 .main-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  filter: brightness(1.1);
+}
+
+.filter-btn:active,
+.main-btn:active {
+  transform: scale(0.97);
 }
 
 @media (hover: none) {
@@ -237,20 +252,23 @@ a:hover {
   position: fixed;
   top: 15px;
   right: 15px;
-  background-color: var(--accent);
+  background: radial-gradient(circle at 30% 30%, var(--accent), #1e293b);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   font-size: 20px;
   cursor: pointer;
   z-index: 1000;
-  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .theme-toggle-btn:hover {
-  transform: rotate(20deg) scale(1.08);
+  transform: rotate(25deg) scale(1.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  filter: brightness(1.15);
 }
 
 /* footer */

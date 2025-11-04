@@ -116,6 +116,13 @@ body.dark #controls input {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
+@media (hover: none) {
+  .filter-btn:active,
+  .main-btn:active {
+    transform: scale(0.97);
+  }
+}
+
 /* 表格 */
 #resultTable {
   width: 100%;
@@ -155,7 +162,6 @@ body.dark #resultTable tr:hover {
   background-color: rgba(240, 171, 0, 0.15);
 }
 
-/* hover 整列亮化 */
 #resultTable tr:hover td {
   color: #fff;
 }
@@ -256,27 +262,29 @@ footer {
   animation: fadeIn 0.5s ease;
 }
 
-/* 手機版 */
-@media (max-width: 600px) {
-  #controls {
-    flex-direction: column;
-    align-items: center;
-  }
-  #controls select,
-  #controls input,
-  .main-btn {
-    width: 90%;
-  }
-  .modal-content {
-    width: 90%;
-  }
+/* 自動提示框樣式 + 動畫 */
+#suggestionBox {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
-/* 深色模式下自動提示框顯示修正 */
-/* 深色模式下自動提示框立即顯示明顯 */
+
+#suggestionBox.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 深色模式下提示框 */
 body.dark #suggestionBox {
   background: #1e293b;
   border: 1px solid #475569;
-  color: #facc15; /* 黃色字，一出現就明顯 */
+  color: #facc15;
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
@@ -293,16 +301,21 @@ body.dark #suggestionBox div:last-child {
 
 body.dark #suggestionBox div:hover {
   background: #334155;
-  color: #fff; /* 滑上去才變白更亮 */
-}
-/* 提示框動畫 */
-#suggestionBox {
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  color: #fff;
 }
 
-#suggestionBox.show {
-  opacity: 1;
-  transform: translateY(0);
+/* 手機版 */
+@media (max-width: 600px) {
+  #controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  #controls select,
+  #controls input,
+  .main-btn {
+    width: 90%;
+  }
+  .modal-content {
+    width: 90%;
+  }
 }

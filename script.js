@@ -23,19 +23,29 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", dark ? "dark" : "light");
   });
 
+  // ✅ GitHub Pages 需使用相對路徑
+  const basePath = window.location.pathname.includes("health-dashboard")
+    ? "/health-dashboard/"
+    : "./";
+
   // 📄 載入資料（兩份 CSV）
   Promise.all([
-    fetch("A21030000I-D2000H-001.csv").then(r => r.text()),
-    fetch("A21030000I-D2000I-001.csv").then(r => r.text())
+    fetch(basePath + "A21030000I-D2000H-001.csv").then(r => r.text()),
+    fetch(basePath + "A21030000I-D2000I-001.csv").then(r => r.text())
   ])
-  .then(([h, i]) => {
-    const homecare = Papa.parse(h, { header: true }).data;
-    const hospice = Papa.parse(i, { header: true }).data;
-    data = [...homecare, ...hospice].filter(d => d["醫事機構名稱"]);
-    initCityDistrict();
-    renderTable();
-  })
-  .catch(err => console.error("CSV 載入錯誤：", err));
+    .then(([h, i]) => {
+      const homecare = Papa.parse(h, { header: true }).data;
+      const hospice = Papa.parse(i, { header: true }).data;
+
+      // ⚙️ 防呆過濾
+      data = [...homecare, ...hospice].filter(
+        d => d["醫事機構名稱"] && d["地址"]
+      );
+
+      initCityDistrict();
+      renderTable();
+    })
+    .catch(err => console.error("❌ CSV 載入錯誤：", err));
 
   // 🏙️ 初始化縣市與地區選單（防呆修正版）
   function initCityDistrict() {

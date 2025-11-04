@@ -4,34 +4,48 @@ let currentPage = 1;
 const pageSize = 50;
 let currentData = [];
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(initApp, 150); // 手機延後初始化，避免載入過快
+});
+
+async function initApp() {
   initTheme();
 
-  // ✅ 使用 GitHub Raw 路徑避免 GitHub Pages CORS 問題
   const files = [
-    { path: "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/A21030000I-D2000H-001.csv", source: "居家醫療機構" },
-    { path: "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
+    {
+      path: "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/A21030000I-D2000H-001.csv",
+      source: "居家醫療機構",
+    },
+    {
+      path: "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/A21030000I-D2000I-001.csv",
+      source: "安寧照護／護理之家",
+    },
   ];
 
-  let merged = [];
-  for (const f of files) {
-    const res = await fetch(f.path);
-    const text = await res.text();
-    const json = csvToJson(text).map((item) => ({ ...item, 來源: f.source }));
-    merged = merged.concat(json);
+  try {
+    let merged = [];
+    for (const f of files) {
+      const res = await fetch(f.path, { cache: "no-store" });
+      const text = await res.text();
+      const json = csvToJson(text).map((item) => ({ ...item, 來源: f.source }));
+      merged = merged.concat(json);
+    }
+
+    allData = merged;
+    normalizeAddress(allData);
+    buildCityDistrictMap(allData);
+    populateCityList();
+    populateDistrictList();
+    setupModal();
+    setupAutocomplete();
+
+    // 初始顯示所有資料
+    currentData = allData;
+    renderTablePage();
+  } catch (err) {
+    console.error("資料載入失敗", err);
+    document.getElementById("status").textContent = "⚠️ 資料載入失敗，請重新整理或檢查網路。";
   }
-
-  allData = merged;
-  normalizeAddress(allData);
-  buildCityDistrictMap(allData);
-  populateCityList();
-  populateDistrictList();
-  setupModal();
-  setupAutocomplete();
-
-  // 初始顯示所有資料
-  currentData = allData;
-  renderTablePage();
 
   // 事件註冊
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
@@ -42,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.querySelectorAll(".filter-btn").forEach((btn) =>
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
-});
+}
 
 /* CSV轉JSON */
 function csvToJson(csv) {
@@ -177,11 +191,11 @@ function renderTablePage() {
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${d["醫事機構名稱"]}</td>
-      <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td><a href="tel:${d["醫事機構電話"]}" style="color:#2b6cb0;text-decoration:none;">${d["醫事機構電話"]}</a></td>
-      <td>${d["整合團隊名稱"]}</td>
-      <td>${d["來源"]}</td>`;
+      <td data-label="醫事機構名稱">${d["醫事機構名稱"]}</td>
+      <td data-label="地址"><a href="${mapUrl}" target="_blank">${addr}</a></td>
+      <td data-label="電話"><a href="tel:${d["醫事機構電話"]}" style="color:#2b6cb0;text-decoration:none;">${d["醫事機構電話"]}</a></td>
+      <td data-label="整合團隊名稱">${d["整合團隊名稱"]}</td>
+      <td data-label="來源">${d["來源"]}</td>`;
     row.addEventListener("click", () => showDetails(d));
     tbody.appendChild(row);
   }

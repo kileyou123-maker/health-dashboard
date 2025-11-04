@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPage = 1;
   const rowsPerPage = 50;
 
-  // 主題模式
+  // 深淺模式
   if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark");
     themeToggle.textContent = "☀️";
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTable();
   });
 
-  // 城市與地區下拉
+  // 縣市地區選單
   function initCityDistrict() {
     const cities = [...new Set(data.map(d => d["地址"].slice(0, 3)))].filter(Boolean);
     cities.forEach(c => {
@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // 主要渲染函數
   function renderTable(type = "全部") {
     const city = citySelect.value;
     const dist = districtSelect.value;
@@ -125,8 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageData = filtered.slice(start, start + rowsPerPage);
     tbody.innerHTML = "";
 
-    pageData.forEach(row => {
+    pageData.forEach((row, idx) => {
       const tr = document.createElement("tr");
+      tr.style.animationDelay = `${idx * 0.05}s`;
       tr.innerHTML = `
         <td>${row["醫事機構名稱"] || ""}</td>
         <td><a href="https://www.google.com/maps/search/?api=1&query=${row["地址"]}" target="_blank">${row["地址"] || ""}</a></td>

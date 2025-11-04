@@ -271,3 +271,21 @@ footer {
     width: 90%;
   }
 }
+/* 深色模式下自動提示框顯示修正 */
+body.dark #suggestionBox {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+body.dark #suggestionBox div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+body.dark #suggestionBox div:hover {
+  background: #334155;
+  color: #facc15;
+}
+

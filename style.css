@@ -95,7 +95,7 @@ body.dark #controls input {
   outline: none;
 }
 
-/* 美化主要按鈕 */
+/* 美化按鈕 */
 .filter-btn,
 .main-btn {
   background: linear-gradient(135deg, var(--accent), #2b6cb0);
@@ -131,7 +131,7 @@ body.dark .main-btn {
   transform: scale(0.97);
 }
 
-/* 分頁按鈕（上一頁/下一頁） */
+/* 分頁按鈕 */
 #pagination button {
   background: linear-gradient(135deg, var(--accent), #2b6cb0);
   color: #fff;
@@ -345,18 +345,101 @@ body.dark #suggestionBox div:hover {
   color: #fff;
 }
 
-/* 手機版 */
+/* === 手機版進階優化 === */
 @media (max-width: 600px) {
+  body {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  header h1 {
+    font-size: 20px;
+    padding: 10px;
+  }
+
   #controls {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    gap: 8px;
+    margin: 15px 0;
+    width: 94%;
+    margin-left: auto;
+    margin-right: auto;
   }
+
   #controls select,
   #controls input,
   .main-btn {
-    width: 90%;
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
   }
+
+  #filterSection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .filter-btn {
+    flex: 1 1 45%;
+    min-width: 130px;
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  /* 表格在手機改為卡片式顯示 */
+  #resultTable,
+  #resultTable thead {
+    display: none;
+  }
+
+  #resultTable tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #resultTable tbody tr {
+    display: block;
+    background: var(--table-bg);
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    text-align: left;
+  }
+
+  #resultTable tbody tr td {
+    display: block;
+    border: none;
+    padding: 4px 0;
+    font-size: 14px;
+  }
+
+  #resultTable tbody tr td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--accent);
+    display: inline-block;
+    width: 6em;
+  }
+
+  #pagination {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .modal-content {
-    width: 90%;
+    width: 92%;
+    padding: 15px;
+    font-size: 15px;
+  }
+
+  .theme-toggle-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
   }
 }

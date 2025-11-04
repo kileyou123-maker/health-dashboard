@@ -23,40 +23,42 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", dark ? "dark" : "light");
   });
 
-  // ✅ GitHub Pages 需使用相對路徑
   const basePath = window.location.pathname.includes("health-dashboard")
     ? "/health-dashboard/"
     : "./";
 
-  // 📄 載入資料（兩份 CSV）
+  // 📄 載入兩個 CSV
   Promise.all([
     fetch(basePath + "A21030000I-D2000H-001.csv").then(r => r.text()),
     fetch(basePath + "A21030000I-D2000I-001.csv").then(r => r.text())
   ])
-    .then(([h, i]) => {
-      const homecare = Papa.parse(h, { header: true }).data;
-      const hospice = Papa.parse(i, { header: true }).data;
+    .then(([homecareCsv, hospiceCsv]) => {
+      const homecare = Papa.parse(homecareCsv, { header: true }).data.map(d => ({
+        名稱: d["醫事機構名稱"],
+        地址: d["地址"],
+        電話: d["電話"],
+        整合團隊名稱: d["整合團隊名稱"] || "",
+        來源: "居家醫療"
+      }));
 
-      // ⚙️ 防呆過濾
-      data = [...homecare, ...hospice].filter(
-        d => d["醫事機構名稱"] && d["地址"]
-      );
+      const hospice = Papa.parse(hospiceCsv, { header: true }).data.map(d => ({
+        名稱: d["醫事機構名稱"],
+        地址: d["地址"],
+        電話: d["電話"],
+        整合團隊名稱: d["服務項目"] || "",
+        來源: "安寧照護"
+      }));
 
+      data = [...homecare, ...hospice].filter(d => d.名稱 && d.地址);
+      console.log("資料載入成功，共", data.length, "筆");
       initCityDistrict();
       renderTable();
     })
     .catch(err => console.error("❌ CSV 載入錯誤：", err));
 
-  // 🏙️ 初始化縣市與地區選單（防呆修正版）
+  // 🏙️ 初始化縣市與地區選單
   function initCityDistrict() {
-    const cities = [
-      ...new Set(
-        data
-          .filter(d => d["地址"] && d["地址"].trim() !== "")
-          .map(d => d["地址"].slice(0, 3))
-      )
-    ].filter(Boolean);
-
+    const cities = [...new Set(data.map(d => d.地址.slice(0, 3)))];
     cities.forEach(c => {
       const opt = document.createElement("option");
       opt.textContent = c;
@@ -70,9 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const dists = new Set(
         data
-          .filter(d => d["地址"] && d["地址"].includes(city))
+          .filter(d => d.地址.includes(city))
           .map(d => {
-            const match = d["地址"].match(/..[區鄉鎮市]/);
+            const match = d.地址.match(/..[區鄉鎮市]/);
             return match ? match[0] : "";
           })
       );
@@ -92,28 +94,16 @@ document.addEventListener("DOMContentLoaded", () => {
     suggestionBox.innerHTML = "";
     if (!val) return;
 
-    const matched = data
-      .filter(d => d["醫事機構名稱"] && d["醫事機構名稱"].includes(val))
-      .slice(0, 5);
-
+    const matched = data.filter(d => d.名稱.includes(val)).slice(0, 5);
     matched.forEach(item => {
       const div = document.createElement("div");
       div.className = "suggestion-item";
-      div.textContent = item["醫事機構名稱"];
+      div.textContent = item.名稱;
       div.onclick = () => {
-        keywordInput.value = item["醫事機構名稱"];
+        keywordInput.value = item.名稱;
         suggestionBox.innerHTML = "";
       };
       suggestionBox.appendChild(div);
-    });
-  });
-
-  // 🏥 篩選按鈕
-  document.querySelectorAll(".filter-btns button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const type = btn.dataset.type;
-      currentPage = 1;
-      renderTable(type);
     });
   });
 
@@ -135,24 +125,23 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // 🪄 表格渲染函式（含縣市地區篩選）
-  function renderTable(type = "全部") {
+  // 🪄 表格渲染函式
+  function renderTable() {
     const city = citySelect.value;
     const dist = districtSelect.value;
     const kw = keywordInput.value.trim();
     let filtered = data;
 
-    if (type !== "全部") filtered = filtered.filter(d => d["資料來源"] === type);
-    if (city !== "全部縣市") filtered = filtered.filter(d => d["地址"] && d["地址"].includes(city));
-    if (dist !== "全部地區") filtered = filtered.filter(d => d["地址"] && d["地址"].includes(dist));
-    if (kw) {
-      filtered = filtered.filter(d =>
-        (d["醫事機構名稱"] || "").includes(kw) ||
-        (d["地址"] || "").includes(kw) ||
-        (d["電話"] || "").includes(kw) ||
-        (d["整合團隊名稱"] || "").includes(kw)
+    if (city !== "全部縣市") filtered = filtered.filter(d => d.地址.includes(city));
+    if (dist !== "全部地區") filtered = filtered.filter(d => d.地址.includes(dist));
+    if (kw)
+      filtered = filtered.filter(
+        d =>
+          d.名稱.includes(kw) ||
+          d.地址.includes(kw) ||
+          d.電話.includes(kw) ||
+          d.整合團隊名稱.includes(kw)
       );
-    }
 
     const start = (currentPage - 1) * rowsPerPage;
     const pageData = filtered.slice(start, start + rowsPerPage);
@@ -162,11 +151,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const tr = document.createElement("tr");
       tr.style.animationDelay = `${idx * 0.05}s`;
       tr.innerHTML = `
-        <td>${row["醫事機構名稱"] || ""}</td>
-        <td><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row["地址"] || "")}" target="_blank">${row["地址"] || ""}</a></td>
-        <td><a href="tel:${row["電話"]}">${row["電話"] || ""}</a></td>
-        <td>${row["整合團隊名稱"] || ""}</td>
-        <td>${row["資料來源"] || ""}</td>`;
+        <td>${row.名稱}</td>
+        <td><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row.地址)}" target="_blank">${row.地址}</a></td>
+        <td><a href="tel:${row.電話}">${row.電話}</a></td>
+        <td>${row.整合團隊名稱}</td>
+        <td>${row.來源}</td>
+      `;
       tbody.appendChild(tr);
     });
 

@@ -295,6 +295,14 @@ body.dark #suggestionBox div:hover {
   background: #334155;
   color: #fff; /* 滑上去才變白更亮 */
 }
+/* 提示框動畫 */
+#suggestionBox {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
 
-
-
+#suggestionBox.show {
+  opacity: 1;
+  transform: translateY(0);
+}

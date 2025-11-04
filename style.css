@@ -316,3 +316,95 @@ body.dark #suggestionBox {
     min-width: 130px;
   }
 }
+/* === 下拉選單與關鍵字提示美化 === */
+
+/* 統一外觀 */
+#citySelect,
+#districtSelect,
+#keyword {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--table-bg);
+  color: var(--text-color);
+  border: 1px solid var(--table-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  width: 180px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+}
+
+#keyword {
+  width: 220px;
+}
+
+#citySelect:hover,
+#districtSelect:hover,
+#keyword:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+#citySelect:focus,
+#districtSelect:focus,
+#keyword:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(49, 151, 149, 0.3);
+  outline: none;
+}
+
+/* 深色模式 */
+body.dark #citySelect,
+body.dark #districtSelect,
+body.dark #keyword {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid #475569;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+/* 自動提示框 */
+#suggestionBox {
+  background: var(--table-bg);
+  border: 1px solid var(--table-border);
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  overflow-y: auto;
+  max-height: 180px;
+}
+
+#suggestionBox div {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#suggestionBox div:hover {
+  background: rgba(49, 151, 149, 0.15);
+}
+
+body.dark #suggestionBox {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #facc15;
+}
+
+body.dark #suggestionBox div:hover {
+  background: rgba(240, 171, 0, 0.2);
+}
+
+/* 小箭頭樣式 for select */
+#citySelect,
+#districtSelect {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23666666' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+body.dark #citySelect,
+body.dark #districtSelect {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23facc15' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+}
+

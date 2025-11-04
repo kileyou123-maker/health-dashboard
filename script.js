@@ -307,17 +307,14 @@ function setupAutocomplete() {
       });
       suggestionBox.appendChild(div);
     });
-    if (unique.length) {
-      const rect = input.getBoundingClientRect();
-      suggestionBox.style.left = rect.left + "px";
-      suggestionBox.style.top = rect.bottom + window.scrollY + "px";
-      suggestionBox.style.width = rect.width + "px";
-      suggestionBox.style.display = "block";
-    } else suggestionBox.style.display = "none";
-  });
-
-  document.addEventListener("click", (e) => {
-    if (e.target !== input && e.target.parentNode !== suggestionBox)
-      suggestionBox.style.display = "none";
-  });
+    const rect = input.getBoundingClientRect();
+  suggestionBox.style.left = rect.left + "px";
+  suggestionBox.style.top = rect.bottom + window.scrollY + "px";
+  suggestionBox.style.width = rect.width + "px";
+  suggestionBox.classList.add("show");   // 新增動畫啟用
+  suggestionBox.style.display = "block";
+} else {
+  suggestionBox.classList.remove("show"); // 移除動畫
+  suggestionBox.style.display = "none";
 }
+

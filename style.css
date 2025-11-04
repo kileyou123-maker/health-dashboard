@@ -14,18 +14,20 @@ body.dark {
   --button-hover: #40c0ba;
   --shadow: rgba(255, 255, 255, 0.1);
 }
+
 body {
   font-family: "Noto Sans TC", sans-serif;
   margin: 0;
   background: var(--bg);
   color: var(--text);
   transition: background 0.5s, color 0.5s;
-  animation: fadeIn 0.7s ease-in-out;
+  animation: fadeIn 0.8s ease-in-out;
 }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 header {
   background: var(--button);
   color: white;
@@ -125,9 +127,16 @@ th, td {
   border-bottom: 1px solid #ccc;
   text-align: left;
 }
-tr:hover {
-  background: rgba(0, 0, 0, 0.03);
+tr {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: slideIn 0.6s forwards;
 }
+@keyframes slideIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+tr:hover { background: rgba(0, 0, 0, 0.03); }
+
 .pagination {
   text-align: center;
   margin: 15px 0;

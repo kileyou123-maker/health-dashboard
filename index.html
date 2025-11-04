@@ -11,24 +11,23 @@
 <body>
   <header>
     <h1>全台居家醫療與安寧照護查詢系統</h1>
-    <button class="theme-toggle" id="themeToggle">🌙</button>
+    <button id="themeToggle" class="theme-toggle">🌙</button>
   </header>
-
-  <div class="filter-btns">
-    <button data-type="全部">全部</button>
-    <button data-type="醫院">醫院</button>
-    <button data-type="診所">診所</button>
-    <button data-type="護理之家">護理之家</button>
-  </div>
 
   <div class="controls">
     <select id="citySelect"><option>全部縣市</option></select>
     <select id="districtSelect"><option>全部地區</option></select>
-    <div style="position:relative;">
-      <input type="text" id="keyword" placeholder="輸入關鍵字（醫院、診所、護理之家、內科）">
+    <div class="search-box">
+      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱、地址、電話...）">
       <div id="suggestions"></div>
     </div>
     <button id="searchBtn">搜尋</button>
+  </div>
+
+  <div class="filter-btns">
+    <button data-type="全部">全部</button>
+    <button data-type="居家醫療">居家醫療</button>
+    <button data-type="安寧照護">安寧照護</button>
   </div>
 
   <table>
@@ -37,7 +36,7 @@
         <th>醫事機構名稱</th>
         <th>地址</th>
         <th>電話</th>
-        <th>整合團隊名稱</th>
+        <th>整合團隊名稱／服務項目</th>
         <th>資料來源</th>
       </tr>
     </thead>
@@ -51,7 +50,7 @@
   </div>
 
   <footer>
-    資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv、A21030000I-D2000I-001.csv）
+    資料來源：衛生福利部開放資料（A21030000I-D2000H-001、A21030000I-D2000I-001）
   </footer>
 
   <script src="script.js"></script>

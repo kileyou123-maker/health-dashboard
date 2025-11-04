@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const loading = document.getElementById("loading");
-  const mainContent = document.getElementById("main-content");
   const tbody = document.querySelector("tbody");
   const keywordInput = document.getElementById("keyword");
   const suggestionBox = document.getElementById("suggestions");
@@ -36,15 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
     data = [...homecare, ...hospice].filter(d => d["醫事機構名稱"]);
     initCityDistrict();
     renderTable();
-    setTimeout(() => {
-      loading.style.display = "none";
-      mainContent.style.display = "block";
-    }, 800);
   });
 
   // 城市與地區下拉
   function initCityDistrict() {
-    const cities = [...new Set(data.map(d => d["地址"].split("市")[0] + "市"))].filter(Boolean);
+    const cities = [...new Set(data.map(d => d["地址"].slice(0, 3)))].filter(Boolean);
     cities.forEach(c => {
       const opt = document.createElement("option");
       opt.textContent = c;
@@ -54,12 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const city = citySelect.value;
       districtSelect.innerHTML = "<option>全部地區</option>";
       if (city === "全部縣市") return;
-      const distSet = new Set(
-        data
-          .filter(d => d["地址"].includes(city))
-          .map(d => d["地址"].match(/(區|鄉|鎮|市)/g)?.[0])
-      );
-      distSet.forEach(d => {
+      const dists = new Set(data.filter(d => d["地址"].includes(city))
+        .map(d => d["地址"].slice(3, 6)));
+      dists.forEach(d => {
         const opt = document.createElement("option");
         opt.textContent = d;
         districtSelect.appendChild(opt);

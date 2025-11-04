@@ -1,57 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>全台居家醫療與安寧照護查詢系統</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全台居家醫療查詢系統</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <header>
-    <h1>全台居家醫療與安寧照護查詢系統</h1>
-    <button id="themeToggle" class="theme-toggle">🌙</button>
+    <h1>全台居家醫療查詢系統</h1>
   </header>
 
-  <div class="controls">
-    <select id="citySelect"><option>全部縣市</option></select>
-    <select id="districtSelect"><option>全部地區</option></select>
-    <div class="search-box">
-      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱、地址、電話...）">
-      <div id="suggestions"></div>
-    </div>
-    <button id="searchBtn">搜尋</button>
-  </div>
+  <button id="themeToggle" class="theme-toggle-btn">🌙</button>
 
-  <div class="filter-btns">
-    <button data-type="全部">全部</button>
-    <button data-type="居家醫療">居家醫療</button>
-    <button data-type="安寧照護">安寧照護</button>
-  </div>
+  <main>
+    <section id="filterSection">
+      <button class="filter-btn" data-type="全部">全部</button>
+      <button class="filter-btn" data-type="醫院">醫院</button>
+      <button class="filter-btn" data-type="診所">診所</button>
+      <button class="filter-btn" data-type="護理之家">護理之家</button>
+    </section>
 
-  <table>
-    <thead>
-      <tr>
-        <th>醫事機構名稱</th>
-        <th>地址</th>
-        <th>電話</th>
-        <th>整合團隊名稱／服務項目</th>
-        <th>資料來源</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <section id="controls">
+      <select id="citySelect"></select>
+      <select id="districtSelect"></select>
+      <input type="text" id="keyword" placeholder="輸入關鍵字（機構名稱／地址／電話）">
+      <button id="searchBtn" class="main-btn">搜尋</button>
+    </section>
 
-  <div class="pagination">
-    <button id="prevPage">上一頁</button>
-    <span id="pageInfo">第 1 頁</span>
-    <button id="nextPage">下一頁</button>
-  </div>
+    <div id="status"></div>
+
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>醫事機構名稱</th>
+          <th>地址</th>
+          <th>電話</th>
+          <th>整合團隊名稱</th>
+          <th>來源</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="pagination" style="margin-top: 15px;"></div>
+  </main>
 
   <footer>
-    資料來源：衛生福利部開放資料（A21030000I-D2000H-001、A21030000I-D2000I-001）
+    資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）
   </footer>
+
+  <!-- 詳細資料彈窗 -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p><strong>機構代碼：</strong><span id="modalCode"></span></p>
+      <p><strong>整合團隊：</strong><span id="modalTeam"></span></p>
+      <p><strong>地址：</strong><span id="modalAddr"></span></p>
+      <p><strong>電話：</strong><span id="modalPhone"></span></p>
+      <p><strong>來源：</strong><span id="modalSource"></span></p>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

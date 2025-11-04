@@ -22,7 +22,7 @@ body.dark {
   --accent: #f59e0b;
 }
 
-/* 全域過渡 */
+/* 基本樣式 */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
 }
@@ -37,7 +37,7 @@ body {
   animation: fadeIn 0.6s ease;
 }
 
-/* header 漸入 */
+/* header */
 header {
   background-color: var(--header-bg);
   color: white;
@@ -55,12 +55,6 @@ main {
   padding: 20px;
   max-width: 900px;
   margin: 0 auto;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 /* 控制區 */
@@ -78,7 +72,6 @@ main {
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 15px;
-  transition: box-shadow 0.25s ease;
 }
 
 body.dark #controls select,
@@ -88,14 +81,7 @@ body.dark #controls input {
   border: 1px solid #475569;
 }
 
-#controls select:focus,
-#controls input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 6px rgba(49, 151, 149, 0.35);
-  outline: none;
-}
-
-/* 美化按鈕 */
+/* 按鈕美化 */
 .filter-btn,
 .main-btn {
   background: linear-gradient(135deg, var(--accent), #2b6cb0);
@@ -107,7 +93,6 @@ body.dark #controls input {
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.5px;
   transition: all 0.25s ease;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
@@ -116,52 +101,15 @@ body.dark .filter-btn,
 body.dark .main-btn {
   background: linear-gradient(135deg, #f59e0b, #b45309);
   color: #fffbea;
-  box-shadow: 0 3px 10px rgba(255, 180, 0, 0.25);
 }
 
 .filter-btn:hover,
 .main-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
-  filter: brightness(1.1);
-}
-
-.filter-btn:active,
-.main-btn:active {
-  transform: scale(0.97);
-}
-
-/* 分頁按鈕 */
-#pagination button {
-  background: linear-gradient(135deg, var(--accent), #2b6cb0);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-body.dark #pagination button {
-  background: linear-gradient(135deg, #f59e0b, #b45309);
-  color: #fffbea;
-  box-shadow: 0 3px 10px rgba(255, 180, 0, 0.25);
-}
-
-#pagination button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
 }
 
-#pagination button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* 表格 */
+/* 表格 (桌面用) */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
@@ -169,13 +117,6 @@ body.dark #pagination button {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-  opacity: 0;
-  transform: translateY(10px);
-  animation: tableFade 0.5s ease forwards;
-}
-
-@keyframes tableFade {
-  to { opacity: 1; transform: translateY(0); }
 }
 
 #resultTable th,
@@ -183,7 +124,6 @@ body.dark #pagination button {
   border: 1px solid var(--table-border);
   padding: 10px;
   text-align: center;
-  color: var(--text-color);
 }
 
 #resultTable th {
@@ -191,83 +131,36 @@ body.dark #pagination button {
   color: white;
 }
 
-#resultTable tr:hover {
-  background-color: rgba(49, 151, 149, 0.15);
-  transition: background-color 0.3s ease;
-}
-
-body.dark #resultTable tr:hover {
-  background-color: rgba(240, 171, 0, 0.15);
-}
-
-#resultTable tr:hover td {
-  color: #fff;
-}
-
-/* 連結 */
-a {
-  color: var(--link-color);
-  text-decoration: none;
-}
-
-a:hover {
-  color: #93c5fd;
-}
-
-/* 分頁容器 */
+/* 分頁 */
 #pagination {
   margin: 15px 0;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  animation: fadeIn 0.5s ease;
 }
 
-/* 彈窗 */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  padding-top: 80px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.25s ease;
-}
-
-.modal-content {
-  background-color: var(--table-bg);
-  color: var(--text-color);
-  margin: auto;
-  padding: 20px;
-  border-radius: 12px;
-  width: 80%;
-  max-width: 600px;
-  text-align: left;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--table-border);
-  transform: translateY(20px);
-  animation: slideUp 0.3s ease forwards;
-}
-
-@keyframes slideUp {
-  to { transform: translateY(0); }
-}
-
-/* 關閉按鈕 */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
+#pagination button {
+  background: linear-gradient(135deg, var(--accent), #2b6cb0);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.close:hover {
-  color: var(--accent);
+body.dark #pagination button {
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+}
+
+/* footer */
+footer {
+  background-color: var(--footer-bg);
+  color: white;
+  padding: 10px 0;
+  margin-top: 20px;
 }
 
 /* 深色模式按鈕 */
@@ -283,27 +176,39 @@ a:hover {
   height: 48px;
   font-size: 20px;
   cursor: pointer;
-  z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 }
 
 .theme-toggle-btn:hover {
   transform: rotate(25deg) scale(1.12);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  filter: brightness(1.15);
 }
 
-/* footer */
-footer {
-  background-color: var(--footer-bg);
-  color: white;
-  padding: 10px 0;
-  margin-top: 20px;
-  animation: fadeIn 0.5s ease;
+/* 彈窗 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 80px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* 自動提示框樣式 + 動畫 */
+.modal-content {
+  background-color: var(--table-bg);
+  color: var(--text-color);
+  margin: auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 600px;
+  text-align: left;
+}
+
+/* 提示框 */
 #suggestionBox {
   position: absolute;
   background: white;
@@ -311,60 +216,84 @@ footer {
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 9999;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-#suggestionBox.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* 深色模式下提示框 */
 body.dark #suggestionBox {
   background: #1e293b;
-  border: 1px solid #475569;
   color: #facc15;
-  font-weight: 600;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
 
-body.dark #suggestionBox div {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #334155;
-}
-
-body.dark #suggestionBox div:last-child {
-  border-bottom: none;
-}
-
-body.dark #suggestionBox div:hover {
-  background: #334155;
-  color: #fff;
-}
-
-/* === 手機版進階優化 === */
+/* === 手機版卡片式顯示 === */
 @media (max-width: 600px) {
-  body {
-    font-size: 15px;
-    line-height: 1.5;
+  /* 隱藏表格表頭 */
+  #resultTable thead {
+    display: none;
   }
 
-  header h1 {
-    font-size: 20px;
-    padding: 10px;
+  #resultTable {
+    border: none;
+    background: transparent;
+    box-shadow: none;
   }
 
+  #resultTable tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #resultTable tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    background: var(--table-bg);
+    border: 1px solid var(--table-border);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    padding: 12px 15px;
+    transition: transform 0.2s ease;
+  }
+
+  #resultTable tbody tr:hover {
+    transform: scale(1.02);
+  }
+
+  #resultTable tbody tr td {
+    display: block;
+    border: none;
+    padding: 4px 0;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  #resultTable tbody tr td:first-child {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  #resultTable tbody tr td a[href^="tel:"] {
+    background: var(--accent);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 2px;
+  }
+
+  #resultTable tbody tr td a[href^="tel:"]:hover {
+    filter: brightness(1.15);
+  }
+
+  /* 控制區改直向排列 */
   #controls {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    margin: 15px 0;
-    width: 94%;
-    margin-left: auto;
-    margin-right: auto;
   }
 
   #controls select,
@@ -380,66 +309,10 @@ body.dark #suggestionBox div:hover {
     flex-wrap: wrap;
     justify-content: center;
     gap: 6px;
-    margin-top: 8px;
   }
 
   .filter-btn {
     flex: 1 1 45%;
     min-width: 130px;
-    font-size: 15px;
-    padding: 10px;
-  }
-
-  /* 表格在手機改為卡片式顯示 */
-  #resultTable,
-  #resultTable thead {
-    display: none;
-  }
-
-  #resultTable tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  #resultTable tbody tr {
-    display: block;
-    background: var(--table-bg);
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    text-align: left;
-  }
-
-  #resultTable tbody tr td {
-    display: block;
-    border: none;
-    padding: 4px 0;
-    font-size: 14px;
-  }
-
-  #resultTable tbody tr td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--accent);
-    display: inline-block;
-    width: 6em;
-  }
-
-  #pagination {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .modal-content {
-    width: 92%;
-    padding: 15px;
-    font-size: 15px;
-  }
-
-  .theme-toggle-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
   }
 }

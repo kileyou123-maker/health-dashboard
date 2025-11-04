@@ -7,9 +7,10 @@ let currentData = [];
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
 
+  // ✅ 使用 GitHub Raw 路徑避免 GitHub Pages CORS 問題
   const files = [
-    { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
-    { path: "A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
+    { path: "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/A21030000I-D2000H-001.csv", source: "居家醫療機構" },
+    { path: "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" },
   ];
 
   let merged = [];
@@ -111,7 +112,7 @@ function populateDistrictList() {
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
-  const keyword = document.getElementById("keyword").value.trim();
+  const keyword = document.getElementById("keyword").value.trim().toLowerCase();
 
   currentData = allData.filter((d) => {
     const addr = d["醫事機構地址"] || "";
@@ -122,10 +123,10 @@ function searchData() {
       (city === "全部" || addr.includes(city)) &&
       (district === "全部" || addr.includes(district)) &&
       (!keyword ||
-        name.includes(keyword) ||
-        addr.includes(keyword) ||
+        name.toLowerCase().includes(keyword) ||
+        addr.toLowerCase().includes(keyword) ||
         phone.includes(keyword) ||
-        team.includes(keyword))
+        team.toLowerCase().includes(keyword))
     );
   });
 
@@ -281,40 +282,64 @@ function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const suggestionBox = document.createElement("div");
   suggestionBox.id = "suggestionBox";
-  suggestionBox.style.position = "fixed";
+  suggestionBox.style.position = "absolute";
   suggestionBox.style.background = "white";
   suggestionBox.style.border = "1px solid #ccc";
   suggestionBox.style.borderRadius = "5px";
-  suggestionBox.style.zIndex = "999";
+  suggestionBox.style.zIndex = "9999";
   suggestionBox.style.display = "none";
+  suggestionBox.style.opacity = "0";
+  suggestionBox.style.transition = "opacity 0.25s ease, transform 0.25s ease";
   document.body.appendChild(suggestionBox);
 
   input.addEventListener("input", () => {
     const val = input.value.trim();
     suggestionBox.innerHTML = "";
-    if (!val) return (suggestionBox.style.display = "none");
-    const matches = allData.map((d) => d["醫事機構名稱"]).filter((n) => n && n.includes(val));
-    const unique = [...new Set(matches)].slice(0, 5);
+    if (!val) {
+      suggestionBox.classList.remove("show");
+      suggestionBox.style.display = "none";
+      return;
+    }
+
+    const matches = allData
+      .filter((d) => d["醫事機構名稱"]?.includes(val))
+      .slice(0, 5)
+      .map((d) => d["醫事機構名稱"]);
+
+    const unique = [...new Set(matches)];
     unique.forEach((name) => {
       const div = document.createElement("div");
       div.textContent = name;
-      div.style.padding = "8px";
+      div.style.padding = "10px";
       div.style.cursor = "pointer";
       div.addEventListener("click", () => {
         input.value = name;
+        suggestionBox.classList.remove("show");
         suggestionBox.style.display = "none";
         searchData();
       });
       suggestionBox.appendChild(div);
     });
-    const rect = input.getBoundingClientRect();
-  suggestionBox.style.left = rect.left + "px";
-  suggestionBox.style.top = rect.bottom + window.scrollY + "px";
-  suggestionBox.style.width = rect.width + "px";
-  suggestionBox.classList.add("show");   // 新增動畫啟用
-  suggestionBox.style.display = "block";
-} else {
-  suggestionBox.classList.remove("show"); // 移除動畫
-  suggestionBox.style.display = "none";
-}
 
+    if (unique.length) {
+      const rect = input.getBoundingClientRect();
+      suggestionBox.style.left = rect.left + window.scrollX + "px";
+      suggestionBox.style.top = rect.bottom + window.scrollY + "px";
+      suggestionBox.style.width = rect.width + "px";
+      suggestionBox.style.display = "block";
+      requestAnimationFrame(() => suggestionBox.classList.add("show"));
+      suggestionBox.style.opacity = "1";
+      suggestionBox.style.transform = "translateY(0)";
+    } else {
+      suggestionBox.classList.remove("show");
+      suggestionBox.style.display = "none";
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target !== input && e.target.parentNode !== suggestionBox) {
+      suggestionBox.classList.remove("show");
+      setTimeout(() => (suggestionBox.style.display = "none"), 200);
+    }
+  });
+}

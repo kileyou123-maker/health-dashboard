@@ -14,47 +14,18 @@ body.dark {
   --button-hover: #40c0ba;
   --shadow: rgba(255, 255, 255, 0.1);
 }
-
-/* Loading 動畫 */
-#loading {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: var(--text);
-  z-index: 999;
-}
-.spinner {
-  border: 6px solid #ccc;
-  border-top: 6px solid var(--button);
-  border-radius: 50%;
-  width: 60px; height: 60px;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 頁面淡入 */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 body {
   font-family: "Noto Sans TC", sans-serif;
   margin: 0;
   background: var(--bg);
   color: var(--text);
   transition: background 0.5s, color 0.5s;
-  animation: fadeIn 1s ease-in-out;
+  animation: fadeIn 0.7s ease-in-out;
 }
-
-/* Header */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 header {
   background: var(--button);
   color: white;
@@ -75,7 +46,6 @@ header {
 }
 .theme-toggle:hover { transform: scale(1.15); }
 
-/* 篩選按鈕 */
 .filter-btns {
   text-align: center;
   margin: 20px 0;
@@ -97,7 +67,6 @@ header {
   transform: translateY(-2px);
 }
 
-/* 控制區 */
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -123,7 +92,6 @@ select, input {
 }
 #searchBtn:hover { background: var(--button-hover); }
 
-/* 關鍵字提示框 */
 #suggestions {
   position: absolute;
   background: var(--card);
@@ -143,7 +111,6 @@ select, input {
   color: #fff;
 }
 
-/* 表格 */
 table {
   width: 95%;
   margin: 0 auto;
@@ -161,8 +128,6 @@ th, td {
 tr:hover {
   background: rgba(0, 0, 0, 0.03);
 }
-
-/* 分頁 */
 .pagination {
   text-align: center;
   margin: 15px 0;
@@ -180,8 +145,6 @@ tr:hover {
 .pagination button:hover {
   background: var(--button-hover);
 }
-
-/* Footer */
 footer {
   text-align: center;
   font-size: 14px;
@@ -189,8 +152,6 @@ footer {
   margin-top: 25px;
   padding-bottom: 15px;
 }
-
-/* RWD */
 @media (max-width: 768px) {
   .controls { flex-direction: column; align-items: center; }
   table { width: 100%; font-size: 13px; }

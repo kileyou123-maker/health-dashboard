@@ -5,7 +5,7 @@ const pageSize = 50;
 let currentData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(initApp, 150); // 手機延後初始化，避免載入過快
+  setTimeout(initApp, 150); // 手機稍微延後初始化
 });
 
 async function initApp() {
@@ -39,16 +39,17 @@ async function initApp() {
     setupModal();
     setupAutocomplete();
 
-    // 初始顯示所有資料
     currentData = allData;
     renderTablePage();
   } catch (err) {
     console.error("資料載入失敗", err);
-    document.getElementById("status").textContent = "⚠️ 資料載入失敗，請重新整理或檢查網路。";
+    document.getElementById("status").textContent =
+      "⚠️ 資料載入失敗，請重新整理或檢查網路。";
   }
 
-  // 事件註冊
-  document.getElementById("citySelect").addEventListener("change", populateDistrictList);
+  document
+    .getElementById("citySelect")
+    .addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
   document.getElementById("keyword").addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchData();
@@ -73,15 +74,35 @@ function csvToJson(csv) {
 /* 地址清理 */
 function normalizeAddress(data) {
   data.forEach((d) => {
-    if (d["醫事機構地址"]) d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
+    if (d["醫事機構地址"])
+      d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
   });
 }
 
 /* 城市 / 地區 */
 const allCities = [
-  "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
-  "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
-  "台東縣","澎湖縣","金門縣","連江縣",
+  "台北市",
+  "新北市",
+  "桃園市",
+  "台中市",
+  "台南市",
+  "高雄市",
+  "基隆市",
+  "新竹市",
+  "嘉義市",
+  "新竹縣",
+  "苗栗縣",
+  "彰化縣",
+  "南投縣",
+  "雲林縣",
+  "嘉義縣",
+  "屏東縣",
+  "宜蘭縣",
+  "花蓮縣",
+  "台東縣",
+  "澎湖縣",
+  "金門縣",
+  "連江縣",
 ];
 
 function buildCityDistrictMap(data) {
@@ -145,7 +166,9 @@ function searchData() {
   });
 
   currentPage = 1;
-  document.getElementById("status").textContent = `共找到 ${currentData.length} 筆結果`;
+  document.getElementById(
+    "status"
+  ).textContent = `共找到 ${currentData.length} 筆結果`;
   smoothRender(renderTablePage);
 }
 
@@ -166,7 +189,9 @@ function quickFilter(type) {
 
   currentData = filtered;
   currentPage = 1;
-  document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
+  document.getElementById(
+    "status"
+  ).textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
   smoothRender(renderTablePage);
 }
 
@@ -188,12 +213,18 @@ function renderTablePage() {
 
   for (const d of pageData) {
     const addr = d["醫事機構地址"];
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      addr
+    )}`;
     const row = document.createElement("tr");
     row.innerHTML = `
       <td data-label="醫事機構名稱">${d["醫事機構名稱"]}</td>
       <td data-label="地址"><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td data-label="電話"><a href="tel:${d["醫事機構電話"]}" style="color:#2b6cb0;text-decoration:none;">${d["醫事機構電話"]}</a></td>
+      <td data-label="電話"><a href="tel:${
+        d["醫事機構電話"]
+      }" style="color:#2b6cb0;text-decoration:none;">${
+      d["醫事機構電話"]
+    }</a></td>
       <td data-label="整合團隊名稱">${d["整合團隊名稱"]}</td>
       <td data-label="來源">${d["來源"]}</td>`;
     row.addEventListener("click", () => showDetails(d));
@@ -269,10 +300,14 @@ function setupModal() {
 
 function showDetails(d) {
   const modal = document.getElementById("detailModal");
-  document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
-  document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
-  document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
-  document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
+  document.getElementById("modalTitle").textContent =
+    d["醫事機構名稱"] || "無";
+  document.getElementById("modalCode").textContent =
+    d["醫事機構代碼"] || "無";
+  document.getElementById("modalTeam").textContent =
+    d["整合團隊名稱"] || "無";
+  document.getElementById("modalAddr").textContent =
+    d["醫事機構地址"] || "無";
   document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
     ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
     : "無";
@@ -287,11 +322,14 @@ function initTheme() {
   if (savedTheme === "dark") document.body.classList.add("dark");
   themeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
   });
 }
 
-/* 自動提示 */
+/* 自動提示（增強版） */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const suggestionBox = document.createElement("div");
@@ -302,33 +340,42 @@ function setupAutocomplete() {
   suggestionBox.style.borderRadius = "5px";
   suggestionBox.style.zIndex = "9999";
   suggestionBox.style.display = "none";
-  suggestionBox.style.opacity = "0";
-  suggestionBox.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+  suggestionBox.style.maxHeight = "200px";
+  suggestionBox.style.overflowY = "auto";
+  suggestionBox.style.boxShadow = "0 3px 8px rgba(0,0,0,0.15)";
   document.body.appendChild(suggestionBox);
 
   input.addEventListener("input", () => {
-    const val = input.value.trim();
+    const val = input.value.trim().toLowerCase();
     suggestionBox.innerHTML = "";
     if (!val) {
-      suggestionBox.classList.remove("show");
       suggestionBox.style.display = "none";
       return;
     }
 
     const matches = allData
-      .filter((d) => d["醫事機構名稱"]?.includes(val))
-      .slice(0, 5)
-      .map((d) => d["醫事機構名稱"]);
+      .map((d) => ({
+        name: d["醫事機構名稱"] || "",
+        addr: d["醫事機構地址"] || "",
+        team: d["整合團隊名稱"] || "",
+      }))
+      .filter(
+        (d) =>
+          d.name.toLowerCase().includes(val) ||
+          d.addr.toLowerCase().includes(val) ||
+          d.team.toLowerCase().includes(val)
+      )
+      .map((d) => d.name || d.addr || d.team);
 
-    const unique = [...new Set(matches)];
-    unique.forEach((name) => {
+    const unique = [...new Set(matches)].slice(0, 10);
+
+    unique.forEach((item) => {
       const div = document.createElement("div");
-      div.textContent = name;
+      div.textContent = item;
       div.style.padding = "10px";
       div.style.cursor = "pointer";
       div.addEventListener("click", () => {
-        input.value = name;
-        suggestionBox.classList.remove("show");
+        input.value = item;
         suggestionBox.style.display = "none";
         searchData();
       });
@@ -341,19 +388,13 @@ function setupAutocomplete() {
       suggestionBox.style.top = rect.bottom + window.scrollY + "px";
       suggestionBox.style.width = rect.width + "px";
       suggestionBox.style.display = "block";
-      requestAnimationFrame(() => suggestionBox.classList.add("show"));
-      suggestionBox.style.opacity = "1";
-      suggestionBox.style.transform = "translateY(0)";
     } else {
-      suggestionBox.classList.remove("show");
       suggestionBox.style.display = "none";
     }
   });
 
   document.addEventListener("click", (e) => {
-    if (e.target !== input && e.target.parentNode !== suggestionBox) {
-      suggestionBox.classList.remove("show");
-      setTimeout(() => (suggestionBox.style.display = "none"), 200);
-    }
+    if (e.target !== input && e.target.parentNode !== suggestionBox)
+      suggestionBox.style.display = "none";
   });
 }

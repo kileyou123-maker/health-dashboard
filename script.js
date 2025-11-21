@@ -50,14 +50,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 
   // 綁定表格事件委派（防止重繪後失效）
-  document.querySelector("#resultTable tbody").onclick = function (e) {
-    let row = e.target.closest("tr");
-    if (!row) return;
-    const name = row.children[0].innerText;
-    const found = currentData.find((d) => d["醫事機構名稱"] === name);
-    if (found) showDetails(found);
-  };
+  // 永久事件委派：即使表格重繪也不會失效
+document.addEventListener("click", (e) => {
+  const row = e.target.closest("#resultTable tbody tr");
+  if (!row) return;
+  const name = row.children[0]?.innerText?.trim();
+  if (!name) return;
+  const found = currentData.find((d) => d["醫事機構名稱"] === name);
+  if (found) showDetails(found);
 });
+
 
 /* CSV 轉 JSON */
 function csvToJson(csv) {
@@ -348,3 +350,4 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
+

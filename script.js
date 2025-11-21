@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   populateDistrictList();
   setupAutocomplete();
 
-  // 讀取服務資料
   try {
     const res = await fetch("https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv");
     const text = await res.text();
@@ -49,6 +48,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.querySelectorAll(".filter-btn").forEach((btn) =>
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
+
+  // 綁定表格事件委派（防止重繪後失效）
+  document.querySelector("#resultTable tbody").onclick = function (e) {
+    let row = e.target.closest("tr");
+    if (!row) return;
+    const name = row.children[0].innerText;
+    const found = currentData.find((d) => d["醫事機構名稱"] === name);
+    if (found) showDetails(found);
+  };
 });
 
 /* CSV 轉 JSON */
@@ -187,7 +195,6 @@ function renderTablePage() {
       <td><a href="tel:${d["醫事機構電話"]}" style="color:#2b6cb0;text-decoration:none;">${d["醫事機構電話"]}</a></td>
       <td>${d["整合團隊名稱"]}</td>
       <td>${d["來源"]}</td>`;
-    row.addEventListener("click", () => showDetails(d));
     tbody.appendChild(row);
   }
   renderPagination();
@@ -255,16 +262,13 @@ function showDetails(d) {
     : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
 
-  // 新增服務項目
   const serviceSection = document.createElement("div");
   const found = serviceData.find(
     (s) => s["醫事機構名稱"] && s["醫事機構名稱"].includes(d["醫事機構名稱"])
   );
   if (found) {
     let table = `<table class="service-table">
-      <thead><tr>
-        <th>項目</th><th>是否提供</th>
-      </tr></thead><tbody>`;
+      <thead><tr><th>項目</th><th>是否提供</th></tr></thead><tbody>`;
     const keys = Object.keys(found).slice(4);
     keys.forEach((k) => {
       if (k && k.trim()) {
@@ -313,9 +317,7 @@ function setupAutocomplete() {
     suggestionBox.innerHTML = "";
     if (!val) return (suggestionBox.style.display = "none");
 
-    const matches = allData
-      .map((d) => d["醫事機構名稱"])
-      .filter((n) => n && n.includes(val));
+    const matches = allData.map((d) => d["醫事機構名稱"]).filter((n) => n && n.includes(val));
     const unique = [...new Set(matches)].slice(0, 8);
     unique.forEach((name) => {
       const div = document.createElement("div");

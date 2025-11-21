@@ -62,7 +62,8 @@ function csvToJson(csv) {
 
 /* 服務資料載入 */
 async function loadServices() {
-  const url = "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/services.csv";
+  // 改為本地檔案路徑
+  const url = "/mnt/data/services.csv";
   const res = await fetch(url);
   const text = await res.text();
   const lines = text.split("\n").filter((l) => l.trim());

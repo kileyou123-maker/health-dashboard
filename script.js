@@ -62,7 +62,7 @@ function csvToJson(csv) {
 }
 
 /* ===============================
-   載入服務資料（GitHub 原始檔）
+   載入服務資料
 =============================== */
 async function loadServices() {
   const url =
@@ -138,15 +138,16 @@ function searchData() {
 
   currentData = allData.filter((d) => {
     const addr = d["醫事機構地址"] || "";
+    const addrNorm = addr.replaceAll("臺", "台");
     const name = d["醫事機構名稱"] || "";
     const phone = d["醫事機構電話"] || "";
     const team = d["整合團隊名稱"] || "";
     return (
-      (city === "全部" || addr.includes(city)) &&
-      (district === "全部" || addr.includes(district)) &&
+      (city === "全部" || addrNorm.includes(city.replaceAll("臺", "台"))) &&
+      (district === "全部" || addrNorm.includes(district.replaceAll("臺", "台"))) &&
       (!keyword ||
         name.includes(keyword) ||
-        addr.includes(keyword) ||
+        addrNorm.includes(keyword.replaceAll("臺", "台")) ||
         phone.includes(keyword) ||
         team.includes(keyword))
     );
@@ -211,6 +212,9 @@ function renderTablePage() {
   renderPagination();
 }
 
+/* ===============================
+   分頁控制
+=============================== */
 function renderPagination() {
   const pageCount = Math.ceil(currentData.length / pageSize);
   const pagination = document.getElementById("pagination");
@@ -248,17 +252,6 @@ function renderPagination() {
 }
 
 /* ===============================
-   動畫效果
-=============================== */
-function smoothRender(callback) {
-  const table = document.getElementById("resultTable");
-  table.style.transition = "opacity 0.25s ease, transform 0.25s ease";
-  table.style.opacity = "0";
-  table.style.transform = "translateY(15px)";
-  setTimeout(callback, 250);
-}
-
-/* ===============================
    詳細資料與服務顯示
 =============================== */
 function showDetails(d) {
@@ -278,6 +271,7 @@ function showDetails(d) {
   const target = servicesData.find((r) =>
     (r[1] || "").replace("臺", "台").includes((d["醫事機構名稱"] || "").replace("臺", "台"))
   );
+
   if (target) {
     const table = document.createElement("table");
     table.id = "serviceTable";
@@ -302,7 +296,7 @@ function showDetails(d) {
 }
 
 /* ===============================
-   彈窗控制
+   模態視窗控制
 =============================== */
 function setupModal() {
   const modal = document.getElementById("detailModal");
@@ -314,7 +308,7 @@ function setupModal() {
 }
 
 /* ===============================
-   深色模式
+   深色模式切換
 =============================== */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
@@ -327,7 +321,7 @@ function initTheme() {
 }
 
 /* ===============================
-   關鍵字提示
+   關鍵字自動提示
 =============================== */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");

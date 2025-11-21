@@ -340,3 +340,67 @@ footer {
     width: 92%;
   }
 }
+/* =========================
+   手機版：隱藏表格 → 改用卡片 UI
+========================= */
+@media (max-width: 600px) {
+
+  /* 隱藏原本表格 */
+  #resultTable thead {
+    display: none;
+  }
+
+  #resultTable,
+  #resultTable tbody,
+  #resultTable tr,
+  #resultTable td {
+    display: block;
+    width: 100%;
+  }
+
+  #resultTable tr {
+    background: var(--table-bg);
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+
+  #resultTable td {
+    border: none;
+    text-align: left;
+    padding: 6px 0;
+    font-size: 15px;
+  }
+
+  #resultTable td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* 控制區滿版顯示 */
+  #controls select,
+  #controls input,
+  .main-btn {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* filter 按鈕變成滿版、好按 */
+  .filter-btn {
+    width: 48%;
+    margin-bottom: 10px;
+  }
+
+  /* Modal 全螢幕 */
+  .modal-content {
+    width: 95%;
+    margin-top: 50px;
+    border-radius: 14px;
+    padding: 18px;
+  }
+}
+

@@ -1,3 +1,4 @@
+// === 全域變數 ===
 let allData = [];
 let currentData = [];
 let cityDistrictMap = {};
@@ -6,7 +7,7 @@ const pageSize = 50;
 let servicesData = [];
 let serviceHeaders = [];
 
-/* 初始化 */
+// === 初始化 ===
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
 
@@ -41,9 +42,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("keyword").addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchData();
   });
+
+  document.querySelectorAll(".filter-btn").forEach((btn) =>
+    btn.addEventListener("click", () => quickFilter(btn.dataset.type))
+  );
 });
 
-/* CSV 轉 JSON */
+// === CSV轉JSON ===
 function csvToJson(csv) {
   const lines = csv.split("\n").filter((l) => l.trim());
   const headers = lines[0].split(",").map((h) => h.trim());
@@ -55,7 +60,7 @@ function csvToJson(csv) {
   });
 }
 
-/* 載入 services.csv */
+// === 讀取服務資料 ===
 async function loadServices() {
   const url = "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv";
   const res = await fetch(url);
@@ -65,7 +70,7 @@ async function loadServices() {
   servicesData = lines.slice(1).map((l) => l.split(","));
 }
 
-/* 地址正規化 */
+// === 地址正規化 ===
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"])
@@ -73,7 +78,7 @@ function normalizeAddress(data) {
   });
 }
 
-/* 城市與地區對應表 */
+// === 城市／地區 ===
 const allCities = [
   "台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市",
   "基隆市", "新竹市", "嘉義市", "新竹縣", "苗栗縣", "彰化縣",
@@ -94,7 +99,6 @@ function buildCityDistrictMap(data) {
   });
 }
 
-/* 縣市、地區下拉 */
 function populateCityList() {
   const citySel = document.getElementById("citySelect");
   citySel.innerHTML = '<option value="全部">全部</option>';
@@ -121,7 +125,7 @@ function populateDistrictList() {
   searchData();
 }
 
-/* 搜尋與篩選 */
+// === 搜尋 ===
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
@@ -133,15 +137,10 @@ function searchData() {
     const name = d["醫事機構名稱"] || "";
     const phone = d["醫事機構電話"] || "";
     const team = d["整合團隊名稱"] || "";
-
     return (
       (city === "全部" || addrNorm.includes(city)) &&
       (district === "全部" || addrNorm.includes(district)) &&
-      (!keyword ||
-        name.includes(keyword) ||
-        addrNorm.includes(keyword) ||
-        phone.includes(keyword) ||
-        team.includes(keyword))
+      (!keyword || name.includes(keyword) || addrNorm.includes(keyword) || phone.includes(keyword) || team.includes(keyword))
     );
   });
 
@@ -150,11 +149,32 @@ function searchData() {
   renderTablePage();
 }
 
-/* 表格 */
+// === 類型快速篩選 ===
+function quickFilter(type) {
+  let filtered;
+  if (type === "全部") {
+    filtered = allData;
+  } else {
+    const keywords = {
+      醫院: ["醫院"],
+      診所: ["診所", "醫療"],
+      護理之家: ["護理", "安養", "養護"],
+    }[type] || [];
+    filtered = allData.filter((d) =>
+      keywords.some((k) => (d["醫事機構名稱"] || "").includes(k))
+    );
+  }
+
+  currentData = filtered;
+  currentPage = 1;
+  document.getElementById("status").textContent = `顯示類型：${type}（共 ${filtered.length} 筆）`;
+  renderTablePage();
+}
+
+// === 表格與分頁 ===
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-
   if (currentData.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
     document.getElementById("pagination").innerHTML = "";
@@ -182,7 +202,6 @@ function renderTablePage() {
   renderPagination();
 }
 
-/* 分頁 */
 function renderPagination() {
   const pageCount = Math.ceil(currentData.length / pageSize);
   const pagination = document.getElementById("pagination");
@@ -215,7 +234,7 @@ function renderPagination() {
   pagination.appendChild(next);
 }
 
-/* 詳細資訊與服務表格 */
+// === 詳細資料 + 服務表格 ===
 function showDetails(d) {
   const modal = document.getElementById("detailModal");
   document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
@@ -238,7 +257,6 @@ function showDetails(d) {
     table.id = "serviceTable";
     table.innerHTML = `<thead><tr><th>服務項目</th><th>提供</th></tr></thead><tbody></tbody>`;
     const tbody = table.querySelector("tbody");
-
     for (let i = 4; i < serviceHeaders.length; i++) {
       const name = serviceHeaders[i];
       const val = target[i] && target[i].trim() === "1" ? "✅" : "❌";
@@ -246,14 +264,13 @@ function showDetails(d) {
       tr.innerHTML = `<td>${name}</td><td style="text-align:center">${val}</td>`;
       tbody.appendChild(tr);
     }
-
     modal.querySelector(".modal-content").appendChild(table);
   }
 
   modal.style.display = "block";
 }
 
-/* 模態框 */
+// === 模態框 ===
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -263,7 +280,7 @@ function setupModal() {
   };
 }
 
-/* 深色模式 */
+// === 深色模式 ===
 function initTheme() {
   const btn = document.getElementById("themeToggle");
   const saved = localStorage.getItem("theme");
@@ -274,7 +291,7 @@ function initTheme() {
   });
 }
 
-/* 關鍵字提示 */
+// === 關鍵字提示 ===
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const box = document.createElement("div");

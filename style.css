@@ -532,3 +532,35 @@ body.dark #suggestionBox div:hover {
   font-size: 14px;
 }
 
+/* ================================
+   手機版 Modal 縮小版（電腦版不變）
+================================ */
+@media (max-width: 600px) {
+
+  /* 背景照樣滿版 */
+  .modal {
+    align-items: center;  /* 不再固定在底部，改成置中更好看 */
+  }
+
+  /* Modal 尺寸縮小 */
+  .modal-content {
+    width: 85%;          /* 原本 100% → 改 85% */
+    max-width: 380px;    /* 給手機一個固定最大寬度 */
+    max-height: 70vh;    /* 高度縮小一點 */
+    border-radius: 18px; /* 圓角更好看 */
+    padding: 16px;
+  }
+
+  /* 讓內容不要塞滿螢幕底部 */
+  @keyframes slideUpMobile {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  /* 叉叉位置微調 */
+  .close {
+    font-size: 28px;
+    padding: 8px;
+  }
+}
+

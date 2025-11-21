@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderTablePage();
 
   document.getElementById("citySelect").addEventListener("change", populateDistrictList);
+  document.getElementById("districtSelect").addEventListener("change", searchData);
   document.getElementById("searchBtn").addEventListener("click", searchData);
   document.getElementById("keyword").addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchData();
@@ -126,6 +127,8 @@ function populateDistrictList() {
       districtSel.appendChild(opt);
     });
   }
+  // 修正：切換縣市時自動更新資料
+  searchData();
 }
 
 /* ===============================
@@ -183,7 +186,6 @@ function quickFilter(type) {
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-  const table = document.getElementById("resultTable");
 
   if (currentData.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
@@ -226,10 +228,8 @@ function renderPagination() {
   prev.disabled = currentPage === 1;
   prev.onclick = () => {
     currentPage--;
-    smoothRender(() => {
-      renderTablePage();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    renderTablePage();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const next = document.createElement("button");
@@ -237,10 +237,8 @@ function renderPagination() {
   next.disabled = currentPage === pageCount;
   next.onclick = () => {
     currentPage++;
-    smoothRender(() => {
-      renderTablePage();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    renderTablePage();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const pageInfo = document.createElement("span");
@@ -252,12 +250,11 @@ function renderPagination() {
 }
 
 /* ===============================
-   詳細資料與服務顯示
+   詳細資料與服務表格
 =============================== */
 function showDetails(d) {
   const modal = document.getElementById("detailModal");
   document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
-  document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
   document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
   document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
   document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
@@ -275,9 +272,6 @@ function showDetails(d) {
   if (target) {
     const table = document.createElement("table");
     table.id = "serviceTable";
-    table.style.width = "100%";
-    table.style.marginTop = "10px";
-    table.style.borderCollapse = "collapse";
     table.innerHTML = `<thead><tr><th>服務項目</th><th>是否提供</th></tr></thead><tbody></tbody>`;
     const tbody = table.querySelector("tbody");
 
@@ -296,7 +290,7 @@ function showDetails(d) {
 }
 
 /* ===============================
-   模態視窗控制
+   模態框
 =============================== */
 function setupModal() {
   const modal = document.getElementById("detailModal");
@@ -308,7 +302,7 @@ function setupModal() {
 }
 
 /* ===============================
-   深色模式切換
+   深色模式
 =============================== */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
@@ -321,7 +315,7 @@ function initTheme() {
 }
 
 /* ===============================
-   關鍵字自動提示
+   自動提示
 =============================== */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
@@ -340,9 +334,7 @@ function setupAutocomplete() {
     box.innerHTML = "";
     if (!val) return (box.style.display = "none");
 
-    const matches = allData
-      .map((d) => d["醫事機構名稱"])
-      .filter((n) => n && n.includes(val));
+    const matches = allData.map((d) => d["醫事機構名稱"]).filter((n) => n && n.includes(val));
     const unique = [...new Set(matches)].slice(0, 6);
     unique.forEach((n) => {
       const div = document.createElement("div");
@@ -367,7 +359,6 @@ function setupAutocomplete() {
   });
 
   document.addEventListener("click", (e) => {
-    if (e.target !== input && e.target.parentNode !== box)
-      box.style.display = "none";
+    if (e.target !== input && e.target.parentNode !== box) box.style.display = "none";
   });
 }

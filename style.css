@@ -67,6 +67,16 @@ header {
 }
 
 /* =========================
+   main（資料不顯示修正）
+========================= */
+main {
+  display: block;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* =========================
    控制區（Material UI 風）
 ========================= */
 #controls {
@@ -134,6 +144,7 @@ header {
    表格（專業醫療系統風）
 ========================= */
 #resultTable {
+  display: table; /* 修正表格不顯示 */
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -141,6 +152,10 @@ header {
   box-shadow: 0 4px 15px rgba(0,0,0,0.12);
   border-radius: 12px;
   overflow: hidden;
+}
+
+#resultTable tbody {
+  display: table-row-group; /* 修正渲染問題 */
 }
 
 #resultTable th {

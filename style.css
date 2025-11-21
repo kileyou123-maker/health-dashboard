@@ -38,7 +38,7 @@ body.dark {
 
 /* 全局過渡動畫 */
 * {
-  transition: 
+  transition:
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease,
@@ -67,7 +67,7 @@ header {
 }
 
 /* =========================
-   main（資料不顯示修正）
+   main
 ========================= */
 main {
   display: block;
@@ -77,7 +77,7 @@ main {
 }
 
 /* =========================
-   控制區（Material UI 風）
+   控制區
 ========================= */
 #controls {
   display: flex;
@@ -116,7 +116,7 @@ main {
 }
 
 /* =========================
-   Filter 按鈕（醫療專業感）
+   Filter 按鈕
 ========================= */
 .filter-btn {
   background: white;
@@ -141,10 +141,10 @@ main {
 }
 
 /* =========================
-   表格（專業醫療系統風）
+   表格
 ========================= */
 #resultTable {
-  display: table; /* 修正表格不顯示 */
+  display: table;
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -155,7 +155,7 @@ main {
 }
 
 #resultTable tbody {
-  display: table-row-group; /* 修正渲染問題 */
+  display: table-row-group;
 }
 
 #resultTable th {
@@ -208,7 +208,7 @@ body.dark #resultTable tr:hover {
 }
 
 /* =========================
-   Modal（醫療資訊卡）
+   Modal
 ========================= */
 .modal {
   display: none;
@@ -251,7 +251,7 @@ body.dark #resultTable tr:hover {
   color: var(--accent);
 }
 
-/* Modal 資訊區 */
+/* Modal 內容 */
 .modal-content p {
   font-size: 16px;
   margin: 8px 0;
@@ -324,28 +324,24 @@ footer {
 }
 
 /* =========================
-   手機版
+   手機版卡片 UI
 ========================= */
 @media (max-width: 600px) {
+
   #controls select,
   #controls input {
     width: 90%;
   }
 
   .filter-btn {
-    width: 90%;
+    width: 48%;
+    margin-bottom: 10px;
   }
 
   .modal-content {
     width: 92%;
   }
-}
-/* =========================
-   手機版：隱藏表格 → 改用卡片 UI
-========================= */
-@media (max-width: 600px) {
 
-  /* 隱藏原本表格 */
   #resultTable thead {
     display: none;
   }
@@ -381,73 +377,50 @@ footer {
     margin-bottom: 2px;
   }
 
-  /* 控制區滿版顯示 */
   #controls select,
   #controls input,
   .main-btn {
     width: 100%;
     font-size: 16px;
   }
-
-  /* filter 按鈕變成滿版、好按 */
-  .filter-btn {
-    width: 48%;
-    margin-bottom: 10px;
-  }
-
-  /* Modal 全螢幕 */
-  .modal-content {
-    width: 95%;
-    margin-top: 50px;
-    border-radius: 14px;
-    padding: 18px;
-  }
 }
-/* ================================
-   深色模式視覺加強（文字清晰度改善）
-================================ */
 
-/* 深色模式：一般文字亮度提高 */
+/* ====================================
+   深色模式視覺加強
+================================ */
 body.dark {
   --text-color: #f8fafc;
 }
 
-/* 深色模式：連結亮度變強 */
 body.dark a {
-  color: #93c5fd !important;   /* 淺藍 */
+  color: #93c5fd !important;
 }
 
-/* 深色模式：表格 hover 文字強化（避免 hover 變白太刺眼） */
 body.dark #resultTable tr:hover td {
   color: #f8fafc !important;
 }
 
-/* 深色模式：卡片 data-label 標題（例如：醫事機構名稱） */
 @media (max-width: 600px) {
   body.dark #resultTable td::before {
-    color: #93c5fd !important;  /* 清晰淺藍 */
+    color: #93c5fd !important;
     font-weight: 600;
   }
 }
 
-/* 深色模式：Modal 標題 strong 更清楚 */
 body.dark .modal-content strong {
   color: #93c5fd !important;
   font-weight: 700;
 }
 
-/* 深色模式：Modal 內文亮度提升 */
 body.dark .modal-content p {
   color: #f1f5f9 !important;
 }
 
-/* 深色模式：服務表格（右側服務項目）文字加亮 */
 body.dark .service-table td,
 body.dark .service-table th {
   color: #f8fafc !important;
 }
 
-/* 深色模式：autocomplete 建議框背景＋文字清晰度 */
 body.dark #suggestionBox {
   background: #1e293b !important;
   border: 1px solid #475569 !important;
@@ -457,6 +430,10 @@ body.dark #suggestionBox {
 body.dark #suggestionBox div:hover {
   background: #334155 !important;
 }
+
+/* =========================
+   主按鈕
+========================= */
 .main-btn {
   background: var(--accent);
   color: white;
@@ -467,9 +444,7 @@ body.dark #suggestionBox div:hover {
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.5px;
-
   box-shadow: 0 3px 8px rgba(26, 115, 232, 0.25);
-  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .main-btn:hover {
@@ -480,51 +455,56 @@ body.dark #suggestionBox div:hover {
 .main-btn:active {
   transform: translateY(0px);
 }
+
 /* ====================================
-   手機版 modal 修正（不遮字）
+   ★★ 修復版：手機 Modal（叉叉可點版本） ★★
 ==================================== */
 @media (max-width: 600px) {
 
-  /* 改成從底部滑上來的 APP Modal */
+  /* 背景層滿版，才能點到叉叉 */
   .modal {
     display: none;
     position: fixed;
     left: 0;
-    bottom: 0;
-    top: auto;
-    height: auto;
+    top: 0;
     width: 100%;
+    height: 100%;
     background: rgba(0,0,0,0.5);
     padding: 0;
-    align-items: flex-end; /* 對齊到下方 */
+    align-items: flex-end;
+    z-index: 999;
   }
 
+  /* 從底部滑上來 */
   .modal-content {
     width: 100%;
-    max-height: 85vh;          /* 不會超過螢幕 */
-    overflow-y: auto;          /* 自動捲動 */
+    max-height: 85vh;
+    overflow-y: auto;
     border-radius: 16px 16px 0 0;
     padding: 20px;
     margin: 0;
     background: var(--modal-bg);
     animation: slideUpMobile 0.25s ease;
+    position: relative;
+    z-index: 1000;
   }
 
   @keyframes slideUpMobile {
-    from {
-      transform: translateY(80px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    from { transform: translateY(80px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
   }
 
-  /* 關閉按鈕大小調整 */
+  /* 叉叉永遠可點，且固定在頂部 */
   .close {
+    position: sticky;
+    top: 0;
+    right: 0;
+    z-index: 9999;
     font-size: 30px;
-    margin-top: -5px;
-    margin-right: 5px;
+    padding: 12px;
+    margin-left: auto;
+    display: block;
+    cursor: pointer;
+    background: transparent;
   }
 }

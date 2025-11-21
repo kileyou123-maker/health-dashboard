@@ -22,7 +22,7 @@ body.dark {
   --accent: #f59e0b;
 }
 
-/* 基本樣式 */
+/* 全域過渡 */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
 }
@@ -37,7 +37,7 @@ body {
   animation: fadeIn 0.6s ease;
 }
 
-/* header */
+/* header 漸入 */
 header {
   background-color: var(--header-bg);
   color: white;
@@ -55,6 +55,12 @@ main {
   padding: 20px;
   max-width: 900px;
   margin: 0 auto;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* 控制區 */
@@ -72,6 +78,7 @@ main {
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 15px;
+  transition: box-shadow 0.25s ease;
 }
 
 body.dark #controls select,
@@ -81,35 +88,35 @@ body.dark #controls input {
   border: 1px solid #475569;
 }
 
-/* 按鈕美化 */
+#controls select:focus,
+#controls input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(49, 151, 149, 0.35);
+  outline: none;
+}
+
+/* 按鈕 */
 .filter-btn,
 .main-btn {
-  background: linear-gradient(135deg, var(--accent), #2b6cb0);
-  color: #fff;
+  background-color: var(--accent);
+  color: white;
   border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
+  border-radius: 8px;
+  padding: 10px 16px;
   margin: 5px;
   cursor: pointer;
   font-size: 15px;
-  font-weight: 600;
   transition: all 0.25s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-}
-
-body.dark .filter-btn,
-body.dark .main-btn {
-  background: linear-gradient(135deg, #f59e0b, #b45309);
-  color: #fffbea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .filter-btn:hover,
 .main-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
-/* 表格 (桌面用) */
+/* 表格 */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
@@ -117,6 +124,13 @@ body.dark .main-btn {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: tableFade 0.5s ease forwards;
+}
+
+@keyframes tableFade {
+  to { opacity: 1; transform: translateY(0); }
 }
 
 #resultTable th,
@@ -124,11 +138,36 @@ body.dark .main-btn {
   border: 1px solid var(--table-border);
   padding: 10px;
   text-align: center;
+  color: var(--text-color);
 }
 
 #resultTable th {
   background-color: var(--table-th-bg);
   color: white;
+}
+
+#resultTable tr:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+  transition: background-color 0.3s ease;
+}
+
+body.dark #resultTable tr:hover {
+  background-color: rgba(240, 171, 0, 0.15);
+}
+
+/* hover 整列亮化 */
+#resultTable tr:hover td {
+  color: #fff;
+}
+
+/* 連結 */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #93c5fd;
 }
 
 /* 分頁 */
@@ -138,50 +177,7 @@ body.dark .main-btn {
   justify-content: center;
   align-items: center;
   gap: 12px;
-}
-
-#pagination button {
-  background: linear-gradient(135deg, var(--accent), #2b6cb0);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-body.dark #pagination button {
-  background: linear-gradient(135deg, #f59e0b, #b45309);
-}
-
-/* footer */
-footer {
-  background-color: var(--footer-bg);
-  color: white;
-  padding: 10px 0;
-  margin-top: 20px;
-}
-
-/* 深色模式按鈕 */
-.theme-toggle-btn {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  background: radial-gradient(circle at 30% 30%, var(--accent), #1e293b);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
-
-.theme-toggle-btn:hover {
-  transform: rotate(25deg) scale(1.12);
+  animation: fadeIn 0.5s ease;
 }
 
 /* 彈窗 */
@@ -195,6 +191,7 @@ footer {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.25s ease;
 }
 
 .modal-content {
@@ -206,225 +203,110 @@ footer {
   width: 80%;
   max-width: 600px;
   text-align: left;
-}
-
-/* 提示框 */
-#suggestionBox {
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  z-index: 9999;
-}
-
-body.dark #suggestionBox {
-  background: #1e293b;
-  color: #facc15;
-}
-
-/* === 手機版卡片式顯示 === */
-@media (max-width: 600px) {
-  /* 隱藏表格表頭 */
-  #resultTable thead {
-    display: none;
-  }
-
-  #resultTable {
-    border: none;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  #resultTable tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  #resultTable tbody tr {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    background: var(--table-bg);
-    border: 1px solid var(--table-border);
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    padding: 12px 15px;
-    transition: transform 0.2s ease;
-  }
-
-  #resultTable tbody tr:hover {
-    transform: scale(1.02);
-  }
-
-  #resultTable tbody tr td {
-    display: block;
-    border: none;
-    padding: 4px 0;
-    font-size: 14px;
-    width: 100%;
-  }
-
-  #resultTable tbody tr td:first-child {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 6px;
-  }
-
-  #resultTable tbody tr td a[href^="tel:"] {
-    background: var(--accent);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-block;
-    margin-top: 2px;
-  }
-
-  #resultTable tbody tr td a[href^="tel:"]:hover {
-    filter: brightness(1.15);
-  }
-
-  /* 控制區改直向排列 */
-  #controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  #controls select,
-  #controls input,
-  .main-btn {
-    width: 100%;
-    font-size: 16px;
-    padding: 12px;
-  }
-
-  #filterSection {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-  }
-
-  .filter-btn {
-    flex: 1 1 45%;
-    min-width: 130px;
-  }
-}
-/* === 下拉選單與關鍵字提示美化 === */
-
-/* 統一外觀 */
-#citySelect,
-#districtSelect,
-#keyword {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: var(--table-bg);
-  color: var(--text-color);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
   border: 1px solid var(--table-border);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 15px;
-  width: 180px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transform: translateY(20px);
+  animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  to { transform: translateY(0); }
+}
+
+/* 關閉按鈕 */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.close:hover {
+  color: var(--accent);
+}
+
+/* 深色模式按鈕 */
+.theme-toggle-btn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
   transition: all 0.25s ease;
 }
 
-#keyword {
-  width: 220px;
+.theme-toggle-btn:hover {
+  transform: rotate(20deg) scale(1.08);
 }
 
-#citySelect:hover,
-#districtSelect:hover,
-#keyword:hover {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+/* footer */
+footer {
+  background-color: var(--footer-bg);
+  color: white;
+  padding: 10px 0;
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease;
 }
 
-#citySelect:focus,
-#districtSelect:focus,
-#keyword:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(49, 151, 149, 0.3);
-  outline: none;
+/* 手機版 */
+@media (max-width: 600px) {
+  #controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  #controls select,
+  #controls input,
+  .main-btn {
+    width: 90%;
+  }
+  .modal-content {
+    width: 90%;
+  }
 }
 
-/* 深色模式 */
-body.dark #citySelect,
-body.dark #districtSelect,
-body.dark #keyword {
-  background-color: #1e293b;
-  color: #f1f5f9;
-  border: 1px solid #475569;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-}
-
-/* 自動提示框 */
-#suggestionBox {
-  background: var(--table-bg);
-  border: 1px solid var(--table-border);
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  overflow-y: auto;
-  max-height: 180px;
-}
-
-#suggestionBox div {
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-#suggestionBox div:hover {
-  background: rgba(49, 151, 149, 0.15);
-}
-
-body.dark #suggestionBox {
-  background: #1e293b;
-  border: 1px solid #475569;
-  color: #facc15;
-}
-
-body.dark #suggestionBox div:hover {
-  background: rgba(240, 171, 0, 0.2);
-}
-
-/* 小箭頭樣式 for select */
-#citySelect,
-#districtSelect {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23666666' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
-}
-
-body.dark #citySelect,
-body.dark #districtSelect {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23facc15' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-}
-/* 修正表格文字在亮色模式下消失問題 */
-#resultTable td, 
-#resultTable th {
-  color: #222 !important;   /* 確保在亮色模式可見 */
-  background-color: #fefefe !important;
-}
-
-/* 深色模式調整 */
-body.dark #resultTable td, 
-body.dark #resultTable th {
-  color: #fff !important;
-  background-color: #222 !important;
-}
-
-/* 彈窗內服務表格也要顯示 */
-#serviceTable td, #serviceTable th {
+/* ====== 服務項目表格美化 ====== */
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: var(--table-bg);
   color: var(--text-color);
-  background: var(--table-bg);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.4s ease;
 }
 
+.service-table th,
+.service-table td {
+  border: 1px solid var(--table-border);
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+}
 
+.service-table th {
+  background-color: var(--table-th-bg);
+  color: white;
+  letter-spacing: 1px;
+}
+
+.service-table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark .service-table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.service-table td:nth-child(2) {
+  font-size: 20px;
+}

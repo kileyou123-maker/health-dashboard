@@ -67,7 +67,7 @@ header {
 }
 
 /* =========================
-   main
+   main（資料不顯示修正）
 ========================= */
 main {
   display: block;
@@ -77,7 +77,7 @@ main {
 }
 
 /* =========================
-   控制區
+   控制區（Material UI 風）
 ========================= */
 #controls {
   display: flex;
@@ -116,7 +116,7 @@ main {
 }
 
 /* =========================
-   Filter 按鈕
+   Filter 按鈕（醫療專業感）
 ========================= */
 .filter-btn {
   background: white;
@@ -141,10 +141,10 @@ main {
 }
 
 /* =========================
-   表格
+   表格（專業醫療系統風）
 ========================= */
 #resultTable {
-  display: table;
+  display: table; /* 修正表格不顯示 */
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -155,7 +155,7 @@ main {
 }
 
 #resultTable tbody {
-  display: table-row-group;
+  display: table-row-group; /* 修正渲染問題 */
 }
 
 #resultTable th {
@@ -208,7 +208,7 @@ body.dark #resultTable tr:hover {
 }
 
 /* =========================
-   Modal
+   Modal（醫療資訊卡）
 ========================= */
 .modal {
   display: none;
@@ -251,7 +251,7 @@ body.dark #resultTable tr:hover {
   color: var(--accent);
 }
 
-/* Modal 內容 */
+/* Modal 資訊區 */
 .modal-content p {
   font-size: 16px;
   margin: 8px 0;
@@ -286,8 +286,23 @@ body.dark #resultTable tr:hover {
   font-size: 15px;
 }
 
-.service-table tr:hover {
-  background-color: rgba(26,115,232,0.08);
+/* 🔵 專業版驗證風格圖示 */
+.yes-icon::before {
+  content: "✔";
+  color: white;
+  background: #1a73e8;
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.no-icon::before {
+  content: "✖";
+  color: white;
+  background: #9ca3af;
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-size: 14px;
 }
 
 /* =========================
@@ -324,7 +339,7 @@ footer {
 }
 
 /* =========================
-   手機版卡片 UI
+   手機版：隱藏表格 → 卡片 UI
 ========================= */
 @media (max-width: 600px) {
 
@@ -336,10 +351,6 @@ footer {
   .filter-btn {
     width: 48%;
     margin-bottom: 10px;
-  }
-
-  .modal-content {
-    width: 92%;
   }
 
   #resultTable thead {
@@ -366,7 +377,6 @@ footer {
     border: none;
     text-align: left;
     padding: 6px 0;
-    font-size: 15px;
   }
 
   #resultTable td::before {
@@ -376,16 +386,9 @@ footer {
     display: block;
     margin-bottom: 2px;
   }
-
-  #controls select,
-  #controls input,
-  .main-btn {
-    width: 100%;
-    font-size: 16px;
-  }
 }
 
-/* ====================================
+/* ================================
    深色模式視覺加強
 ================================ */
 body.dark {
@@ -398,13 +401,6 @@ body.dark a {
 
 body.dark #resultTable tr:hover td {
   color: #f8fafc !important;
-}
-
-@media (max-width: 600px) {
-  body.dark #resultTable td::before {
-    color: #93c5fd !important;
-    font-weight: 600;
-  }
 }
 
 body.dark .modal-content strong {
@@ -444,7 +440,9 @@ body.dark #suggestionBox div:hover {
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.5px;
+
   box-shadow: 0 3px 8px rgba(26, 115, 232, 0.25);
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .main-btn:hover {
@@ -457,110 +455,52 @@ body.dark #suggestionBox div:hover {
 }
 
 /* ====================================
-   ★★ 修復版：手機 Modal（叉叉可點版本） ★★
+   ★★★ 手機版 Modal：置中＋小視窗修正版 ★★★
 ==================================== */
 @media (max-width: 600px) {
 
-  /* 背景層滿版，才能點到叉叉 */
+  /* 背景改為 flex，使 modal-content 置中 */
   .modal {
-    display: none;
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
     padding: 0;
-    align-items: flex-end;
-    z-index: 999;
+    background: rgba(0,0,0,0.55);
+    height: 100%;
+    width: 100%;
   }
 
-  /* 從底部滑上來 */
+  /* 小視窗 */
   .modal-content {
-    width: 100%;
-    max-height: 85vh;
+    width: 85%;
+    max-width: 380px;
+    max-height: 70vh;
     overflow-y: auto;
-    border-radius: 16px 16px 0 0;
+    border-radius: 18px;
     padding: 20px;
     margin: 0;
     background: var(--modal-bg);
-    animation: slideUpMobile 0.25s ease;
+    animation: mobilePopup 0.25s ease;
     position: relative;
-    z-index: 1000;
   }
 
-  @keyframes slideUpMobile {
-    from { transform: translateY(80px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
+  @keyframes mobilePopup {
+    from { transform: scale(0.88); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
   }
 
-  /* 叉叉永遠可點，且固定在頂部 */
+  /* 叉叉固定右上角 */
   .close {
-    position: sticky;
-    top: 0;
-    right: 0;
-    z-index: 9999;
+    position: absolute;
+    top: 10px;
+    right: 12px;
     font-size: 30px;
-    padding: 12px;
-    margin-left: auto;
-    display: block;
+    color: #ccc;
+    z-index: 999;
     cursor: pointer;
-    background: transparent;
-  }
-}
-.service-table td.yes-icon,
-.service-table td.no-icon {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.yes-icon::before {
-  content: "✔";
-  color: white;
-  background: #1a73e8;
-  padding: 6px 10px;
-  border-radius: 50%;
-  font-size: 14px;
-}
-
-.no-icon::before {
-  content: "✖";
-  color: white;
-  background: #b0b0b0;
-  padding: 6px 10px;
-  border-radius: 50%;
-  font-size: 14px;
-}
-
-/* ================================
-   手機版 Modal 縮小版（電腦版不變）
-================================ */
-@media (max-width: 600px) {
-
-  /* 背景照樣滿版 */
-  .modal {
-    align-items: center;  /* 不再固定在底部，改成置中更好看 */
   }
 
-  /* Modal 尺寸縮小 */
-  .modal-content {
-    width: 85%;          /* 原本 100% → 改 85% */
-    max-width: 380px;    /* 給手機一個固定最大寬度 */
-    max-height: 70vh;    /* 高度縮小一點 */
-    border-radius: 18px; /* 圓角更好看 */
-    padding: 16px;
-  }
-
-  /* 讓內容不要塞滿螢幕底部 */
-  @keyframes slideUpMobile {
-    from { transform: translateY(40px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-  }
-
-  /* 叉叉位置微調 */
-  .close {
-    font-size: 28px;
-    padding: 8px;
+  .close:hover {
+    color: var(--accent);
   }
 }
-

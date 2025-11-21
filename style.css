@@ -407,4 +407,24 @@ body.dark #citySelect,
 body.dark #districtSelect {
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23facc15' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
 }
+/* 修正表格文字在亮色模式下消失問題 */
+#resultTable td, 
+#resultTable th {
+  color: #222 !important;   /* 確保在亮色模式可見 */
+  background-color: #fefefe !important;
+}
+
+/* 深色模式調整 */
+body.dark #resultTable td, 
+body.dark #resultTable th {
+  color: #fff !important;
+  background-color: #222 !important;
+}
+
+/* 彈窗內服務表格也要顯示 */
+#serviceTable td, #serviceTable th {
+  color: var(--text-color);
+  background: var(--table-bg);
+}
+
 

@@ -18,24 +18,27 @@
   --link-color: #1a73e8;
 }
 
-/* 深色模式 */
+/* 深色模式（科技深藍） */
 body.dark {
   --bg-color: #0f172a;
   --text-color: #e2e8f0;
   --header-bg: #1e3a8a;
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
+
   --table-bg: #1e293b;
   --table-th-bg: #2d3f58;
   --table-border: #3b4b64;
+
   --modal-bg: #1e293b;
   --modal-border: #3b4b64;
+
   --link-color: #60a5fa;
 }
 
-/* ========================= 全局過渡動畫 ========================= */
+/* 全局過渡動畫 */
 * {
-  transition:
+  transition: 
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease,
@@ -51,24 +54,31 @@ body {
   text-align: center;
 }
 
-/* ========================= Header ========================= */
+/* =========================
+   Header
+========================= */
 header {
   background-color: var(--header-bg);
   padding: 28px;
   font-size: 1.8em;
   font-weight: bold;
   color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
-/* ========================= main ========================= */
+/* =========================
+   main（資料不顯示修正）
+========================= */
 main {
+  display: block;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-/* ========================= 控制區 ========================= */
+/* =========================
+   控制區（Material UI 風）
+========================= */
 #controls {
   display: flex;
   flex-wrap: wrap;
@@ -86,7 +96,7 @@ main {
   width: 220px;
   background: var(--table-bg);
   color: var(--text-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 #controls input {
@@ -97,7 +107,7 @@ main {
   padding-left: 40px;
 }
 
-/* Focus */
+/* Focus 效果 */
 #controls select:focus,
 #controls input:focus {
   border-color: var(--accent);
@@ -105,7 +115,9 @@ main {
   outline: none;
 }
 
-/* ========================= Filter 按鈕 ========================= */
+/* =========================
+   Filter 按鈕（醫療專業感）
+========================= */
 .filter-btn {
   background: white;
   padding: 10px 20px;
@@ -128,16 +140,22 @@ main {
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.35);
 }
 
-/* ========================= 表格 ========================= */
+/* =========================
+   表格（專業醫療系統風）
+========================= */
 #resultTable {
-  display: table;
+  display: table; /* 修正表格不顯示 */
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   background: var(--table-bg);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
   border-radius: 12px;
   overflow: hidden;
+}
+
+#resultTable tbody {
+  display: table-row-group; /* 修正渲染問題 */
 }
 
 #resultTable th {
@@ -145,6 +163,7 @@ main {
   color: white;
   padding: 14px;
   font-size: 16px;
+  letter-spacing: 0.5px;
 }
 
 #resultTable td {
@@ -159,7 +178,13 @@ main {
   transform: translateY(-1px);
 }
 
-/* ========================= 分頁 ========================= */
+body.dark #resultTable tr:hover {
+  background-color: rgba(96,165,250,0.12);
+}
+
+/* =========================
+   分頁
+========================= */
 #pagination {
   margin: 18px 0;
   display: flex;
@@ -182,34 +207,31 @@ main {
   background-color: var(--accent-hover);
 }
 
-/* ========================= Modal（關鍵部分） ========================= */
-
-/* ✔ 電腦版 modal（置中、正確不跑掉） */
+/* =========================
+   Modal（醫療資訊卡）
+========================= */
 .modal {
   display: none;
   position: fixed;
   z-index: 999;
+  padding-top: 70px;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  justify-content: center;
-  align-items: center; /* 置中關鍵 */
-  padding: 0;
+  background: rgba(0,0,0,0.4);
 }
 
-/* 彈窗內容（電腦版） */
 .modal-content {
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
+  margin: auto;
   padding: 25px;
   border-radius: 16px;
   width: 80%;
   max-width: 760px;
   text-align: left;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.25);
   animation: modalPop 0.25s ease;
 }
 
@@ -225,14 +247,216 @@ main {
   color: #999;
 }
 
-.close:hover { color: var(--accent); }
+.close:hover {
+  color: var(--accent);
+}
 
-/* ========================= 服務項目 ========================= */
-.service-table { width: 100%; border-collapse: collapse; margin-top: 18px; }
-.service-table th { background: var(--table-th-bg); color: white; padding: 10px; }
-.service-table td { border: 1px solid var(--table-border); padding: 10px; }
+/* Modal 資訊區 */
+.modal-content p {
+  font-size: 16px;
+  margin: 8px 0;
+}
 
-/* ========================= 主按鈕 ========================= */
+.modal-content strong {
+  color: var(--accent);
+}
+
+/* =========================
+   服務項目 Table
+========================= */
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--table-bg);
+}
+
+.service-table th {
+  background: var(--table-th-bg);
+  color: white;
+  padding: 10px;
+}
+
+.service-table td {
+  border: 1px solid var(--table-border);
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.service-table tr:hover {
+  background-color: rgba(26,115,232,0.08);
+}
+
+/* =========================
+   深色模式切換按鈕
+========================= */
+.theme-toggle-btn {
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* =========================
+   Footer
+========================= */
+footer {
+  margin-top: 25px;
+  padding: 15px;
+  font-size: 14px;
+  background: var(--header-bg);
+  color: white;
+}
+
+/* =========================
+   手機版
+========================= */
+@media (max-width: 600px) {
+  #controls select,
+  #controls input {
+    width: 90%;
+  }
+
+  .filter-btn {
+    width: 90%;
+  }
+
+  .modal-content {
+    width: 92%;
+  }
+}
+/* =========================
+   手機版：隱藏表格 → 改用卡片 UI
+========================= */
+@media (max-width: 600px) {
+
+  /* 隱藏原本表格 */
+  #resultTable thead {
+    display: none;
+  }
+
+  #resultTable,
+  #resultTable tbody,
+  #resultTable tr,
+  #resultTable td {
+    display: block;
+    width: 100%;
+  }
+
+  #resultTable tr {
+    background: var(--table-bg);
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+
+  #resultTable td {
+    border: none;
+    text-align: left;
+    padding: 6px 0;
+    font-size: 15px;
+  }
+
+  #resultTable td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* 控制區滿版顯示 */
+  #controls select,
+  #controls input,
+  .main-btn {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* filter 按鈕變成滿版、好按 */
+  .filter-btn {
+    width: 48%;
+    margin-bottom: 10px;
+  }
+
+  /* Modal 全螢幕 */
+  .modal-content {
+    width: 95%;
+    margin-top: 50px;
+    border-radius: 14px;
+    padding: 18px;
+  }
+}
+/* ================================
+   深色模式視覺加強（文字清晰度改善）
+================================ */
+
+/* 深色模式：一般文字亮度提高 */
+body.dark {
+  --text-color: #f8fafc;
+}
+
+/* 深色模式：連結亮度變強 */
+body.dark a {
+  color: #93c5fd !important;   /* 淺藍 */
+}
+
+/* 深色模式：表格 hover 文字強化（避免 hover 變白太刺眼） */
+body.dark #resultTable tr:hover td {
+  color: #f8fafc !important;
+}
+
+/* 深色模式：卡片 data-label 標題（例如：醫事機構名稱） */
+@media (max-width: 600px) {
+  body.dark #resultTable td::before {
+    color: #93c5fd !important;  /* 清晰淺藍 */
+    font-weight: 600;
+  }
+}
+
+/* 深色模式：Modal 標題 strong 更清楚 */
+body.dark .modal-content strong {
+  color: #93c5fd !important;
+  font-weight: 700;
+}
+
+/* 深色模式：Modal 內文亮度提升 */
+body.dark .modal-content p {
+  color: #f1f5f9 !important;
+}
+
+/* 深色模式：服務表格（右側服務項目）文字加亮 */
+body.dark .service-table td,
+body.dark .service-table th {
+  color: #f8fafc !important;
+}
+
+/* 深色模式：autocomplete 建議框背景＋文字清晰度 */
+body.dark #suggestionBox {
+  background: #1e293b !important;
+  border: 1px solid #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark #suggestionBox div:hover {
+  background: #334155 !important;
+}
 .main-btn {
   background: var(--accent);
   color: white;
@@ -242,63 +466,65 @@ main {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(26,115,232,0.25);
-}
-.main-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  letter-spacing: 0.5px;
 
-/* ========================= 手機版 ========================= */
+  box-shadow: 0 3px 8px rgba(26, 115, 232, 0.25);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.main-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.main-btn:active {
+  transform: translateY(0px);
+}
+/* ====================================
+   手機版 modal 修正（不遮字）
+==================================== */
 @media (max-width: 600px) {
 
-  /* 控制區滿版 */
-  #controls select,
-  #controls input,
-  .main-btn {
-    width: 100%;
-  }
-
-  .filter-btn {
-    width: 48%;
-  }
-
-  /* ✔ 手機版 Modal：縮小置中，不影響桌機版 */
+  /* 改成從底部滑上來的 APP Modal */
   .modal {
-    align-items: center;
-    justify-content: center;
+    display: none;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    top: auto;
+    height: auto;
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    padding: 0;
+    align-items: flex-end; /* 對齊到下方 */
   }
 
   .modal-content {
-    width: 92%;
-    max-width: 360px;
-    border-radius: 12px;
-    padding: 18px;
+    width: 100%;
+    max-height: 85vh;          /* 不會超過螢幕 */
+    overflow-y: auto;          /* 自動捲動 */
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+    margin: 0;
+    background: var(--modal-bg);
+    animation: slideUpMobile 0.25s ease;
   }
 
-  /* 卡片式表格 */
-  #resultTable thead { display: none; }
-  #resultTable, #resultTable tbody, #resultTable tr, #resultTable td {
-    display: block;
-    width: 100%;
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(80px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
-  #resultTable tr {
-    background: var(--table-bg);
-    margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 12px;
-  }
-  #resultTable td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    color: var(--accent);
-    margin-bottom: 2px;
-    display: block;
+
+  /* 關閉按鈕大小調整 */
+  .close {
+    font-size: 30px;
+    margin-top: -5px;
+    margin-right: 5px;
   }
 }
-
-/* ========================= 深色模式修正 ========================= */
-body.dark { --text-color: #f8fafc; }
-body.dark a { color: #93c5fd !important; }
-body.dark .modal-content strong { color: #93c5fd !important; }
-body.dark .modal-content p { color: #f1f5f9 !important; }
-body.dark .service-table td,
-body.dark .service-table th { color: #f8fafc !important; }
-

@@ -49,17 +49,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 
-  // 綁定表格事件委派（防止重繪後失效）
-  // 永久事件委派：即使表格重繪也不會失效
-document.addEventListener("click", (e) => {
-  const row = e.target.closest("#resultTable tbody tr");
-  if (!row) return;
-  const name = row.children[0]?.innerText?.trim();
-  if (!name) return;
-  const found = currentData.find((d) => d["醫事機構名稱"] === name);
-  if (found) showDetails(found);
+  // 永久事件委派（確保重新渲染後也能開啟）
+  document.addEventListener("click", (e) => {
+    const row = e.target.closest("#resultTable tbody tr");
+    if (!row) return;
+    const name = row.children[0]?.innerText?.trim();
+    if (!name) return;
+    const found = currentData.find((d) => d["醫事機構名稱"] === name);
+    if (found) showDetails(found);
+  });
 });
-
 
 /* CSV 轉 JSON */
 function csvToJson(csv) {
@@ -80,7 +79,7 @@ function normalizeAddress(data) {
   });
 }
 
-/* 城市 / 地區 */
+/* 城市與地區 */
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
   "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
@@ -152,7 +151,7 @@ function searchData() {
   smoothRender(renderTablePage);
 }
 
-/* 快速篩選 */
+/* 類別篩選 */
 function quickFilter(type) {
   let filtered;
   if (type === "全部") filtered = allData;
@@ -172,7 +171,7 @@ function quickFilter(type) {
   smoothRender(renderTablePage);
 }
 
-/* 表格與分頁 */
+/* 表格 */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
@@ -202,6 +201,7 @@ function renderTablePage() {
   renderPagination();
 }
 
+/* 分頁 */
 function renderPagination() {
   const pageCount = Math.ceil(currentData.length / pageSize);
   const pagination = document.getElementById("pagination");
@@ -243,7 +243,7 @@ function smoothRender(callback) {
   setTimeout(callback, 250);
 }
 
-/* 詳細資料與服務表格 */
+/* 詳細資料與服務 */
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -289,7 +289,7 @@ function showDetails(d) {
   modal.style.display = "block";
 }
 
-/* 主題切換 */
+/* 深色模式 */
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");
@@ -300,7 +300,7 @@ function initTheme() {
   });
 }
 
-/* 關鍵字自動提示 */
+/* 自動提示 */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const suggestionBox = document.createElement("div");
@@ -350,4 +350,3 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
-

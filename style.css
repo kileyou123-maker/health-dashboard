@@ -22,9 +22,9 @@ body.dark {
   --accent: #f59e0b;
 }
 
-/* 全域過渡 */
+/* ======== 全域動畫與過渡 ======== */
 * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 
 body {
@@ -34,28 +34,37 @@ body {
   color: var(--text-color);
   text-align: center;
   overflow-x: hidden;
-  animation: fadeIn 0.6s ease;
+  animation: fadeIn 0.8s ease;
 }
 
-/* header 漸入 */
+/* Header 區塊 */
 header {
   background-color: var(--header-bg);
   color: white;
-  padding: 20px 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  animation: slideDown 0.5s ease;
+  padding: 25px 10px;
+  font-size: 1.6em;
+  font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.6s ease;
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* 主要內容區 */
 main {
   padding: 20px;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.6s ease;
 }
 
 @keyframes fadeIn {
@@ -63,22 +72,30 @@ main {
   to { opacity: 1; }
 }
 
-/* 控制區 */
+/* ======== 控制區 ======== */
 #controls {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
   margin: 20px 0;
 }
 
 #controls select,
 #controls input {
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 15px;
-  transition: box-shadow 0.25s ease;
+  font-size: 16px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+#controls select:focus,
+#controls input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(49, 151, 149, 0.5);
+  outline: none;
 }
 
 body.dark #controls select,
@@ -88,55 +105,56 @@ body.dark #controls input {
   border: 1px solid #475569;
 }
 
-#controls select:focus,
-#controls input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 6px rgba(49, 151, 149, 0.35);
-  outline: none;
-}
-
-/* 按鈕 */
+/* ======== 按鈕樣式 ======== */
 .filter-btn,
 .main-btn {
   background-color: var(--accent);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 10px 18px;
   margin: 5px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 16px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
   transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .filter-btn:hover,
 .main-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* 表格 */
+.filter-btn.active {
+  background-color: var(--table-th-bg);
+  box-shadow: 0 3px 8px rgba(49, 151, 149, 0.5);
+}
+
+/* ======== 表格樣式 ======== */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
   background: var(--table-bg);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   opacity: 0;
   transform: translateY(10px);
-  animation: tableFade 0.5s ease forwards;
+  animation: tableFade 0.6s ease forwards;
 }
 
 @keyframes tableFade {
-  to { opacity: 1; transform: translateY(0); }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #resultTable th,
 #resultTable td {
   border: 1px solid var(--table-border);
-  padding: 10px;
+  padding: 12px;
   text-align: center;
   color: var(--text-color);
 }
@@ -144,6 +162,8 @@ body.dark #controls input {
 #resultTable th {
   background-color: var(--table-th-bg);
   color: white;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 #resultTable tr:hover {
@@ -155,32 +175,44 @@ body.dark #resultTable tr:hover {
   background-color: rgba(240, 171, 0, 0.15);
 }
 
-/* hover 整列亮化 */
+/* Hover 整列亮化 */
 #resultTable tr:hover td {
   color: #fff;
 }
 
-/* 連結 */
-a {
-  color: var(--link-color);
-  text-decoration: none;
-}
-
-a:hover {
-  color: #93c5fd;
-}
-
-/* 分頁 */
+/* ======== 分頁控制 ======== */
 #pagination {
   margin: 15px 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   animation: fadeIn 0.5s ease;
 }
 
-/* 彈窗 */
+#pagination button {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 15px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
+}
+
+#pagination button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+#pagination span {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* ======== 彈出視窗 Modal ======== */
 .modal {
   display: none;
   position: fixed;
@@ -191,7 +223,7 @@ a:hover {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.25s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
@@ -201,32 +233,33 @@ a:hover {
   padding: 20px;
   border-radius: 12px;
   width: 80%;
-  max-width: 600px;
+  max-width: 650px;
   text-align: left;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid var(--table-border);
-  transform: translateY(20px);
+  transform: translateY(30px);
   animation: slideUp 0.3s ease forwards;
 }
 
 @keyframes slideUp {
-  to { transform: translateY(0); }
+  to {
+    transform: translateY(0);
+  }
 }
 
-/* 關閉按鈕 */
 .close {
   color: #aaa;
   float: right;
   font-size: 28px;
   cursor: pointer;
-  transition: color 0.25s ease;
+  transition: color 0.3s ease;
 }
 
 .close:hover {
   color: var(--accent);
 }
 
-/* 深色模式按鈕 */
+/* ======== 深色模式切換按鈕 ======== */
 .theme-toggle-btn {
   position: fixed;
   top: 15px;
@@ -235,44 +268,59 @@ a:hover {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 20px;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
   cursor: pointer;
   z-index: 1000;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
 .theme-toggle-btn:hover {
-  transform: rotate(20deg) scale(1.08);
+  transform: rotate(20deg) scale(1.1);
 }
 
-/* footer */
+/* ======== Footer ======== */
 footer {
   background-color: var(--footer-bg);
   color: white;
-  padding: 10px 0;
+  padding: 12px 0;
+  font-size: 14px;
   margin-top: 20px;
   animation: fadeIn 0.5s ease;
 }
 
-/* 手機版 */
+/* ======== 手機版樣式 ======== */
 @media (max-width: 600px) {
   #controls {
     flex-direction: column;
     align-items: center;
   }
+
   #controls select,
   #controls input,
   .main-btn {
     width: 90%;
   }
+
+  .filter-btn {
+    width: 80%;
+    font-size: 14px;
+  }
+
+  #resultTable th,
+  #resultTable td {
+    font-size: 13px;
+    padding: 8px;
+  }
+
   .modal-content {
     width: 90%;
   }
 }
 
-/* ====== 服務項目表格美化 ====== */
+/* ======== 服務項目表格 ======== */
 .service-table {
   width: 100%;
   border-collapse: collapse;
@@ -281,8 +329,8 @@ footer {
   color: var(--text-color);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  animation: fadeIn 0.4s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.5s ease;
 }
 
 .service-table th,
@@ -296,7 +344,6 @@ footer {
 .service-table th {
   background-color: var(--table-th-bg);
   color: white;
-  letter-spacing: 1px;
 }
 
 .service-table tr:nth-child(even) {
@@ -308,5 +355,16 @@ body.dark .service-table tr:nth-child(even) {
 }
 
 .service-table td:nth-child(2) {
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* hover 動畫 */
+.service-table tr:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+  transition: background-color 0.3s ease;
+}
+
+body.dark .service-table tr:hover {
+  background-color: rgba(240, 171, 0, 0.15);
 }

@@ -30,9 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupAutocomplete();
 
   try {
-    const res = await fetch(
-      "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv"
-    );
+    const res = await fetch("https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv");
     const text = await res.text();
     serviceData = csvToJson(text);
   } catch (e) {
@@ -52,18 +50,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 
-  // 事件委派（修正過的版本：可無限次開啟 modal）
+  // ------ 修正後：使用事件委派偵測 tr ------
   document.addEventListener("click", (e) => {
     const row = e.target.closest("tr");
     if (!row) return;
 
-    // 確認在 resultTable 的 tbody 下
     if (
       !row.parentElement ||
       row.parentElement.tagName !== "TBODY" ||
       row.parentElement.parentElement.id !== "resultTable"
-    )
-      return;
+    ) return;
 
     const name = row.children[0]?.innerText?.trim();
     if (!name) return;
@@ -268,6 +264,7 @@ function setupModal() {
 
 function showDetails(d) {
   const modal = document.getElementById("detailModal");
+
   document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
   document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
   document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
@@ -276,6 +273,11 @@ function showDetails(d) {
     ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
     : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
+
+  const modalContent = modal.querySelector(".modal-content");
+
+  // ----★ 只刪服務表格，不刪掉基本資訊 (<p>) ----
+  modalContent.querySelectorAll(".service-table").forEach((el) => el.remove());
 
   const serviceSection = document.createElement("div");
   const found = serviceData.find(
@@ -297,8 +299,6 @@ function showDetails(d) {
     serviceSection.innerHTML = "<p style='text-align:center;'>暫無服務資料</p>";
   }
 
-  const modalContent = modal.querySelector(".modal-content");
-  modalContent.querySelectorAll(".service-table, p").forEach((el) => el.remove());
   modalContent.appendChild(serviceSection);
   modal.style.display = "block";
 }
@@ -310,10 +310,7 @@ function initTheme() {
   if (savedTheme === "dark") document.body.classList.add("dark");
   themeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "theme",
-      document.body.classList.contains("dark") ? "dark" : "light"
-    );
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
   });
 }
 

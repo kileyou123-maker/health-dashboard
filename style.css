@@ -403,4 +403,59 @@ footer {
     padding: 18px;
   }
 }
+/* ================================
+   深色模式視覺加強（文字清晰度改善）
+================================ */
+
+/* 深色模式：一般文字亮度提高 */
+body.dark {
+  --text-color: #f8fafc;
+}
+
+/* 深色模式：連結亮度變強 */
+body.dark a {
+  color: #93c5fd !important;   /* 淺藍 */
+}
+
+/* 深色模式：表格 hover 文字強化（避免 hover 變白太刺眼） */
+body.dark #resultTable tr:hover td {
+  color: #f8fafc !important;
+}
+
+/* 深色模式：卡片 data-label 標題（例如：醫事機構名稱） */
+@media (max-width: 600px) {
+  body.dark #resultTable td::before {
+    color: #93c5fd !important;  /* 清晰淺藍 */
+    font-weight: 600;
+  }
+}
+
+/* 深色模式：Modal 標題 strong 更清楚 */
+body.dark .modal-content strong {
+  color: #93c5fd !important;
+  font-weight: 700;
+}
+
+/* 深色模式：Modal 內文亮度提升 */
+body.dark .modal-content p {
+  color: #f1f5f9 !important;
+}
+
+/* 深色模式：服務表格（右側服務項目）文字加亮 */
+body.dark .service-table td,
+body.dark .service-table th {
+  color: #f8fafc !important;
+}
+
+/* 深色模式：autocomplete 建議框背景＋文字清晰度 */
+body.dark #suggestionBox {
+  background: #1e293b !important;
+  border: 1px solid #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark #suggestionBox div:hover {
+  background: #334155 !important;
+}
+
 

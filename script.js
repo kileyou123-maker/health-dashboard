@@ -255,6 +255,7 @@ function showDetails(d) {
   if (target) {
     const table = document.createElement("table");
     table.id = "serviceTable";
+    table.classList.add("service-table");
     table.innerHTML = `<thead><tr><th>服務項目</th><th>提供</th></tr></thead><tbody></tbody>`;
     const tbody = table.querySelector("tbody");
     for (let i = 4; i < serviceHeaders.length; i++) {

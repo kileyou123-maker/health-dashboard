@@ -40,11 +40,11 @@ function filterData(keyword) {
   keyword = keyword.trim();
   filteredData = allData.filter(d => {
     return (
-      d["醫事機構名稱"].includes(keyword) ||
-      d["醫事機構電話"].includes(keyword) ||
-      d["醫事機構地址"].includes(keyword) ||
-      d["整合團隊名稱"].includes(keyword) ||
-      d["來源"].includes(keyword)
+      (d["醫事機構名稱"] || "").includes(keyword) ||
+      (d["醫事機構電話"] || "").includes(keyword) ||
+      (d["醫事機構地址"] || "").includes(keyword) ||
+      (d["整合團隊名稱"] || "").includes(keyword) ||
+      (d["來源"] || "").includes(keyword)
     );
   });
   currentPage = 1;
@@ -62,11 +62,11 @@ function renderTable() {
   for (const d of pageData) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${d["醫事機構名稱"]}</td>
-      <td>${d["醫事機構電話"]}</td>
-      <td>${d["醫事機構地址"]}</td>
-      <td>${d["整合團隊名稱"]}</td>
-      <td>${d["來源"]}</td>
+      <td>${d["醫事機構名稱"] || ""}</td>
+      <td>${d["醫事機構電話"] || ""}</td>
+      <td>${d["醫事機構地址"] || ""}</td>
+      <td>${d["整合團隊名稱"] || ""}</td>
+      <td>${d["來源"] || ""}</td>
     `;
     tr.addEventListener("click", () => showDetails(d));
     tbody.appendChild(tr);
@@ -75,7 +75,7 @@ function renderTable() {
   renderPagination();
 }
 
-// 分頁
+// 分頁控制
 function renderPagination() {
   const totalPages = Math.ceil(filteredData.length / perPage);
   const pagination = document.getElementById("pagination");
@@ -96,7 +96,7 @@ function prevPage() {
   renderTable();
 }
 
-// 詳細資料顯示（含服務表格）
+// 顯示詳細資料 + 服務表格
 async function showDetails(d) {
   const modal = document.getElementById("detailModal");
   document.getElementById("modalTitle").textContent = d["醫事機構名稱"];
@@ -108,7 +108,6 @@ async function showDetails(d) {
     : "—";
   document.getElementById("modalSource").textContent = d["來源"] || "—";
 
-  // 移除舊表格
   const old = document.getElementById("serviceTable");
   if (old) old.remove();
 
@@ -163,7 +162,7 @@ function setupAutocomplete() {
     suggestionBox.innerHTML = "";
     if (!val) return;
     const matches = allData
-      .filter(d => d["醫事機構名稱"].includes(val))
+      .filter(d => (d["醫事機構名稱"] || "").includes(val))
       .slice(0, 8);
     for (const m of matches) {
       const div = document.createElement("div");
@@ -179,12 +178,12 @@ function setupAutocomplete() {
   });
 }
 
-// 縣市地區篩選
+// 縣市地區篩選（中文欄位）
 function setupFilters() {
   const citySelect = document.getElementById("citySelect");
   const townSelect = document.getElementById("townSelect");
 
-  const cities = [...new Set(allData.map(d => d.city))].filter(Boolean);
+  const cities = [...new Set(allData.map(d => d["縣市"]))].filter(Boolean);
   for (const c of cities) {
     const opt = document.createElement("option");
     opt.value = c;
@@ -194,7 +193,7 @@ function setupFilters() {
 
   citySelect.addEventListener("change", () => {
     const selected = citySelect.value;
-    const towns = [...new Set(allData.filter(d => d.city === selected).map(d => d.town))];
+    const towns = [...new Set(allData.filter(d => d["縣市"] === selected).map(d => d["地區"]))];
     townSelect.innerHTML = '<option value="">選擇地區</option>';
     for (const t of towns) {
       const opt = document.createElement("option");
@@ -211,7 +210,9 @@ function setupFilters() {
 function filterByLocation() {
   const city = document.getElementById("citySelect").value;
   const town = document.getElementById("townSelect").value;
-  filteredData = allData.filter(d => (!city || d.city === city) && (!town || d.town === town));
+  filteredData = allData.filter(
+    d => (!city || d["縣市"] === city) && (!town || d["地區"] === town)
+  );
   currentPage = 1;
   renderTable();
 }

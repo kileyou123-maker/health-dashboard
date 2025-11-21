@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupAutocomplete();
 
   try {
-    const res = await fetch("https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv");
+    const res = await fetch(
+      "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv"
+    );
     const text = await res.text();
     serviceData = csvToJson(text);
   } catch (e) {
@@ -45,16 +47,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("keyword").addEventListener("keypress", (e) => {
     if (e.key === "Enter") searchData();
   });
+
   document.querySelectorAll(".filter-btn").forEach((btn) =>
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 
-  // 永久事件委派（確保重新渲染後也能開啟）
+  // 事件委派（修正過的版本：可無限次開啟 modal）
   document.addEventListener("click", (e) => {
-    const row = e.target.closest("#resultTable tbody tr");
+    const row = e.target.closest("tr");
     if (!row) return;
+
+    // 確認在 resultTable 的 tbody 下
+    if (
+      !row.parentElement ||
+      row.parentElement.tagName !== "TBODY" ||
+      row.parentElement.parentElement.id !== "resultTable"
+    )
+      return;
+
     const name = row.children[0]?.innerText?.trim();
     if (!name) return;
+
     const found = currentData.find((d) => d["醫事機構名稱"] === name);
     if (found) showDetails(found);
   });
@@ -268,6 +281,7 @@ function showDetails(d) {
   const found = serviceData.find(
     (s) => s["醫事機構名稱"] && s["醫事機構名稱"].includes(d["醫事機構名稱"])
   );
+
   if (found) {
     let table = `<table class="service-table">
       <thead><tr><th>項目</th><th>是否提供</th></tr></thead><tbody>`;
@@ -296,7 +310,10 @@ function initTheme() {
   if (savedTheme === "dark") document.body.classList.add("dark");
   themeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
   });
 }
 

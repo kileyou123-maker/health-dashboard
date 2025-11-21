@@ -508,3 +508,27 @@ body.dark #suggestionBox div:hover {
     background: transparent;
   }
 }
+.service-table td.yes-icon,
+.service-table td.no-icon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.yes-icon::before {
+  content: "✔";
+  color: white;
+  background: #1a73e8;
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.no-icon::before {
+  content: "✖";
+  color: white;
+  background: #b0b0b0;
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+

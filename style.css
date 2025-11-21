@@ -1,5 +1,5 @@
 /* =========================
-   主題配色
+   全局主題變數（亮色）
 ========================= */
 :root {
   --bg-color: #f7fafc;
@@ -18,7 +18,9 @@
   --link-color: #1a73e8;
 }
 
-/* 深色模式 */
+/* =========================
+   深色模式
+========================= */
 body.dark {
   --bg-color: #0f172a;
   --text-color: #e2e8f0;
@@ -36,14 +38,9 @@ body.dark {
   --link-color: #60a5fa;
 }
 
-/* 全域過渡 */
+/* 全局過渡 */
 * {
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.15s ease;
+  transition: background-color .25s ease, color .25s ease;
 }
 
 body {
@@ -51,7 +48,6 @@ body {
   background: var(--bg-color);
   color: var(--text-color);
   margin: 0;
-  text-align: center;
 }
 
 /* =========================
@@ -59,25 +55,22 @@ body {
 ========================= */
 header {
   background: var(--header-bg);
-  padding: 25px;
+  padding: 28px;
   font-size: 1.8em;
   font-weight: bold;
   color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
 }
 
 /* =========================
-   main
+   Layout
 ========================= */
 main {
-  width: 100%;
   max-width: 1100px;
-  margin: 0 auto;
+  margin: auto;
 }
 
-/* =========================
-   控制區
-========================= */
 #controls {
   display: flex;
   flex-wrap: wrap;
@@ -89,158 +82,99 @@ main {
 #controls select,
 #controls input {
   padding: 12px 15px;
+  border-radius: 12px;
+  border: 1px solid var(--table-border);
   background: var(--table-bg);
   color: var(--text-color);
-  border: 1px solid var(--table-border);
-  border-radius: 12px;
-  font-size: 16px;
   width: 220px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-#controls input {
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%231A73E8" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M21.71 20.29l-3.4-3.39A9 9 0 1018 19l3.41 3.42a1 1 0 001.41-1.41zM11 18a7 7 0 117-7 7 7 0 01-7 7z"></path></svg>');
-  background-repeat: no-repeat;
-  background-size: 18px;
-  background-position: 10px center;
-  padding-left: 40px;
 }
 
 /* =========================
-   Filter 按鈕
+   Filter Buttons
 ========================= */
 .filter-btn {
   background: white;
-  padding: 10px 20px;
-  border-radius: 25px;
   border: 2px solid var(--accent);
-  font-size: 15px;
-  font-weight: 600;
   color: var(--accent);
+  padding: 10px 22px;
+  border-radius: 25px;
   cursor: pointer;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-  background: var(--accent);
-  color: white;
-}
-
-/* =========================
-   搜尋按鈕（美化）
-========================= */
-.main-btn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 12px;
-  font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  box-shadow: 0 3px 8px rgba(26,115,232,0.25);
 }
 
-.main-btn:hover {
-  background: var(--accent-hover);
+.filter-btn.active,
+.filter-btn:hover {
+  background: var(--accent);
+  color: white;
 }
 
 /* =========================
-   表格（桌機）
+   Table
 ========================= */
 #resultTable {
   width: 100%;
   border-collapse: collapse;
-  background: var(--table-bg);
   margin-top: 20px;
+  background: var(--table-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 15px rgba(0,0,0,.12);
 }
 
 #resultTable th {
   background: var(--table-th-bg);
   color: white;
   padding: 14px;
-  font-size: 16px;
 }
 
 #resultTable td {
   padding: 12px;
   border-bottom: 1px solid var(--table-border);
-  color: var(--text-color);
-}
-
-#resultTable tr:hover {
-  background: rgba(26,115,232,0.08);
+  text-align: center;
 }
 
 /* =========================
-   分頁
-========================= */
-#pagination {
-  margin: 18px 0;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-#pagination button {
-  background: var(--accent);
-  border: none;
-  color: white;
-  padding: 10px 18px;
-  font-size: 15px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-#pagination button:hover {
-  background: var(--accent-hover);
-}
-
-/* =========================
-   Modal（電腦置中、手機置中）
+   Modal（電腦版置中）
 ========================= */
 .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 999;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 
-  /* 電腦 + 手機都置中 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  background: rgba(0,0,0,0.45) !important;
+  z-index: 999 !important;
 }
 
 .modal-content {
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
+  border-radius: 16px;
   width: 80%;
   max-width: 650px;
   padding: 25px;
-  border-radius: 16px;
   text-align: left;
-
   max-height: 85vh;
   overflow-y: auto;
-
-  animation: modalPop 0.25s ease;
+  animation: modalPop .25s ease;
 }
 
+/* Modal 動畫 */
 @keyframes modalPop {
-  from { transform: scale(0.92); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from { transform: scale(.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .close {
   float: right;
   font-size: 28px;
   cursor: pointer;
-  color: #999;
+  color: #888;
 }
 
 .close:hover {
@@ -248,96 +182,55 @@ main {
 }
 
 /* =========================
-   手機版表格 → 卡片 UI
+   手機版：表格變卡片式
 ========================= */
-@media (max-width: 600px) {
+@media (max-width:600px) {
 
-  #controls select,
-  #controls input {
-    width: 95%;
-  }
-
-  .filter-btn {
-    width: 48%;
-  }
-
-  #resultTable thead {
-    display: none;
-  }
-
-  #resultTable,
-  #resultTable tbody,
-  #resultTable tr,
-  #resultTable td {
-    display: block;
-    width: 100%;
-  }
+  #resultTable thead { display: none; }
 
   #resultTable tr {
-    background: var(--table-bg);
-    margin-bottom: 15px;
+    display: block;
+    margin-bottom: 14px;
     padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
   }
 
   #resultTable td {
-    border: none;
-    padding: 6px 0;
+    display: block;
     text-align: left;
+    border: none;
   }
 
   #resultTable td::before {
     content: attr(data-label);
-    color: var(--accent);
-    font-weight: bold;
     display: block;
-    margin-bottom: 4px;
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 2px;
   }
 
-  /* 手機版 modal：保持置中縮小 */
+  /* 手機 Modal 置中、不貼上下邊 */
+  .modal {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+
   .modal-content {
-    width: 92%;
-    max-height: 80vh;
-    padding: 20px;
+    width: 90% !important;
+    border-radius: 16px !important;
+    max-height: 80vh !important;
   }
 }
 
 /* =========================
-   深色模式補強
+   深色模式強化
 ========================= */
-body.dark a { color: #93c5fd !important; }
-body.dark .modal-content strong { color: #93c5fd !important; }
-body.dark .modal-content p { color: #f1f5f9 !important; }
-body.dark #resultTable tr:hover td { color: #fff !important; }
-
-/* =========================
-   深色模式切換按鈕
-========================= */
-.theme-toggle-btn {
-  position: fixed;
-  top: 15px;
-  right: 18px;
-  width: 48px;
-  height: 48px;
-  background: var(--accent);
-  border-radius: 50%;
-  border: none;
+body.dark #resultTable tr:hover td {
   color: white;
-  font-size: 20px;
-  cursor: pointer;
 }
 
-.theme-toggle-btn:hover {
-  background: var(--accent-hover);
-}
-
-/* =========================
-   Footer
-========================= */
-footer {
-  margin-top: 25px;
-  padding: 15px;
-  background: var(--header-bg);
-  color: white;
+body.dark .modal-content strong {
+  color: #93c5fd;
 }

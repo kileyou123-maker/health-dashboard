@@ -5,7 +5,7 @@ const pageSize = 50;
 let currentData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(initApp, 150); // 手機稍微延後初始化
+  setTimeout(initApp, 150);
 });
 
 async function initApp() {
@@ -218,15 +218,11 @@ function renderTablePage() {
     )}`;
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td data-label="醫事機構名稱">${d["醫事機構名稱"]}</td>
-      <td data-label="地址"><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td data-label="電話"><a href="tel:${
-        d["醫事機構電話"]
-      }" style="color:#2b6cb0;text-decoration:none;">${
-      d["醫事機構電話"]
-    }</a></td>
-      <td data-label="整合團隊名稱">${d["整合團隊名稱"]}</td>
-      <td data-label="來源">${d["來源"]}</td>`;
+      <td>${d["醫事機構名稱"]}</td>
+      <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
+      <td><a href="tel:${d["醫事機構電話"]}" style="color:#2b6cb0;text-decoration:none;">${d["醫事機構電話"]}</a></td>
+      <td>${d["整合團隊名稱"]}</td>
+      <td>${d["來源"]}</td>`;
     row.addEventListener("click", () => showDetails(d));
     tbody.appendChild(row);
   }
@@ -288,7 +284,68 @@ function smoothRender(callback) {
   setTimeout(callback, 250);
 }
 
-/* 詳細資料 */
+/* 詳細資料 + 新增服務表格 */
+async function showDetails(d) {
+  const modal = document.getElementById("detailModal");
+  document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
+  document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
+  document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
+  document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
+  document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
+    ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
+    : "無";
+  document.getElementById("modalSource").textContent = d["來源"] || "無";
+
+  const oldTable = document.getElementById("serviceTable");
+  if (oldTable) oldTable.remove();
+
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/services.csv");
+    const text = await res.text();
+    const lines = text.split("\n").filter((l) => l.trim());
+    const headers = lines[0].split(",").map((h) => h.trim());
+    const nameIndex = 0;
+    const dataRows = lines.slice(1).map((l) => l.split(","));
+    const target = dataRows.find((r) =>
+      (r[nameIndex] || "").includes(d["醫事機構名稱"])
+    );
+
+    if (target) {
+      const table = document.createElement("table");
+      table.id = "serviceTable";
+      table.style.width = "100%";
+      table.style.marginTop = "10px";
+      table.style.borderCollapse = "collapse";
+      table.style.border = "1px solid var(--table-border)";
+      table.innerHTML = `
+        <thead>
+          <tr style="background: var(--table-th-bg); color: white;">
+            <th>服務項目</th><th>是否提供</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector("tbody");
+
+      for (let i = 1; i < headers.length; i++) {
+        const item = headers[i];
+        const val = target[i] && target[i].trim() === "1" ? "✅" : "❌";
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${item}</td><td>${val}</td>`;
+        row.style.textAlign = "center";
+        row.style.border = "1px solid var(--table-border)";
+        tbody.appendChild(row);
+      }
+      modal.querySelector(".modal-content").appendChild(table);
+    }
+  } catch (e) {
+    console.error("服務資料載入錯誤", e);
+  }
+
+  modal.style.display = "block";
+}
+
+/* Modal 關閉 */
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -298,24 +355,7 @@ function setupModal() {
   };
 }
 
-function showDetails(d) {
-  const modal = document.getElementById("detailModal");
-  document.getElementById("modalTitle").textContent =
-    d["醫事機構名稱"] || "無";
-  document.getElementById("modalCode").textContent =
-    d["醫事機構代碼"] || "無";
-  document.getElementById("modalTeam").textContent =
-    d["整合團隊名稱"] || "無";
-  document.getElementById("modalAddr").textContent =
-    d["醫事機構地址"] || "無";
-  document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
-    ? `<a href="tel:${d["醫事機構電話"]}" style="color:#63b3ed;text-decoration:none;">${d["醫事機構電話"]}</a>`
-    : "無";
-  document.getElementById("modalSource").textContent = d["來源"] || "無";
-  modal.style.display = "block";
-}
-
-/* 主題切換 */
+/* 深色模式 */
 function initTheme() {
   const themeBtn = document.getElementById("themeToggle");
   const savedTheme = localStorage.getItem("theme");
@@ -329,7 +369,7 @@ function initTheme() {
   });
 }
 
-/* 自動提示（增強版） */
+/* 自動提示強化版 */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const suggestionBox = document.createElement("div");

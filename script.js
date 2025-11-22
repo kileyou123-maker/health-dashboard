@@ -1,9 +1,3 @@
-async function loadServiceJSON() {
-  const url = "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.json?_=" + Date.now();
-  const res = await fetch(url);
-  return await res.json();
-}
-
 let allData = [];
 let cityDistrictMap = {};
 let currentPage = 1;
@@ -28,7 +22,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   for (const f of files) {
     const res = await fetch(f.path);
     const text = await res.text();
-    const json = csvToJson(text).map((item) => ({ ...item, 來源: f.source }));
+    const json = csvToJson(text).map(item => ({
+      ...item,
+      來源: f.source
+    }));
     merged = merged.concat(json);
   }
 
@@ -49,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.key === "Enter") searchData();
   });
 
-  document.querySelectorAll(".filter-btn").forEach((btn) =>
+  document.querySelectorAll(".filter-btn").forEach(btn =>
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 
@@ -58,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const row = e.target.closest("#resultTable tbody tr");
     if (!row) return;
     const name = row.children[0]?.innerText?.trim();
-    const found = currentData.find((d) => d["醫事機構名稱"] === name);
+    const found = currentData.find(d => d["醫事機構名稱"] === name);
     if (found) showDetails(found);
   });
 });
@@ -67,13 +64,15 @@ document.addEventListener("DOMContentLoaded", async () => {
    CSV → JSON
 =========================== */
 function csvToJson(csv) {
-  const lines = csv.split("\n").filter((l) => l.trim());
-  const headers = lines[0].split(",").map((h) => h.trim());
+  const lines = csv.split("\n").filter(l => l.trim());
+  const headers = lines[0].split(",").map(h => h.trim());
 
-  return lines.slice(1).map((line) => {
+  return lines.slice(1).map(line => {
     const values = line.split(",");
     const obj = {};
-    headers.forEach((h, i) => (obj[h] = values[i] ? values[i].trim() : ""));
+    headers.forEach((h, i) => {
+      obj[h] = values[i] ? values[i].trim() : "";
+    });
     return obj;
   });
 }
@@ -82,9 +81,10 @@ function csvToJson(csv) {
    地址清理（臺 → 台）
 =========================== */
 function normalizeAddress(data) {
-  data.forEach((d) => {
-    if (d["醫事機構地址"])
+  data.forEach(d => {
+    if (d["醫事機構地址"]) {
       d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
+    }
   });
 }
 
@@ -98,11 +98,11 @@ const allCities = [
 ];
 
 function buildCityDistrictMap(data) {
-  data.forEach((d) => {
+  data.forEach(d => {
     const addr = d["醫事機構地址"];
     if (!addr) return;
 
-    const city = allCities.find((c) => addr.startsWith(c)) || "其他";
+    const city = allCities.find(c => addr.startsWith(c)) || "其他";
     const after = addr.replace(city, "");
     const match = after.match(/[\u4e00-\u9fa5]{1,3}(區|鎮|鄉|市)/);
     const district = match ? match[0] : "其他";
@@ -115,7 +115,7 @@ function buildCityDistrictMap(data) {
 function populateCityList() {
   const citySel = document.getElementById("citySelect");
   citySel.innerHTML = '<option value="全部">全部</option>';
-  Object.keys(cityDistrictMap).forEach((city) => {
+  Object.keys(cityDistrictMap).forEach(city => {
     const opt = document.createElement("option");
     opt.value = city;
     opt.textContent = city;
@@ -130,7 +130,7 @@ function populateDistrictList() {
   districtSel.innerHTML = '<option value="全部">全部</option>';
 
   if (city !== "全部" && cityDistrictMap[city]) {
-    [...cityDistrictMap[city]].forEach((d) => {
+    [...cityDistrictMap[city]].forEach(d => {
       const opt = document.createElement("option");
       opt.value = d;
       opt.textContent = d;
@@ -138,7 +138,6 @@ function populateDistrictList() {
     });
   }
 }
-
 /* ===========================
    搜尋
 =========================== */
@@ -147,7 +146,7 @@ function searchData() {
   const district = document.getElementById("districtSelect").value;
   const keyword = document.getElementById("keyword").value.trim();
 
-  currentData = allData.filter((d) => {
+  currentData = allData.filter(d => {
     const addr = d["醫事機構地址"] || "";
     const name = d["醫事機構名稱"] || "";
     const phone = d["醫事機構電話"] || "";
@@ -178,16 +177,17 @@ function searchData() {
 function quickFilter(type) {
   let filtered;
 
-  if (type === "全部") filtered = allData;
-  else {
+  if (type === "全部") {
+    filtered = allData;
+  } else {
     const keywords = {
       醫院: ["醫院"],
       診所: ["診所", "醫療"],
       護理之家: ["護理", "安養", "養護"],
     }[type] || [];
 
-    filtered = allData.filter((d) =>
-      keywords.some((k) => (d["醫事機構名稱"] || "").includes(k))
+    filtered = allData.filter(d =>
+      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
     );
   }
 
@@ -219,14 +219,19 @@ function renderTablePage() {
 
   for (const d of pageData) {
     const addr = d["醫事機構地址"];
-    const mapUrl =
+    const mapUrl = 
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
 
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${d["醫事機構名稱"]}</td>
       <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td><a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${d["醫事機構電話"]}</a></td>
+      <td><a href="tel:${d["醫事機構電話"]}"
+             style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};
+                    text-decoration:none;">
+            ${d["醫事機構電話"]}
+          </a>
+      </td>
       <td>${d["整合團隊名稱"]}</td>
       <td>${d["來源"]}</td>
     `;
@@ -273,7 +278,7 @@ function renderPagination() {
 }
 
 /* ===========================
-   ★ 修正版 smoothRender ★
+   ★ 修正版 smoothRender（不卡頓）
 =========================== */
 function smoothRender(callback) {
   const table = document.getElementById("resultTable");
@@ -282,17 +287,16 @@ function smoothRender(callback) {
   table.style.transform = "translateY(15px)";
 
   setTimeout(() => {
-    callback();
+    callback(); // 更新內容
 
     requestAnimationFrame(() => {
       table.style.opacity = "1";
       table.style.transform = "translateY(0)";
     });
-  }, 250);
+  }, 200);
 }
-
 /* ===========================
-   Modal
+   Modal 基本設定
 =========================== */
 function setupModal() {
   const modal = document.getElementById("detailModal");
@@ -305,22 +309,49 @@ function setupModal() {
   };
 }
 
-/* ===========================================================
-   ⭐⭐⭐ 這裡是新的：即時抓健保署 INAE1031S01 服務項目 ⭐⭐⭐
-=========================================================== */
-      }
-    });
+/* ===========================
+   ⭐ 從 GitHub 自動取得最新 services.json（方案 A）
+=========================== */
+async function fetchServiceFromGitHub(name) {
+  try {
+    const url =
+      "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/main/services.json";
 
-    return result;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+
+    const json = await res.json();
+
+    return json[name] || null;
 
   } catch (e) {
-    console.error("即時健保署資料抓取失敗：", e);
+    console.error("抓取 services.json 失敗：", e);
     return null;
   }
 }
 
 /* ===========================
-   詳細資料（已整合健保署）
+   服務項目圖示（更漂亮）
+=========================== */
+function renderIcon(value) {
+  if (!value) return `<span class="no-icon">✕</span>`;
+
+  const val = value.toString();
+
+  const yes =
+    val.includes("1") ||
+    val.includes("是") ||
+    val.includes("V") ||
+    val.includes("✓") ||
+    val.includes("提供");
+
+  return yes
+    ? `<span class="yes-icon">●</span>`
+    : `<span class="no-icon">✕</span>`;
+}
+
+/* ===========================
+   ⭐ showDetails（整合：基本資料 + services.json）
 =========================== */
 async function showDetails(d) {
   const modal = document.getElementById("detailModal");
@@ -330,53 +361,63 @@ async function showDetails(d) {
   document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
   document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
   document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
-    ? `<a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${d["醫事機構電話"]}</a>`
+    ? `<a href="tel:${d["醫事機構電話"]}"
+         style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};
+                text-decoration:none;">
+         ${d["醫事機構電話"]}
+       </a>`
     : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
 
-  /* 清空舊的服務表 */
+  /* 清掉舊資料 */
   const modalContent = modal.querySelector(".modal-content");
-  modalContent.querySelectorAll(".service-table, p.temp-msg, p.live-tag").forEach((el) => el.remove());
+  modalContent.querySelectorAll(".service-table, .temp-msg, .live-tag").forEach(el => el.remove());
 
-  /* ⭐ 直接抓健保署最新資料 */
-  const serviceList = await loadServiceJSON();
-const found = serviceList.find(s => s["醫事機構名稱"] === d["醫事機構名稱"]);
+  /* ===========================
+     ⭐ 從 GitHub 自動更新的 services.json
+  ============================ */
+  const live = await fetchServiceFromGitHub(d["醫事機構名稱"]);
 
-let section = document.createElement("div");
-if (found) {
-  let table = `
-    <p class="live-tag" style="font-size:14px;color:var(--accent);margin:6px 0;">
-      （資料來自 GitHub 自動更新 services.json）
-    </p>
-    <table class="service-table">
-      <thead><tr><th>項目</th><th>是否提供</th></tr></thead>
-      <tbody>
-  `;
-  for (let [key, value] of Object.entries(found)) {
-    if (!key || key === "醫事機構名稱") continue;
-    const yes = value === "1" || value === "是" || value === "✔";
-    table += `
-      <tr>
-        <td>${key}</td>
-        <td class="${yes ? "yes-icon" : "no-icon"}"></td>
-      </tr>
+  const section = document.createElement("div");
+
+  if (live) {
+    let table = `
+      <p class="live-tag" style="font-size:14px;color:var(--accent);margin:6px 0;">
+        （本資料已即時同步健保署服務項目）
+      </p>
+
+      <table class="service-table">
+        <thead><tr><th>項目</th><th>是否提供</th></tr></thead>
+        <tbody>
+    `;
+
+    for (let [key, value] of Object.entries(live)) {
+      table += `
+        <tr>
+          <td>${key}</td>
+          <td>${renderIcon(value)}</td>
+        </tr>
+      `;
+    }
+
+    table += `</tbody></table>`;
+    section.innerHTML = table;
+
+  } else {
+    section.innerHTML = `
+      <p class="temp-msg" style="text-align:center;color:#999;">
+        ⚠ 無法取得健保署最新服務資料（services.json 無對應資料）
+      </p>
     `;
   }
-  table += "</tbody></table>";
-  section.innerHTML = table;
-} else {
-  section.innerHTML = `
-    <p class="temp-msg" style="text-align:center;color:#999;">
-      ⚠ 找不到服務項目（services.json 尚未含此機構）
-    </p>
-  `;
-}
-modalContent.appendChild(section);
-modal.style.display = "block";
-}
 
+  modalContent.appendChild(section);
+
+  /* 顯示 modal */
+  modal.style.display = "block";
+}
 /* ===========================
-   深色模式
+   深色模式（含 LocalStorage）
 =========================== */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
@@ -386,48 +427,61 @@ function initTheme() {
 
   btn.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
   });
 }
 
 /* ===========================
-   自動提示
+   Autocomplete 搜尋提示
 =========================== */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
-  const suggestionBox = document.createElement("div");
 
+  const suggestionBox = document.createElement("div");
   suggestionBox.id = "suggestionBox";
   suggestionBox.style.position = "absolute";
-  suggestionBox.style.background = "white";
-  suggestionBox.style.border = "1px solid #ccc";
-  suggestionBox.style.borderRadius = "5px";
-  suggestionBox.style.zIndex = "999";
+  suggestionBox.style.background = "var(--table-bg)";
+  suggestionBox.style.border = "1px solid var(--table-border)";
+  suggestionBox.style.borderRadius = "6px";
+  suggestionBox.style.zIndex = "9999";
   suggestionBox.style.display = "none";
-  suggestionBox.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
+  suggestionBox.style.boxShadow = "0 3px 8px rgba(0,0,0,0.25)";
+  suggestionBox.style.maxHeight = "260px";
+  suggestionBox.style.overflowY = "auto";
 
   document.body.appendChild(suggestionBox);
 
+  /* 更新建議內容 */
   input.addEventListener("input", () => {
     const val = input.value.trim();
     suggestionBox.innerHTML = "";
 
-    if (!val) return (suggestionBox.style.display = "none");
+    if (!val) {
+      suggestionBox.style.display = "none";
+      return;
+    }
 
     const matches = allData
-      .map((d) => d["醫事機構名稱"])
-      .filter((n) => n && n.includes(val));
+      .map(d => d["醫事機構名稱"])
+      .filter(n => n && n.includes(val));
 
     const unique = [...new Set(matches)].slice(0, 8);
 
-    unique.forEach((name) => {
+    unique.forEach(name => {
       const div = document.createElement("div");
       div.textContent = name;
-      div.style.padding = "8px";
+      div.style.padding = "10px";
       div.style.cursor = "pointer";
 
-      div.addEventListener("mouseover", () => (div.style.background = "#e6fffa"));
-      div.addEventListener("mouseout", () => (div.style.background = "transparent"));
+      div.addEventListener("mouseover", () => {
+        div.style.background = "rgba(26,115,232,0.12)";
+      });
+      div.addEventListener("mouseout", () => {
+        div.style.background = "transparent";
+      });
 
       div.addEventListener("click", () => {
         input.value = name;
@@ -449,8 +503,41 @@ function setupAutocomplete() {
     }
   });
 
+  /* 點擊外部關閉建議框 */
   document.addEventListener("click", (e) => {
-    if (e.target !== input && e.target.parentNode !== suggestionBox)
+    if (e.target !== input && e.target.parentNode !== suggestionBox) {
       suggestionBox.style.display = "none";
+    }
   });
 }
+/* ===========================
+   避免 Scroll 造成 Modal 跑位（手機）
+=========================== */
+window.addEventListener("resize", () => {
+  const suggestionBox = document.getElementById("suggestionBox");
+  if (suggestionBox) suggestionBox.style.display = "none";
+});
+
+/* ===========================
+   修正手機版 Modal 置中顯示
+=========================== */
+function adjustMobileModal() {
+  const modalContent = document.querySelector(".modal-content");
+  if (!modalContent) return;
+
+  if (window.innerWidth <= 600) {
+    modalContent.style.margin = "0 auto";
+    modalContent.style.position = "relative";
+    modalContent.style.top = "0";
+  } else {
+    modalContent.style.margin = "auto";
+  }
+}
+
+window.addEventListener("resize", adjustMobileModal);
+window.addEventListener("load", adjustMobileModal);
+
+/* ===========================
+   最終安全檢查（避免 JS 錯誤停住整站）
+=========================== */
+console.log("%c健康儀表板 script.js 載入完成", "color:#1a73e8;font-size:14px;");

@@ -40,7 +40,7 @@ for city in cities:
 
     table = page.find("table", {"id": "gvList"})
     if not table:
-        print("⚠ 找不到資料表（被擋或無資料）", city)
+        print("⚠ 找不到資料表（可能被擋）", city)
         continue
 
     rows = table.find_all("tr")[1:]

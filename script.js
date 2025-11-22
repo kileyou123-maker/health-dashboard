@@ -1,3 +1,9 @@
+async function loadServiceJSON() {
+  const url = "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.json?_=" + Date.now();
+  const res = await fetch(url);
+  return await res.json();
+}
+
 let allData = [];
 let cityDistrictMap = {};
 let currentPage = 1;
@@ -302,32 +308,6 @@ function setupModal() {
 /* ===========================================================
    ⭐⭐⭐ 這裡是新的：即時抓健保署 INAE1031S01 服務項目 ⭐⭐⭐
 =========================================================== */
-async function fetchServiceFromNHI(name) {
-  try {
-    const url = "https://info.nhi.gov.tw/INAE1000/INAE1031S01";
-
-    const res = await fetch(url, { mode: "cors" });
-    const html = await res.text();
-    const doc = new DOMParser().parseFromString(html, "text/html");
-
-    const table = doc.querySelector("table");
-    if (!table) return null;
-
-    const rows = table.querySelectorAll("tbody tr");
-    let result = {};
-
-    rows.forEach(tr => {
-      const tds = tr.querySelectorAll("td");
-      const instName = tds[0]?.innerText?.trim();
-
-      if (instName === name) {
-        const headers = table.querySelectorAll("thead th");
-
-        for (let i = 3; i < tds.length; i++) {
-          const label = headers[i].innerText.trim();
-          const value = tds[i].innerText.trim();
-          result[label] = value;
-        }
       }
     });
 
@@ -359,48 +339,40 @@ async function showDetails(d) {
   modalContent.querySelectorAll(".service-table, p.temp-msg, p.live-tag").forEach((el) => el.remove());
 
   /* ⭐ 直接抓健保署最新資料 */
-  const live = await fetchServiceFromNHI(d["醫事機構名稱"]);
+  const serviceList = await loadServiceJSON();
+const found = serviceList.find(s => s["醫事機構名稱"] === d["醫事機構名稱"]);
 
-  const section = document.createElement("div");
-
-  if (live) {
-    let table = `
-      <p class="live-tag" style="font-size:14px;color:var(--accent);margin:6px 0;">
-        （資料已即時同步健保署 INAE1031）
-      </p>
-      <table class="service-table">
-        <thead><tr><th>項目</th><th>是否提供</th></tr></thead>
-        <tbody>
-    `;
-
-    for (let [key, value] of Object.entries(live)) {
-      const yes =
-        value.includes("是") ||
-        value.includes("V") ||
-        value.includes("提供") ||
-        value.includes("✓");
-
-      table += `
-        <tr>
-          <td>${key}</td>
-          <td class="${yes ? "yes-icon" : "no-icon"}"></td>
-        </tr>
-      `;
-    }
-
-    table += "</tbody></table>";
-    section.innerHTML = table;
-
-  } else {
-    section.innerHTML = `
-      <p class="temp-msg" style="text-align:center;color:#999;">
-        ⚠ 無法即時取得健保署資料，僅顯示基本資訊
-      </p>
+let section = document.createElement("div");
+if (found) {
+  let table = `
+    <p class="live-tag" style="font-size:14px;color:var(--accent);margin:6px 0;">
+      （資料來自 GitHub 自動更新 services.json）
+    </p>
+    <table class="service-table">
+      <thead><tr><th>項目</th><th>是否提供</th></tr></thead>
+      <tbody>
+  `;
+  for (let [key, value] of Object.entries(found)) {
+    if (!key || key === "醫事機構名稱") continue;
+    const yes = value === "1" || value === "是" || value === "✔";
+    table += `
+      <tr>
+        <td>${key}</td>
+        <td class="${yes ? "yes-icon" : "no-icon"}"></td>
+      </tr>
     `;
   }
-
-  modalContent.appendChild(section);
-  modal.style.display = "block";
+  table += "</tbody></table>";
+  section.innerHTML = table;
+} else {
+  section.innerHTML = `
+    <p class="temp-msg" style="text-align:center;color:#999;">
+      ⚠ 找不到服務項目（services.json 尚未含此機構）
+    </p>
+  `;
+}
+modalContent.appendChild(section);
+modal.style.display = "block";
 }
 
 /* ===========================

@@ -344,8 +344,13 @@ function showDetails(d) {
 
     keys.forEach((k) => {
       if (!k.trim()) return;
-      table += `<tr><td>${k}</td><td>${found[k] == 1 ? "✅" : "❌"}</td></tr>`;
-    });
+      table += `
+  <tr>
+    <td>${k}</td>
+    <td>${yes ? '<span class="icon-yes"></span>' : '<span class="icon-no"></span>'}</td>
+  </tr>
+`;
+;
 
     table += `</tbody></table>`;
     section.innerHTML = table;
@@ -436,3 +441,4 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
+

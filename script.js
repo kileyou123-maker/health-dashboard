@@ -33,17 +33,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   populateDistrictList();
   setupAutocomplete();
 
-  /* 載入服務資料 */
-  try {
-    const res = await fetch(
-      "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv"
-    );
-    const text = await res.text();
-    serviceData = csvToJson(text);
-  } catch (e) {
-    console.error("服務資料載入失敗", e);
-  }
-
   currentData = allData;
   renderTablePage();
 
@@ -283,15 +272,13 @@ function renderPagination() {
 function smoothRender(callback) {
   const table = document.getElementById("resultTable");
 
-  // 淡出
   table.style.opacity = "0";
   table.style.transform = "translateY(15px)";
 
   setTimeout(() => {
-    callback(); // 更新內容
+    callback();
 
     requestAnimationFrame(() => {
-      // 淡入
       table.style.opacity = "1";
       table.style.transform = "translateY(0)";
     });
@@ -306,12 +293,56 @@ function setupModal() {
   const closeBtn = document.getElementById("closeModal");
 
   closeBtn.onclick = () => (modal.style.display = "none");
+
   window.onclick = (e) => {
     if (e.target === modal) modal.style.display = "none";
   };
 }
 
-function showDetails(d) {
+/* ===========================================================
+   ⭐⭐⭐ 這裡是新的：即時抓健保署 INAE1031S01 服務項目 ⭐⭐⭐
+=========================================================== */
+async function fetchServiceFromNHI(name) {
+  try {
+    const url = "https://info.nhi.gov.tw/INAE1000/INAE1031S01";
+
+    const res = await fetch(url, { mode: "cors" });
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    const table = doc.querySelector("table");
+    if (!table) return null;
+
+    const rows = table.querySelectorAll("tbody tr");
+    let result = {};
+
+    rows.forEach(tr => {
+      const tds = tr.querySelectorAll("td");
+      const instName = tds[0]?.innerText?.trim();
+
+      if (instName === name) {
+        const headers = table.querySelectorAll("thead th");
+
+        for (let i = 3; i < tds.length; i++) {
+          const label = headers[i].innerText.trim();
+          const value = tds[i].innerText.trim();
+          result[label] = value;
+        }
+      }
+    });
+
+    return result;
+
+  } catch (e) {
+    console.error("即時健保署資料抓取失敗：", e);
+    return null;
+  }
+}
+
+/* ===========================
+   詳細資料（已整合健保署）
+=========================== */
+async function showDetails(d) {
   const modal = document.getElementById("detailModal");
 
   document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
@@ -323,39 +354,49 @@ function showDetails(d) {
     : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
 
-  /* 服務項目 */
+  /* 清空舊的服務表 */
   const modalContent = modal.querySelector(".modal-content");
-  modalContent.querySelectorAll(".service-table, p.temp-msg").forEach((el) => el.remove());
+  modalContent.querySelectorAll(".service-table, p.temp-msg, p.live-tag").forEach((el) => el.remove());
 
-  const found = serviceData.find(
-    (s) => s["醫事機構名稱"] && s["醫事機構名稱"].includes(d["醫事機構名稱"])
-  );
+  /* ⭐ 直接抓健保署最新資料 */
+  const live = await fetchServiceFromNHI(d["醫事機構名稱"]);
 
   const section = document.createElement("div");
 
-  if (found) {
+  if (live) {
     let table = `
+      <p class="live-tag" style="font-size:14px;color:var(--accent);margin:6px 0;">
+        （資料已即時同步健保署 INAE1031）
+      </p>
       <table class="service-table">
         <thead><tr><th>項目</th><th>是否提供</th></tr></thead>
         <tbody>
     `;
 
-    const keys = Object.keys(found).slice(4);
+    for (let [key, value] of Object.entries(live)) {
+      const yes =
+        value.includes("是") ||
+        value.includes("V") ||
+        value.includes("提供") ||
+        value.includes("✓");
 
-    keys.forEach((k) => {
-      if (!k.trim()) return;
       table += `
-      <tr>
-        <td>${k}</td>
-        <td class="${found[k] == 1 ? "yes-icon" : "no-icon"}"></td>
-      </tr>`;
+        <tr>
+          <td>${key}</td>
+          <td class="${yes ? "yes-icon" : "no-icon"}"></td>
+        </tr>
+      `;
+    }
 
-    });
-
-    table += `</tbody></table>`;
+    table += "</tbody></table>";
     section.innerHTML = table;
+
   } else {
-    section.innerHTML = `<p class="temp-msg" style="text-align:center;">暫無服務資料</p>`;
+    section.innerHTML = `
+      <p class="temp-msg" style="text-align:center;color:#999;">
+        ⚠ 無法即時取得健保署資料，僅顯示基本資訊
+      </p>
+    `;
   }
 
   modalContent.appendChild(section);
@@ -441,4 +482,3 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
-

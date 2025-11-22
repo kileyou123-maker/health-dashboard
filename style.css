@@ -454,9 +454,6 @@ body.dark #suggestionBox div:hover {
   transform: translateY(0px);
 }
 
-/* ====================================
-   ★★★ 手機版 Modal：置中＋小視窗修正版 ★★★
-==================================== */
 /* ===============================
    手機版 Modal 修復版（正常運作）
 ================================ */
@@ -508,19 +505,5 @@ body.dark #suggestionBox div:hover {
     color: var(--accent);
   }
 }
-.icon-yes {
-  width: 22px;
-  height: 22px;
-  display: inline-block;
-  background: url("check.svg") center/contain no-repeat;
-}
-
-.icon-no {
-  width: 22px;
-  height: 22px;
-  display: inline-block;
-  background: url("cross.svg") center/contain no-repeat;
-}
-
 
 

@@ -508,5 +508,19 @@ body.dark #suggestionBox div:hover {
     color: var(--accent);
   }
 }
+.icon-yes {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  background: url("check.svg") center/contain no-repeat;
+}
+
+.icon-no {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  background: url("cross.svg") center/contain no-repeat;
+}
+
 
 

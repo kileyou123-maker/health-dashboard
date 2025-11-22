@@ -1,41 +1,58 @@
 import requests
+import pandas as pd
 import json
+from bs4 import BeautifulSoup
 
-# 使用健保署官方開放資料 API（取代 WebForm 抓取）
-API_URL = "https://data.nhi.gov.tw/resource/mask/maskdata.json"
+print("正在從健保署抓取資料...")
 
-def fetch_nhi_service_data():
-    print("正在從健保署 API 取得資料...")
+URL = "https://info.nhi.gov.tw/INAE1000/INAE1031S01"
 
-    try:
-        res = requests.get(API_URL, timeout=10)
-        res.raise_for_status()
-    except Exception as e:
-        print("❌ 健保署資料來源無法連線：", e)
+def fetch_page():
+    r = requests.get(URL, timeout=20)
+    r.encoding = "utf-8"
+    return r.text
+
+def scrape():
+    html = fetch_page()
+    soup = BeautifulSoup(html, "lxml")
+
+    table = soup.find("table")
+    if table is None:
+        print("❌ 找不到資料表（健保署網站格式可能更新）")
         return {}
 
-    data = res.json()
-    result = {}
+    headers = [th.text.strip() for th in table.find_all("th")]
 
-    for item in data:
-        name = item.get("醫事機構名稱", "").strip()
+    records = {}
+    for tr in table.find("tbody").find_all("tr"):
+        tds = tr.find_all("td")
+        if len(tds) < 3:
+            continue
+
+        name = tds[0].text.strip()
         if not name:
             continue
 
-        result[name] = {
-            "居家醫療": 1 if item.get("居家醫療") == "V" else 0,
-            "居家護理": 1 if item.get("居家護理") == "V" else 0,
-            "安寧療護": 1 if item.get("安寧療護") == "V" else 0,
-        }
+        # 從第 3 欄開始是服務項目
+        services = {}
+        for i in range(3, len(headers)):
+            label = headers[i]
+            raw = tds[i].text.strip()
 
-    print("共取得", len(result), "筆資料")
-    return result
+            val = 1 if raw in ["V", "是", "提供", "✓"] else 0
+            services[label] = val
 
+        records[name] = services
 
-if __name__ == "__main__":
-    data = fetch_nhi_service_data()
+    return records
+
+try:
+    data = scrape()
 
     with open("services.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print("已將資料寫入 services.json")
+    print("✔ 已成功更新 services.json")
+
+except Exception as e:
+    print("❌ 無法爬取健保署資料：", e)

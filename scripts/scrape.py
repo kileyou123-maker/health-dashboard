@@ -1,58 +1,72 @@
 import requests
+from bs4 import BeautifulSoup
 import pandas as pd
 import json
-from bs4 import BeautifulSoup
 
-print("正在從健保署抓取資料...")
+print("開始抓取健保署 INAE1031S01 資料...")
 
 URL = "https://info.nhi.gov.tw/INAE1000/INAE1031S01"
 
-def fetch_page():
-    r = requests.get(URL, timeout=20)
-    r.encoding = "utf-8"
-    return r.text
+session = requests.Session()
+session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+})
 
-def scrape():
-    html = fetch_page()
-    soup = BeautifulSoup(html, "lxml")
+# Step 1：先 GET 取得 VIEWSTATE / EVENTVALIDATION
+r = session.get(URL, timeout=20)
+r.encoding = "utf-8"
 
-    table = soup.find("table")
-    if table is None:
-        print("❌ 找不到資料表（健保署網站格式可能更新）")
-        return {}
+soup = BeautifulSoup(r.text, "lxml")
 
-    headers = [th.text.strip() for th in table.find_all("th")]
+viewstate = soup.find("input", {"id": "__VIEWSTATE"})
+eventvalidation = soup.find("input", {"id": "__EVENTVALIDATION"})
 
-    records = {}
-    for tr in table.find("tbody").find_all("tr"):
-        tds = tr.find_all("td")
-        if len(tds) < 3:
-            continue
+if not viewstate or not eventvalidation:
+    print("❌ 無法取得 VIEWSTATE / EVENTVALIDATION，健保署可能更新格式")
+    exit()
 
-        name = tds[0].text.strip()
-        if not name:
-            continue
+payload = {
+    "__VIEWSTATE": viewstate.get("value"),
+    "__EVENTVALIDATION": eventvalidation.get("value"),
+    "btnSearch": "查詢"
+}
 
-        # 從第 3 欄開始是服務項目
-        services = {}
-        for i in range(3, len(headers)):
-            label = headers[i]
-            raw = tds[i].text.strip()
+# Step 2：POST 查詢（真正的資料在 POST 回傳）
+r2 = session.post(URL, data=payload, timeout=20)
+r2.encoding = "utf-8"
 
-            val = 1 if raw in ["V", "是", "提供", "✓"] else 0
-            services[label] = val
+soup2 = BeautifulSoup(r2.text, "lxml")
+table = soup2.find("table")
 
-        records[name] = services
+if table is None:
+    print("❌ 無法找到資料表格，可能網站改版")
+    exit()
 
-    return records
+headers = [th.text.strip() for th in table.find_all("th")]
 
-try:
-    data = scrape()
+records = {}
 
-    with open("services.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+tbody = table.find("tbody")
+for tr in tbody.find_all("tr"):
+    tds = tr.find_all("td")
+    if len(tds) < 3:
+        continue
 
-    print("✔ 已成功更新 services.json")
+    name = tds[0].text.strip()
+    if not name:
+        continue
 
-except Exception as e:
-    print("❌ 無法爬取健保署資料：", e)
+    services = {}
+    for i in range(3, len(headers)):
+        label = headers[i]
+        raw = tds[i].text.strip()
+        val = 1 if raw in ["V", "是", "提供", "✓"] else 0
+        services[label] = val
+
+    records[name] = services
+
+# Step 3：輸出 JSON
+with open("services.json", "w", encoding="utf-8") as f:
+    json.dump(records, f, ensure_ascii=False, indent=2)
+
+print(f"✔ 完成！共抓到 {len(records)} 家機構")

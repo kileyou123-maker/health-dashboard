@@ -278,20 +278,18 @@ function renderPagination() {
 }
 
 /* ===========================
-   ★ 修正版 smoothRender ★
+   Smooth Render
 =========================== */
 function smoothRender(callback) {
   const table = document.getElementById("resultTable");
 
-  // 淡出
   table.style.opacity = "0";
   table.style.transform = "translateY(15px)";
 
   setTimeout(() => {
-    callback(); // 更新內容
+    callback();
 
     requestAnimationFrame(() => {
-      // 淡入
       table.style.opacity = "1";
       table.style.transform = "translateY(0)";
     });
@@ -323,7 +321,7 @@ function showDetails(d) {
     : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
 
-  /* 服務項目 */
+  /* 清除舊服務項目 */
   const modalContent = modal.querySelector(".modal-content");
   modalContent.querySelectorAll(".service-table, p.temp-msg").forEach((el) => el.remove());
 
@@ -333,10 +331,11 @@ function showDetails(d) {
 
   const section = document.createElement("div");
 
+  /* ✔ / ✖ 圖示版 */
   if (found) {
     let table = `
       <table class="service-table">
-        <thead><tr><th>項目</th><th>是否提供</th></tr></thead>
+        <thead><tr><th>項目</th><th>提供</th></tr></thead>
         <tbody>
     `;
 
@@ -344,7 +343,11 @@ function showDetails(d) {
 
     keys.forEach((k) => {
       if (!k.trim()) return;
-      table += `<tr><td>${k}</td><td>${found[k] == 1 ? "✅" : "❌"}</td></tr>`;
+      table += `
+        <tr>
+          <td>${k}</td>
+          <td class="${found[k] == 1 ? "yes-icon" : "no-icon"}"></td>
+        </tr>`;
     });
 
     table += `</tbody></table>`;

@@ -49,19 +49,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /* 事件註冊 */
   /* 城市下拉：重建地區 + 即時篩選 */
+/* ===========================
+   事件註冊（即時篩選版）
+=========================== */
+
+/* 城市 → 更新地區 + 立即篩選 */
 document.getElementById("citySelect").addEventListener("change", () => {
   populateDistrictList();
-  searchData();   // ★ 即時依縣市更新表格
+  searchData();
 });
 
-/* 地區下拉：即時篩選 */
+/* 地區 → 立即篩選 */
 document.getElementById("districtSelect").addEventListener("change", () => {
-  searchData();   // ★ 立即依地區更新表格
+  searchData();
 });
 
-  document.getElementById("keyword").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") searchData();
-  });
+/* 搜尋按鈕還是保留 */
+document.getElementById("searchBtn").addEventListener("click", searchData);
+
+/* Enter 搜尋 */
+document.getElementById("keyword").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") searchData();
+});
+
 
   document.querySelectorAll(".filter-btn").forEach((btn) =>
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
@@ -448,4 +458,5 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
+
 

@@ -1,5 +1,5 @@
 /* =========================
-   專業醫療系統風主題配色
+   專業醫療系統主題色
 ========================= */
 :root {
   --bg-color: #f7fafc;
@@ -36,7 +36,9 @@ body.dark {
   --link-color: #60a5fa;
 }
 
-/* 全局過渡動畫 */
+/* =========================
+   全域過渡動畫
+========================= */
 * {
   transition:
     background-color 0.25s ease,
@@ -67,7 +69,7 @@ header {
 }
 
 /* =========================
-   main（資料不顯示修正）
+   main（修復表格不顯示）
 ========================= */
 main {
   display: block;
@@ -107,7 +109,6 @@ main {
   padding-left: 40px;
 }
 
-/* Focus 效果 */
 #controls select:focus,
 #controls input:focus {
   border-color: var(--accent);
@@ -116,7 +117,7 @@ main {
 }
 
 /* =========================
-   Filter 按鈕（醫療專業感）
+   Filter 按鈕
 ========================= */
 .filter-btn {
   background: white;
@@ -139,7 +140,6 @@ main {
   color: white;
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.35);
 }
-
 /* =========================
    表格（專業醫療系統風）
 ========================= */
@@ -251,7 +251,6 @@ body.dark #resultTable tr:hover {
   color: var(--accent);
 }
 
-/* Modal 資訊區 */
 .modal-content p {
   font-size: 16px;
   margin: 8px 0;
@@ -286,111 +285,45 @@ body.dark #resultTable tr:hover {
   font-size: 15px;
 }
 
-/* 🔵 專業版驗證風格圖示 */
+/* =========================
+   ✔ / ✖ 專業醫療圖示（新版）
+========================= */
+.yes-icon::before,
+.no-icon::before {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+}
+
+/* ✔ 藍色 */
 .yes-icon::before {
   content: "✔";
-  color: white;
   background: #1a73e8;
-  padding: 6px 10px;
-  border-radius: 50%;
-  font-size: 14px;
 }
 
+/* ✖ 灰色 */
 .no-icon::before {
   content: "✖";
-  color: white;
   background: #9ca3af;
-  padding: 6px 10px;
-  border-radius: 50%;
-  font-size: 14px;
 }
 
+/* 深色模式加強 */
+body.dark .yes-icon::before {
+  background: #3b82f6;
+}
+
+body.dark .no-icon::before {
+  background: #6b7280;
+}
 /* =========================
-   深色模式切換按鈕
+   深色模式 A / Link 調整
 ========================= */
-.theme-toggle-btn {
-  position: fixed;
-  top: 14px;
-  right: 18px;
-  width: 48px;
-  height: 48px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-}
-
-.theme-toggle-btn:hover {
-  background: var(--accent-hover);
-}
-
-/* =========================
-   Footer
-========================= */
-footer {
-  margin-top: 25px;
-  padding: 15px;
-  font-size: 14px;
-  background: var(--header-bg);
-  color: white;
-}
-
-/* =========================
-   手機版：隱藏表格 → 卡片 UI
-========================= */
-@media (max-width: 600px) {
-
-  #controls select,
-  #controls input {
-    width: 90%;
-  }
-
-  .filter-btn {
-    width: 48%;
-    margin-bottom: 10px;
-  }
-
-  #resultTable thead {
-    display: none;
-  }
-
-  #resultTable,
-  #resultTable tbody,
-  #resultTable tr,
-  #resultTable td {
-    display: block;
-    width: 100%;
-  }
-
-  #resultTable tr {
-    background: var(--table-bg);
-    margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-  }
-
-  #resultTable td {
-    border: none;
-    text-align: left;
-    padding: 6px 0;
-  }
-
-  #resultTable td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 2px;
-  }
-}
-
-/* ================================
-   深色模式視覺加強
-================================ */
 body.dark {
   --text-color: #f8fafc;
 }
@@ -454,9 +387,92 @@ body.dark #suggestionBox div:hover {
   transform: translateY(0px);
 }
 
-/* ===============================
-   手機版 Modal 修復版（正常運作）
-================================ */
+/* =========================
+   深色模式切換按鈕
+========================= */
+.theme-toggle-btn {
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* =========================
+   Footer
+========================= */
+footer {
+  margin-top: 25px;
+  padding: 15px;
+  font-size: 14px;
+  background: var(--header-bg);
+  color: white;
+}
+
+/* =========================
+   手機版：卡片式 UI
+========================= */
+@media (max-width: 600px) {
+
+  #controls select,
+  #controls input {
+    width: 90%;
+  }
+
+  .filter-btn {
+    width: 48%;
+    margin-bottom: 10px;
+  }
+
+  #resultTable thead {
+    display: none;
+  }
+
+  #resultTable,
+  #resultTable tbody,
+  #resultTable tr,
+  #resultTable td {
+    display: block;
+    width: 100%;
+  }
+
+  #resultTable tr {
+    background: var(--table-bg);
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+
+  #resultTable td {
+    border: none;
+    text-align: left;
+    padding: 6px 0;
+  }
+
+  #resultTable td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 2px;
+  }
+}
+
+/* ============================
+   手機版 Modal（正常運作）
+============================ */
 @media (max-width: 600px) {
 
   .modal {
@@ -478,8 +494,6 @@ body.dark #suggestionBox div:hover {
     overflow-y: auto;
     border-radius: 18px;
     padding: 20px;
-
-    /* 用 margin 置中 → 不破壞 JS */
     margin: 120px auto 0 auto;
 
     background: var(--modal-bg);
@@ -496,7 +510,6 @@ body.dark #suggestionBox div:hover {
     top: 10px;
     right: 12px;
     font-size: 30px;
-    z-index: 999;
     cursor: pointer;
     color: #ccc;
   }
@@ -505,5 +518,3 @@ body.dark #suggestionBox div:hover {
     color: var(--accent);
   }
 }
-
-

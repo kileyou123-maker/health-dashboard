@@ -1,3 +1,14 @@
+/* ============================================
+   全台居家醫療查詢系統 - 完整智慧搜尋版本
+   功能：
+   ✔ 智慧搜尋（台/臺/拼音/注音/多關鍵字）
+   ✔ 自動高亮（深色模式支援）
+   ✔ 即時縣市＋地區篩選
+   ✔ 服務項目 ✔/✖ 圓形圖示
+   ✔ Modal 詳細資料
+   ✔ 分頁、Autocomplete、Smooth Render
+============================================ */
+
 let allData = [];
 let cityDistrictMap = {};
 let currentPage = 1;
@@ -5,9 +16,9 @@ const pageSize = 50;
 let currentData = [];
 let serviceData = [];
 
-/* ===========================
+/* =====================================================
    初始化
-=========================== */
+===================================================== */
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
   setupModal();
@@ -27,10 +38,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   allData = merged;
+
   normalizeAddress(allData);
   buildCityDistrictMap(allData);
   populateCityList();
   populateDistrictList();
+
   setupAutocomplete();
 
   /* 載入服務資料 */
@@ -47,9 +60,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentData = allData;
   renderTablePage();
 
-  /* ===========================
+  /* ================================
      事件註冊（即時篩選）
-  ============================ */
+  ================================= */
   document.getElementById("citySelect").addEventListener("change", () => {
     populateDistrictList();
     searchData();
@@ -73,15 +86,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener("click", (e) => {
     const row = e.target.closest("#resultTable tbody tr");
     if (!row) return;
+
     const name = row.children[0]?.innerText?.replace(/<[^>]*>/g, "").trim();
     const found = currentData.find((d) => d["醫事機構名稱"] === name);
+
     if (found) showDetails(found);
   });
 });
 
-/* ===========================
+/* =====================================================
    CSV → JSON
-=========================== */
+===================================================== */
 function csvToJson(csv) {
   const lines = csv.split("\n").filter((l) => l.trim());
   const headers = lines[0].split(",").map((h) => h.trim());
@@ -94,9 +109,9 @@ function csvToJson(csv) {
   });
 }
 
-/* ===========================
+/* =====================================================
    地址清理（臺 → 台）
-=========================== */
+===================================================== */
 function normalizeAddress(data) {
   data.forEach((d) => {
     if (d["醫事機構地址"])
@@ -104,9 +119,9 @@ function normalizeAddress(data) {
   });
 }
 
-/* ===========================
+/* =====================================================
    城市 / 地區生成
-=========================== */
+===================================================== */
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
   "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
@@ -154,14 +169,76 @@ function populateDistrictList() {
     });
   }
 }
+/* =====================================================
+   智慧搜尋：關鍵字標準化
+   支援：台/臺、英文拼音、注音
+===================================================== */
+function normalizeKeyword(str) {
+  if (!str) return "";
 
-/* ===========================
-   搜尋（帶高亮）
-=========================== */
+  let s = str.toLowerCase().trim();
+
+  // ---- 台 / 臺 ----
+  s = s.replace(/臺/g, "台");
+
+  // ---- 注音 → 拉丁拼音 (簡易映射) ----
+  const zhuyinMap = {
+    "ㄅ": "b", "ㄆ": "p", "ㄇ": "m", "ㄈ": "f",
+    "ㄉ": "d", "ㄊ": "t", "ㄋ": "n", "ㄌ": "l",
+    "ㄍ": "g", "ㄎ": "k", "ㄏ": "h",
+    "ㄐ": "j", "ㄑ": "q", "ㄒ": "x",
+    "ㄓ": "zh", "ㄔ": "ch", "ㄕ": "sh", "ㄖ": "r",
+    "ㄗ": "z", "ㄘ": "c", "ㄙ": "s"
+  };
+  Object.keys(zhuyinMap).forEach(k => {
+    s = s.replace(new RegExp(k, "g"), zhuyinMap[k]);
+  });
+
+  // ---- 常見地名拼音（可擴充） ----
+  const pinyinMap = {
+    "taipei": "台北",
+    "taibei": "台北",
+    "xinbei": "新北",
+    "newtaipei": "新北",
+    "beitou": "北投",
+    "shilin": "士林",
+    "daan": "大安",
+    "zhongshan": "中山",
+    "songshan": "松山",
+    "neihu": "內湖",
+    "danshui": "淡水",
+    "tamsui": "淡水",
+    "taichung": "台中",
+    "tainan": "台南",
+    "kaohsiung": "高雄"
+  };
+
+  Object.keys(pinyinMap).forEach(k => {
+    if (s.includes(k)) s = s.replace(k, pinyinMap[k]);
+  });
+
+  return s;
+}
+
+/* =====================================================
+   智慧比對（多關鍵字 AND 搜尋）
+===================================================== */
+function smartMatch(text, keyword) {
+  if (!keyword) return true;
+
+  const cleanText = normalizeKeyword(text);
+  const keys = keyword.split(/\s+/).map(k => normalizeKeyword(k));
+
+  return keys.every(k => cleanText.includes(k));
+}
+
+/* =====================================================
+   搜尋（支援智慧搜尋 + 高亮）
+===================================================== */
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const district = document.getElementById("districtSelect").value;
-  const keyword = document.getElementById("keyword").value.trim();
+  const keyword = normalizeKeyword(document.getElementById("keyword").value.trim());
 
   currentData = allData.filter((d) => {
     const addr = d["醫事機構地址"] || "";
@@ -172,11 +249,12 @@ function searchData() {
     return (
       (city === "全部" || addr.includes(city)) &&
       (district === "全部" || addr.includes(district)) &&
-      (!keyword ||
-        name.includes(keyword) ||
-        addr.includes(keyword) ||
-        phone.includes(keyword) ||
-        team.includes(keyword))
+      (
+        smartMatch(name, keyword) ||
+        smartMatch(addr, keyword) ||
+        smartMatch(phone, keyword) ||
+        smartMatch(team, keyword)
+      )
     );
   });
 
@@ -188,9 +266,9 @@ function searchData() {
   smoothRender(renderTablePage);
 }
 
-/* ===========================
+/* =====================================================
    類別快速篩選
-=========================== */
+===================================================== */
 function quickFilter(type) {
   let filtered;
 
@@ -216,22 +294,40 @@ function quickFilter(type) {
   smoothRender(renderTablePage);
 }
 
-/* ===========================
-   ✨ 搜尋關鍵字高亮
-=========================== */
-function highlight(text, keyword) {
-  if (!keyword) return text;
-  const re = new RegExp(`(${keyword})`, "gi");
-  return text.replace(re, `<mark class="hl">$1</mark>`);
-}
+/* =====================================================
+   自動高亮（多關鍵字 + 智慧搜尋）
+===================================================== */
+function highlight(text, keywordRaw) {
+  if (!keywordRaw) return text;
 
-/* ===========================
-   表格渲染（含高亮）
-=========================== */
+  const keys = keywordRaw.split(/\s+/).filter(k => k.trim());
+  let result = text;
+
+  keys.forEach(k => {
+    const norm = normalizeKeyword(k);
+    if (!norm) return;
+
+    // 原字比對（例如：北 / 投）
+    const re = new RegExp(k, "gi");
+    // 標準化後比對（例如 bei → 北）
+    const reNorm = new RegExp(norm, "gi");
+
+    result = result
+      .replace(re, `<mark class="hl">$&</mark>`)
+      .replace(reNorm, `<mark class="hl">$&</mark>`);
+  });
+
+  return result;
+}
+/* =====================================================
+   表格渲染（含高亮支援）
+===================================================== */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
-  const key = document.getElementById("keyword").value.trim();
+
+  const keyRaw = document.getElementById("keyword").value.trim();
+  const keyNorm = normalizeKeyword(keyRaw);
 
   if (currentData.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
@@ -250,10 +346,10 @@ function renderTablePage() {
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${highlight(d["醫事機構名稱"], key)}</td>
-      <td><a href="${mapUrl}" target="_blank">${highlight(addr, key)}</a></td>
-      <td><a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${highlight(d["醫事機構電話"], key)}</a></td>
-      <td>${highlight(d["整合團隊名稱"], key)}</td>
+      <td>${highlight(d["醫事機構名稱"], keyRaw)}</td>
+      <td><a href="${mapUrl}" target="_blank">${highlight(addr, keyRaw)}</a></td>
+      <td><a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${highlight(d["醫事機構電話"], keyRaw)}</a></td>
+      <td>${highlight(d["整合團隊名稱"], keyRaw)}</td>
       <td>${d["來源"]}</td>
     `;
     tbody.appendChild(row);
@@ -262,9 +358,9 @@ function renderTablePage() {
   renderPagination();
 }
 
-/* ===========================
+/* =====================================================
    分頁
-=========================== */
+===================================================== */
 function renderPagination() {
   const pageCount = Math.ceil(currentData.length / pageSize);
   const pagination = document.getElementById("pagination");
@@ -298,11 +394,12 @@ function renderPagination() {
   pagination.appendChild(next);
 }
 
-/* ===========================
-   Smooth Render
-=========================== */
+/* =====================================================
+   Smooth Render（表格淡入 / 淡出）
+===================================================== */
 function smoothRender(callback) {
   const table = document.getElementById("resultTable");
+
   table.style.opacity = "0";
   table.style.transform = "translateY(15px)";
 
@@ -315,9 +412,9 @@ function smoothRender(callback) {
   }, 250);
 }
 
-/* ===========================
-   Modal
-=========================== */
+/* =====================================================
+   Modal邏輯
+===================================================== */
 function setupModal() {
   const modal = document.getElementById("detailModal");
   const closeBtn = document.getElementById("closeModal");
@@ -335,15 +432,21 @@ function showDetails(d) {
   document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
   document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
   document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
-  document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
-    ? `<a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${d["醫事機構電話"]}</a>`
-    : "無";
   document.getElementById("modalSource").textContent = d["來源"] || "無";
 
-  /* 清除舊服務項目 */
+  document.getElementById("modalPhone").innerHTML = d["醫事機構電話"]
+    ? `<a href="tel:${d["醫事機構電話"]}" 
+        style="color:${getComputedStyle(document.body)
+          .getPropertyValue('--link-color')};text-decoration:none;">
+        ${d["醫事機構電話"]}
+      </a>`
+    : "無";
+
+  /* 清掉舊的服務列表 */
   const modalContent = modal.querySelector(".modal-content");
   modalContent.querySelectorAll(".service-table, p.temp-msg").forEach((el) => el.remove());
 
+  /* 找服務資料 */
   const found = serviceData.find(
     (s) => s["醫事機構名稱"] && s["醫事機構名稱"].includes(d["醫事機構名稱"])
   );
@@ -354,14 +457,17 @@ function showDetails(d) {
   if (found) {
     let table = `
       <table class="service-table">
-        <thead><tr><th>項目</th><th>提供</th></tr></thead>
+        <thead>
+          <tr><th>項目</th><th>提供</th></tr>
+        </thead>
         <tbody>
     `;
 
-    const keys = Object.keys(found).slice(4);
+    const keys = Object.keys(found).slice(4); // 前四欄為固定欄位
 
     keys.forEach((k) => {
       if (!k.trim()) return;
+
       table += `
         <tr>
           <td>${k}</td>
@@ -378,10 +484,9 @@ function showDetails(d) {
   modalContent.appendChild(section);
   modal.style.display = "block";
 }
-
-/* ===========================
+/* =====================================================
    深色模式
-=========================== */
+===================================================== */
 function initTheme() {
   const btn = document.getElementById("themeToggle");
   const saved = localStorage.getItem("theme");
@@ -390,25 +495,30 @@ function initTheme() {
 
   btn.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
   });
 }
 
-/* ===========================
-   自動提示
-=========================== */
+/* =====================================================
+   自動提示搜尋（Autocomplete）
+===================================================== */
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const suggestionBox = document.createElement("div");
 
   suggestionBox.id = "suggestionBox";
   suggestionBox.style.position = "absolute";
-  suggestionBox.style.background = "white";
-  suggestionBox.style.border = "1px solid #ccc";
-  suggestionBox.style.borderRadius = "5px";
+  suggestionBox.style.background = "var(--table-bg)";
+  suggestionBox.style.border = "1px solid var(--table-border)";
+  suggestionBox.style.borderRadius = "8px";
   suggestionBox.style.zIndex = "999";
   suggestionBox.style.display = "none";
   suggestionBox.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
+  suggestionBox.style.maxHeight = "260px";
+  suggestionBox.style.overflowY = "auto";
 
   document.body.appendChild(suggestionBox);
 
@@ -416,22 +526,34 @@ function setupAutocomplete() {
     const val = input.value.trim();
     suggestionBox.innerHTML = "";
 
-    if (!val) return (suggestionBox.style.display = "none");
+    if (!val) {
+      suggestionBox.style.display = "none";
+      return;
+    }
+
+    const norm = normalizeKeyword(val);
 
     const matches = allData
       .map((d) => d["醫事機構名稱"])
-      .filter((n) => n && n.includes(val));
+      .filter((n) => n && smartMatch(n, norm));
 
     const unique = [...new Set(matches)].slice(0, 8);
 
     unique.forEach((name) => {
       const div = document.createElement("div");
       div.textContent = name;
-      div.style.padding = "8px";
+      div.style.padding = "10px 14px";
       div.style.cursor = "pointer";
+      div.style.transition = "0.2s";
 
-      div.addEventListener("mouseover", () => (div.style.background = "#e6fffa"));
-      div.addEventListener("mouseout", () => (div.style.background = "transparent"));
+      div.addEventListener(
+        "mouseover",
+        () => (div.style.background = "rgba(26, 115, 232, 0.12)")
+      );
+      div.addEventListener(
+        "mouseout",
+        () => (div.style.background = "transparent")
+      );
 
       div.addEventListener("click", () => {
         input.value = name;
@@ -453,8 +575,15 @@ function setupAutocomplete() {
     }
   });
 
+  /* 點擊外面關閉列表 */
   document.addEventListener("click", (e) => {
     if (e.target !== input && e.target.parentNode !== suggestionBox)
       suggestionBox.style.display = "none";
   });
 }
+
+/* =====================================================
+   結束
+===================================================== */
+
+console.log("智慧搜尋版 script.js 載入完成");

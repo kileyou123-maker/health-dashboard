@@ -241,22 +241,43 @@ function searchData() {
   const keyword = normalizeKeyword(document.getElementById("keyword").value.trim());
 
   currentData = allData.filter((d) => {
-    const addr = d["醫事機構地址"] || "";
-    const name = d["醫事機構名稱"] || "";
-    const phone = d["醫事機構電話"] || "";
-    const team = d["整合團隊名稱"] || "";
+  const addr = d["醫事機構地址"] || "";
+  const name = d["醫事機構名稱"] || "";
+  const phone = d["醫事機構電話"] || "";
+  const team = d["整合團隊名稱"] || "";
 
-    return (
-      (city === "全部" || addr.includes(city)) &&
-      (district === "全部" || addr.includes(district)) &&
-      (
-        smartMatch(name, keyword) ||
-        smartMatch(addr, keyword) ||
-        smartMatch(phone, keyword) ||
-        smartMatch(team, keyword)
-      )
-    );
-  });
+  const keywordRaw = document.getElementById("keyword").value.trim();
+  const kw = normalizeKeyword(keywordRaw);
+
+  // ====== 智慧地區比對（行政區：區 / 鄉 / 鎮 / 市） ======
+  const smartDistrictMatch =
+    kw.includes("區") ||
+    kw.includes("鄉") ||
+    kw.includes("鎮") ||
+    kw.includes("市")
+      ? addr.includes(keywordRaw.replace(/\s/g, ""))
+      : true;
+
+  // ====== 城市 / 地區採「柔性 OR」匹配 ======
+  const cityMatch =
+    city === "全部" || addr.includes(city);
+
+  const districtMatch =
+    district === "全部" || addr.includes(district);
+
+  const locationOK =
+    smartDistrictMatch || (cityMatch && districtMatch);
+
+  // ====== 智慧搜尋（名稱 / 地址 / 電話 / 團隊） ======
+  const textMatch =
+    smartMatch(name, kw) ||
+    smartMatch(addr, kw) ||
+    smartMatch(phone, kw) ||
+    smartMatch(team, kw);
+
+  return locationOK && textMatch;
+});
+
 
   currentPage = 1;
 
@@ -587,3 +608,4 @@ function setupAutocomplete() {
 ===================================================== */
 
 console.log("智慧搜尋版 script.js 載入完成");
+

@@ -3,40 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>全台居家醫療查詢系統</title>
+
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <header>
+  <!-- 深色模式按鈕 -->
+  <button id="themeToggle" class="theme-toggle-btn">🌗</button>
+
+  <!-- Header -->
+  <header class="animate-fade-slide">
     <h1>全台居家醫療查詢系統</h1>
   </header>
 
-  <button id="themeToggle" class="theme-toggle-btn">🌗</button>
-
   <main>
 
-    <!-- ✔ 快速分類按鈕移到 controls 裡面 -->
-    <section id="controls">
-
-      <div id="filterSection" style="width:100%; text-align:center; margin-bottom:10px;">
-        <button class="filter-btn" data-type="全部">全部</button>
-        <button class="filter-btn" data-type="醫院">醫院</button>
-        <button class="filter-btn" data-type="診所">診所</button>
-        <button class="filter-btn" data-type="護理之家">護理之家</button>
-      </div>
-
-      <select id="citySelect"></select>
-      <select id="districtSelect"></select>
-      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱／地址／電話）">
-      <button id="searchBtn" class="main-btn">搜尋</button>
-
+    <!-- 🔵 A. 快速分類按鈕（移到搜尋欄上方） -->
+    <section id="filterSection" class="animate-fade-delayed">
+      <button class="filter-btn ripple" data-type="全部">全部</button>
+      <button class="filter-btn ripple" data-type="醫院">醫院</button>
+      <button class="filter-btn ripple" data-type="診所">診所</button>
+      <button class="filter-btn ripple" data-type="護理之家">護理之家</button>
     </section>
 
-    <div id="status"></div>
+    <!-- 🔵 B. Controls（縣市、區、關鍵字） -->
+    <section id="controls" class="animate-fade-delayed2">
+      <select id="citySelect"></select>
+      <select id="districtSelect"></select>
 
-    <table id="resultTable">
+      <input
+        type="text"
+        id="keyword"
+        placeholder="輸入關鍵字（名稱／地址／電話）"
+      />
+
+      <button id="searchBtn" class="main-btn ripple">搜尋</button>
+    </section>
+
+    <div id="status" class="animate-fade-delayed2"></div>
+
+    <!-- 🔵 C. Skeleton（篩選 Loading 動畫） -->
+    <div id="loadingSkeleton" class="skeleton-container" style="display:none;">
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+    </div>
+
+    <!-- 🔵 D. 結果表格 -->
+    <table id="resultTable" class="animate-table">
       <thead>
         <tr>
           <th>醫事機構名稱</th>
@@ -50,26 +69,30 @@
     </table>
 
     <div id="pagination"></div>
-
   </main>
 
   <footer>
     資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）
   </footer>
 
-  <!-- 詳細資料彈窗 -->
+  <!-- 🔵 E. 詳細資料 Modal -->
   <div id="detailModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content animate-modal">
       <span id="closeModal" class="close">&times;</span>
+
       <h2 id="modalTitle"></h2>
+
       <p><strong>機構代碼：</strong><span id="modalCode"></span></p>
       <p><strong>整合團隊：</strong><span id="modalTeam"></span></p>
       <p><strong>地址：</strong><span id="modalAddr"></span></p>
       <p><strong>電話：</strong><span id="modalPhone"></span></p>
       <p><strong>來源：</strong><span id="modalSource"></span></p>
+
+      <!-- 服務項目表格會動態加入 -->
     </div>
   </div>
 
+  <!-- Script -->
   <script src="script.js"></script>
 </body>
 </html>

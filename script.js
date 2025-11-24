@@ -1,126 +1,153 @@
+// =============================================================
+// script.js — Rebuilt Version (Part 1/5)
+// =============================================================
+// 本檔案由 ChatGPT 自動重建，依序分段寫入。
+// 本段包含：資料載入、CSV 轉換、地址正規化。
+// 後續部分將以 append 模式寫入補上。
+// =============================================================
 
-/* ===========================================================
-   全域變數
-=========================================================== */
 let allData = [];
+let serviceData = [];
+let currentData = [];
 let cityDistrictMap = {};
 let currentPage = 1;
 const pageSize = 50;
-let currentData = [];
-let serviceData = [];
 
-/* ===========================================================
-   CSV 轉 JSON
-=========================================================== */
+// ==============================
+// CSV → JSON
+// ==============================
 function csvToJson(csv) {
-  const lines = csv.split("\n").filter((x) => x.trim());
-  const headers = lines[0].split(",").map((h) => h.trim());
-  return lines.slice(1).map((line) => {
-    const vals = line.split(",");
-    const o = {};
-    headers.forEach((h, i) => (o[h] = vals[i] ? vals[i].trim() : ""));
-    return o;
+  const lines = csv.split('\n').filter(x => x.trim());
+  const headers = lines[0].split(',').map(h => h.trim());
+
+  return lines.slice(1).map(line => {
+    const values = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = values[i] ? values[i].trim() : '';
+    });
+    return obj;
   });
 }
 
-/* ===========================================================
-   建立縣市/區 Map
-=========================================================== */
-const cityList = [
+// ==============================
+// 地址正規化（臺 → 台）
+// ==============================
+function normalizeAddress(list) {
+  list.forEach(d => {
+    if (d["醫事機構地址"]) {
+      d["醫事機構地址"] = d["醫事機構地址"].replaceAll("臺", "台").trim();
+    }
+  });
+}
+
+
+// =============================================================
+// Part 2/5 — 城市／地區解析 + 下拉選單自動連動
+// =============================================================
+
+// 全台縣市表
+const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
   "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
   "台東縣","澎湖縣","金門縣","連江縣"
 ];
 
-function buildCityDistrictMap(data) {
-  data.forEach((d) => {
-    const addr = d.地址 || "";
-    const city = cityList.find((c) => addr.startsWith(c)) || "其他";
-    const rest = addr.replace(city, "");
-    const m = rest.match(/[\u4e00-\u9fa5]{1,3}(區|鄉|鎮|市)/);
-    const dist = m ? m[0] : "其他";
+// 解析縣市＋區
+function buildCityDistrictMap(list) {
+  list.forEach(d => {
+    const addr = d["醫事機構地址"];
+    if (!addr) return;
+
+    // 找縣市
+    const city = allCities.find(c => addr.startsWith(c)) || "其他";
+
+    // 找區名
+    const after = addr.replace(city, "");
+    const match = after.match(/[\u4e00-\u9fa5]{1,3}(區|鎮|鄉|市)/);
+    const district = match ? match[0] : "其他";
+
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
-    cityDistrictMap[city].add(dist);
+    cityDistrictMap[city].add(district);
   });
 }
 
-/* ===========================================================
-   產生縣市下拉
-=========================================================== */
+// 填入縣市
 function populateCityList() {
   const sel = document.getElementById("citySelect");
-  sel.innerHTML = `<option value="全部">全部</option>`;
-  Object.keys(cityDistrictMap).forEach((c) => {
-    sel.innerHTML += `<option value="${c}">${c}</option>`;
+  sel.innerHTML = '<option value="全部">全部</option>';
+
+  Object.keys(cityDistrictMap).forEach(city => {
+    const opt = document.createElement("option");
+    opt.value = opt.textContent = city;
+    sel.appendChild(opt);
   });
 }
 
-/* ===========================================================
-   產生地區下拉
-=========================================================== */
+// 填入該縣市的地區
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const sel = document.getElementById("districtSelect");
-  sel.innerHTML = `<option value="全部">全部</option>`;
+
+  sel.innerHTML = '<option value="全部">全部</option>';
+
   if (city !== "全部" && cityDistrictMap[city]) {
-    [...cityDistrictMap[city]].forEach((d) => {
-      sel.innerHTML += `<option value="${d}">${d}</option>`;
+    [...cityDistrictMap[city]].forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = opt.textContent = d;
+      sel.appendChild(opt);
     });
   }
 }
 
-/* ===========================================================
-   搜尋（快速＋穩定）
-=========================================================== */
-function searchData() {
-  const city = document.getElementById("citySelect").value;
-  const dist = document.getElementById("districtSelect").value;
-  const kw = document.getElementById("keyword").value.trim();
 
-  currentData = allData.filter((d) => {
-    return (
-      (city === "全部" || d.地址.includes(city)) &&
-      (dist === "全部" || d.地址.includes(dist)) &&
-      (!kw ||
-        d.名稱.includes(kw) ||
-        d.地址.includes(kw) ||
-        d.電話.includes(kw) ||
-        d.團隊.includes(kw))
+// =============================================================
+// Part 3/5 — 快速分類按鈕 + 表格渲染 + 分頁 + 動畫
+// =============================================================
+
+// =========================
+// 快速分類（全部 / 醫院 / 診所 / 護理之家）
+// =========================
+function quickFilter(type) {
+  let keywords = [];
+
+  if (type === "全部") {
+    currentData = allData;
+  } else if (type === "醫院") {
+    keywords = ["醫院"];
+    currentData = allData.filter(d =>
+      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
     );
-  });
-
-  document.getElementById("status").textContent =
-    `共找到 ${currentData.length} 筆資料`;
+  } else if (type === "診所") {
+    keywords = ["診所", "醫療"];
+    currentData = allData.filter(d =>
+      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
+    );
+  } else if (type === "護理之家") {
+    keywords = ["護理", "安養", "養護"];
+    currentData = allData.filter(d =>
+      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
+    );
+  }
 
   currentPage = 1;
+  document.getElementById("status").textContent = `顯示類別：${type}（${currentData.length} 筆）`;
+
+  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelector(`.filter-btn[data-type="${type}"]`).classList.add("active");
+
   smoothRender(renderTablePage);
 }
 
-/* ===========================================================
-   動畫渲染（淡入淡出＋移動）
-=========================================================== */
-function smoothRender(cb) {
-  const table = document.getElementById("resultTable");
-  table.style.opacity = "0";
-  table.style.transform = "translateY(15px)";
-  setTimeout(() => {
-    cb();
-    requestAnimationFrame(() => {
-      table.style.opacity = "1";
-      table.style.transform = "translateY(0)";
-    });
-  }, 200);
-}
-
-/* ===========================================================
-   表格渲染
-=========================================================== */
+// =========================
+// 表格渲染
+// =========================
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
 
   if (currentData.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5">查無資料</td></tr>`;
+    tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
     document.getElementById("pagination").innerHTML = "";
     return;
   }
@@ -129,31 +156,34 @@ function renderTablePage() {
   const end = Math.min(start + pageSize, currentData.length);
   const pageData = currentData.slice(start, end);
 
-  pageData.forEach((d) => {
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.地址)}`;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${d.名稱}</td>
-      <td><a href="${mapUrl}" target="_blank">${d.地址}</a></td>
-      <td><a href="tel:${d.電話}" style="text-decoration:none;color:var(--link-color);">${d.電話}</a></td>
-      <td>${d.團隊}</td>
-      <td>${d.來源}</td>
+  for (const d of pageData) {
+    const addr = d["醫事機構地址"];
+    const phone = d["醫事機構電話"];
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d["醫事機構名稱"]}</td>
+      <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
+      <td><a href="tel:${phone}" style="color:var(--link-color);text-decoration:none;">${phone}</a></td>
+      <td>${d["整合團隊名稱"]}</td>
+      <td>${d["來源"]}</td>
     `;
-    tbody.appendChild(row);
-  });
+    tbody.appendChild(tr);
+  }
 
   renderPagination();
 }
 
-/* ===========================================================
-   分頁
-=========================================================== */
+// =========================
+// 分頁
+// =========================
 function renderPagination() {
-  const pageTotal = Math.ceil(currentData.length / pageSize);
+  const pageCount = Math.ceil(currentData.length / pageSize);
   const box = document.getElementById("pagination");
   box.innerHTML = "";
 
-  if (pageTotal <= 1) return;
+  if (pageCount <= 1) return;
 
   const prev = document.createElement("button");
   prev.textContent = "← 上一頁";
@@ -166,7 +196,7 @@ function renderPagination() {
 
   const next = document.createElement("button");
   next.textContent = "下一頁 →";
-  next.disabled = currentPage === pageTotal;
+  next.disabled = currentPage === pageCount;
   next.onclick = () => {
     currentPage++;
     smoothRender(renderTablePage);
@@ -174,119 +204,178 @@ function renderPagination() {
   };
 
   const info = document.createElement("span");
-  info.textContent = `第 ${currentPage} / ${pageTotal} 頁`;
+  info.textContent = `第 ${currentPage} / ${pageCount} 頁`;
 
-  box.append(prev, info, next);
+  box.appendChild(prev);
+  box.appendChild(info);
+  box.appendChild(next);
 }
 
-/* ===========================================================
-   Modal 設定
-=========================================================== */
+// =========================
+// 平滑渲染動畫
+// =========================
+function smoothRender(callback) {
+  const table = document.getElementById("resultTable");
+  table.style.opacity = "0";
+  table.style.transform = "translateY(12px)";
+
+  setTimeout(() => {
+    callback();
+    requestAnimationFrame(() => {
+      table.style.opacity = "1";
+      table.style.transform = "translateY(0)";
+    });
+  }, 200);
+}
+
+// =============================================================
+// Part 4/5 — Modal 詳細視窗 + 服務項目 ✔✖ (專業美化版)
+// =============================================================
+
+// Modal 初始化
 function setupModal() {
   const modal = document.getElementById("detailModal");
-  const close = document.getElementById("closeModal");
-  close.onclick = () => (modal.style.display = "none");
+  const closeBtn = document.getElementById("closeModal");
+
+  closeBtn.onclick = () => (modal.style.display = "none");
+
   window.onclick = (e) => {
     if (e.target === modal) modal.style.display = "none";
   };
 }
 
-/* ===========================================================
-   Modal 內容填入（含服務項目 ✔ / ✖ 美化）
-=========================================================== */
+// 顯示 Modal 詳細資料
 function showDetails(d) {
   const modal = document.getElementById("detailModal");
 
-  document.getElementById("modalTitle").textContent = d.名稱 || "無";
-  document.getElementById("modalCode").textContent = d.代碼 || "無";
-  document.getElementById("modalTeam").textContent = d.團隊 || "無";
-  document.getElementById("modalAddr").textContent = d.地址 || "無";
-  document.getElementById("modalPhone").innerHTML = d.電話
-    ? `<a href="tel:${d.電話}" style="color:var(--link-color);">${d.電話}</a>`
-    : "無";
-  document.getElementById("modalSource").textContent = d.來源 || "無";
+  document.getElementById("modalTitle").textContent = d["醫事機構名稱"] || "無";
+  document.getElementById("modalCode").textContent = d["醫事機構代碼"] || "無";
+  document.getElementById("modalTeam").textContent = d["整合團隊名稱"] || "無";
+  document.getElementById("modalAddr").textContent = d["醫事機構地址"] || "無";
 
-  const cont = modal.querySelector(".modal-content");
-  cont.querySelectorAll(".service-table, .temp-msg").forEach((x) => x.remove());
+  // 電話
+  const phone = d["醫事機構電話"] || "";
+  document.getElementById("modalPhone").innerHTML =
+    phone
+      ? `<a href="tel:${phone}" style="color:var(--link-color);text-decoration:none;">${phone}</a>`
+      : "無";
 
-  const found = serviceData.find(
-    (s) => s["醫事機構名稱"] && s["醫事機構名稱"].includes(d.名稱)
+  document.getElementById("modalSource").textContent = d["來源"] || "無";
+
+  // ------------------------------
+  // 服務項目（✔ / ✖）
+  // ------------------------------
+  const modalContent = modal.querySelector(".modal-content");
+
+  // 清除舊表格
+  modalContent.querySelectorAll(".service-table, .service-msg").forEach(el => el.remove());
+
+  // 找對應服務資料
+  const found = serviceData.find(s =>
+    s["醫事機構名稱"] &&
+    d["醫事機構名稱"] &&
+    s["醫事機構名稱"].includes(d["醫事機構名稱"])
   );
 
-  const sec = document.createElement("div");
+  const container = document.createElement("div");
 
   if (found) {
     let table = `
       <table class="service-table">
-        <thead><tr><th>項目</th><th>狀態</th></tr></thead>
+        <thead><tr><th>項目</th><th>提供</th></tr></thead>
         <tbody>
     `;
 
-    Object.keys(found)
-      .slice(4)
-      .forEach((k) => {
-        if (!k.trim()) return;
-        const v = found[k];
-        const icon =
-          v == 1
-            ? `<span class='yes-icon'>✔</span>`
-            : `<span class='no-icon'>✖</span>`;
-        table += `<tr><td>${k}</td><td>${icon}</td></tr>`;
-      });
+    // 從服務資料中撈欄位（前四欄是醫事機構資訊，後面才是服務項目）
+    const keys = Object.keys(found).slice(4);
 
-    table += `</tbody></table>`;
-    sec.innerHTML = table;
+    keys.forEach(k => {
+      if (!k.trim()) return;
+
+      const value = found[k];
+      const icon =
+        value == 1
+          ? "<span class='yes-icon'>✔</span>"
+          : "<span class='no-icon'>✖</span>";
+
+      table += `<tr><td>${k}</td><td>${icon}</td></tr>`;
+    });
+
+    table += "</tbody></table>";
+    container.innerHTML = table;
   } else {
-    sec.innerHTML = `<p class="temp-msg" style="text-align:center;">暫無服務資料</p>`;
+    container.innerHTML = `<p class="service-msg" style="text-align:center;margin-top:10px;">無服務項目資料</p>`;
   }
 
-  cont.appendChild(sec);
+  modalContent.appendChild(container);
   modal.style.display = "block";
 }
 
-/* ===========================================================
-   Autocomplete（機構名稱）
-=========================================================== */
+
+// =============================================================
+// Part 5/5 — 深色模式 + Autocomplete + 搜尋邏輯 + 初始化
+// =============================================================
+
+// =========================
+// 深色模式
+// =========================
+function initTheme() {
+  const btn = document.getElementById("themeToggle");
+  const saved = localStorage.getItem("theme");
+
+  if (saved === "dark") document.body.classList.add("dark");
+
+  btn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
+  });
+}
+
+// =========================
+// Autocomplete 自動完成
+// =========================
 function setupAutocomplete() {
   const input = document.getElementById("keyword");
   const box = document.createElement("div");
+
   box.id = "suggestionBox";
   box.style.position = "absolute";
+  box.style.background = "white";
+  box.style.border = "1px solid #ccc";
+  box.style.borderRadius = "5px";
   box.style.display = "none";
-  box.style.background = "var(--table-bg)";
-  box.style.border = "1px solid var(--table-border)";
-  box.style.borderRadius = "8px";
-  box.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
   box.style.zIndex = "999";
+  box.style.boxShadow = "0 3px 6px rgba(0,0,0,0.2)";
+
   document.body.appendChild(box);
 
   input.addEventListener("input", () => {
-    const kw = input.value.trim();
+    const val = input.value.trim();
     box.innerHTML = "";
 
-    if (!kw) {
-      box.style.display = "none";
-      return;
-    }
+    if (!val) return (box.style.display = "none");
 
     const matches = allData
-      .map((d) => d.名稱)
-      .filter((n) => n && n.includes(kw));
+      .map(d => d["醫事機構名稱"])
+      .filter(n => n && n.includes(val));
+
     const unique = [...new Set(matches)].slice(0, 8);
 
-    unique.forEach((name) => {
+    unique.forEach(name => {
       const div = document.createElement("div");
-      div.textContent = name;
       div.style.padding = "8px";
       div.style.cursor = "pointer";
+      div.textContent = name;
 
-      div.addEventListener("mouseover", () => (div.style.background = "#e6f0ff"));
+      div.addEventListener("mouseover", () => (div.style.background = "#e6fffa"));
       div.addEventListener("mouseout", () => (div.style.background = "transparent"));
-
       div.addEventListener("click", () => {
         input.value = name;
-        searchData();
         box.style.display = "none";
+        searchData();
       });
 
       box.appendChild(div);
@@ -303,39 +392,50 @@ function setupAutocomplete() {
     }
   });
 
-  document.addEventListener("click", (e) => {
-    if (e.target !== input && e.target.parentNode !== box) {
-      box.style.display = "none";
-    }
+  document.addEventListener("click", e => {
+    if (e.target !== input && e.target.parentNode !== box) box.style.display = "none";
   });
 }
 
-/* ===========================================================
-   深色模式（含轉場動畫）
-=========================================================== */
-function initTheme() {
-  const btn = document.getElementById("themeToggle");
-  const saved = localStorage.getItem("theme");
+// =========================
+// 搜尋（關鍵字 + 城市／地區）
+// =========================
+function searchData() {
+  const city = document.getElementById("citySelect").value;
+  const dist = document.getElementById("districtSelect").value;
+  const key = document.getElementById("keyword").value.trim();
 
-  if (saved === "dark") document.body.classList.add("dark");
+  currentData = allData.filter(d => {
+    const addr = d["醫事機構地址"] || "";
+    const name = d["醫事機構名稱"] || "";
+    const phone = d["醫事機構電話"] || "";
+    const team = d["整合團隊名稱"] || "";
 
-  btn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "theme",
-      document.body.classList.contains("dark") ? "dark" : "light"
+    return (
+      (city === "全部" || addr.includes(city)) &&
+      (dist === "全部" || addr.includes(dist)) &&
+      (!key ||
+        addr.includes(key) ||
+        name.includes(key) ||
+        phone.includes(key) ||
+        team.includes(key))
     );
   });
+
+  currentPage = 1;
+  document.getElementById("status").textContent = `共 ${currentData.length} 筆資料`;
+
+  smoothRender(renderTablePage);
 }
 
-/* ===========================================================
-   DOMContentLoaded 整體初始化（資料載入）
-=========================================================== */
+// =========================
+// 初始化流程
+// =========================
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
   setupModal();
-  setupAutocomplete();
 
+  // 下載資料
   const files = [
     { path: "A21030000I-D2000H-001.csv", source: "居家醫療機構" },
     { path: "A21030000I-D2000I-001.csv", source: "安寧照護／護理之家" }
@@ -344,92 +444,57 @@ document.addEventListener("DOMContentLoaded", async () => {
   let merged = [];
 
   for (const f of files) {
-    const res = await fetch(f.path);
-    const txt = await res.text();
-    const json = csvToJson(txt).map((x) => ({
-      名稱: x["醫事機構名稱"] || x["名稱"] || "",
-      地址: x["醫事機構地址"] || x["地址"] || "",
-      電話: x["醫事機構電話"] || x["電話"] || "",
-     團隊: x["整合團隊名稱"] || x["團隊"] || "",
-      代碼: x["醫事機構代碼"] || x["代碼"] || "",
-      來源: f.source
-    }));
-    merged = merged.concat(json);
+    const r = await fetch(f.path);
+    const t = await r.text();
+    const j = csvToJson(t).map(x => ({ ...x, 來源: f.source }));
+    merged = merged.concat(j);
   }
 
-  merged.forEach((d) => {
-    if (d.地址) d.地址 = d.地址.replaceAll("臺", "台");
-  });
-
   allData = merged;
-
+  normalizeAddress(allData);
   buildCityDistrictMap(allData);
+
   populateCityList();
   populateDistrictList();
+  setupAutocomplete();
 
+  // 讀取服務資料
   try {
-    const res = await fetch(
+    const r = await fetch(
       "https://raw.githubusercontent.com/kileyou123-maker/health-dashboard/refs/heads/main/services.csv"
     );
-    const txt = await res.text();
-    serviceData = csvToJson(txt);
+    const t = await r.text();
+    serviceData = csvToJson(t);
   } catch (e) {
-    console.error("服務資料載入失敗：", e);
+    console.error("服務資料載入失敗", e);
   }
 
   currentData = allData;
   renderTablePage();
 
-  document.getElementById("citySelect").addEventListener("change", () => {
-    populateDistrictList();
-    searchData();
-  });
-
-  document.getElementById("districtSelect").addEventListener("change", searchData);
-
+  // 綁定事件
+  document.getElementById("citySelect").addEventListener("change", populateDistrictList);
   document.getElementById("searchBtn").addEventListener("click", searchData);
-  document.getElementById("keyword").addEventListener("keypress", (e) => {
+
+  // Enter 立即搜尋
+  document.getElementById("keyword").addEventListener("keypress", e => {
     if (e.key === "Enter") searchData();
   });
 
-  document.addEventListener("click", (e) => {
+  // 表格列點擊 → Modal
+  document.addEventListener("click", e => {
     const row = e.target.closest("#resultTable tbody tr");
     if (!row) return;
-    const name = row.children[0]?.innerText?.trim();
-    const found = currentData.find((x) => x.名稱 === name);
+
+    const name = row.children[0].innerText.trim();
+    const found = currentData.find(d => d["醫事機構名稱"] === name);
+
     if (found) showDetails(found);
   });
-}
-);
 
-/* ===========================================================
-   Part 4 — 安全補丁 + 小工具函式
-=========================================================== */
+  // 快速分類按鈕
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.addEventListener("click", () => quickFilter(btn.dataset.type))
+  );
+});
 
-/* 安全取值：避免 undefined / null */
-function safe(v, def = "") {
-  return v === undefined || v === null ? def : v;
-}
-
-/* 平滑捲動 */
-function scrollTopSmooth() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-/* 全域防呆：若表格不存在不執行 */
-function safeTableAction(cb) {
-  const table = document.getElementById("resultTable");
-  if (!table) return;
-  cb(table);
-}
-
-/* 資料驗證：排除空名稱、空地址 */
-function validateData() {
-  allData = allData.filter((d) => safe(d.名稱).trim() && safe(d.地址).trim());
-}
-
-/* 初始化前執行資料驗證補丁 */
-validateData();
-
-/* 最終訊息 */
-console.log("✔ script.js 完整載入（精簡＋美化＋動畫版）");

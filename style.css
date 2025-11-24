@@ -285,42 +285,7 @@ body.dark #resultTable tr:hover {
   font-size: 15px;
 }
 
-/* =========================
-   ✔ / ✖ 專業醫療圖示（新版）
-========================= */
-.yes-icon::before,
-.no-icon::before {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  font-size: 15px;
-  font-weight: 700;
-  color: white;
-}
 
-/* ✔ 藍色 */
-.yes-icon::before {
-  content: "✔";
-  background: #1a73e8;
-}
-
-/* ✖ 灰色 */
-.no-icon::before {
-  content: "✖";
-  background: #9ca3af;
-}
-
-/* 深色模式加強 */
-body.dark .yes-icon::before {
-  background: #3b82f6;
-}
-
-body.dark .no-icon::before {
-  background: #6b7280;
-}
 /* =========================
    深色模式 A / Link 調整
 ========================= */
@@ -565,3 +530,4 @@ body.dark .yes-icon {
 body.dark .no-icon {
   background: #6b7280;       /* 深灰 */
 }
+

@@ -23,7 +23,26 @@ function normalizeFields(d) {
     來源: d["來源"] || "",
   };
 }
+/* ===========================
+   建立縣市 → 區域 Map（補上這段）
+=========================== */
+function buildCityDistrictMap(data) {
+  cityDistrictMap = {};
 
+  data.forEach((d) => {
+    const addr = d.地址;
+    if (!addr) return;
+
+    const cityMatch = addr.match(/^(台北市|新北市|桃園市|台中市|台南市|高雄市|基隆市|新竹市|嘉義市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|澎湖縣|金門縣|連江縣)/);
+    const city = cityMatch ? cityMatch[0] : "其他";
+
+    const districtMatch = addr.replace(city, "").match(/[\u4e00-\u9fa5]{1,3}(區|鎮|鄉|市)/);
+    const district = districtMatch ? districtMatch[0] : "其他";
+
+    if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
+    cityDistrictMap[city].add(district);
+  });
+}
 /* ===========================
    初始化
 =========================== */
@@ -627,3 +646,4 @@ console.log("📘 Road → District Map Loaded:", dynamicRoadMap);
 /**************************************************
  *   第 4 段結束 — 全部程式碼完成
  **************************************************/
+

@@ -533,7 +533,35 @@ body.dark mark.hl {
   background: #1e90ff;
   color: white;
 }
+/* ==========================================================
+   ✔✖ 專業醫療風格（藍底白字 / 灰底白字）
+   ========================================================== */
 
+.yes-icon {
+  display: inline-block;
+  background: #1a73e8;       /* 藍底 */
+  color: #ffffff;            /* 白字 */
+  padding: 6px 10px;
+  border-radius: 50%;        /* 圓形 */
+  font-weight: bold;
+  font-size: 14px;
+}
 
+.no-icon {
+  display: inline-block;
+  background: #9ca3af;       /* 灰底 */
+  color: #ffffff;            /* 白字 */
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+}
 
+/* 深色模式相容 */
+body.dark .yes-icon {
+  background: #60a5fa;       /* 深色模式下淺藍 */
+}
 
+body.dark .no-icon {
+  background: #6b7280;       /* 深灰 */
+}

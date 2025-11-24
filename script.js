@@ -479,8 +479,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderTablePage();
 
   // 綁定事件
-  document.getElementById("citySelect").addEventListener("change", populateDistrictList);
-  document.getElementById("searchBtn").addEventListener("click", searchData);
+  // 綁定事件（修復縣市、地區即時篩選）
+document.getElementById("citySelect").addEventListener("change", () => {
+  populateDistrictList();   // 更新地區選單
+  searchData();             // 立即重新篩選（避免表格不更新）
+});
+
+document.getElementById("districtSelect").addEventListener("change", () => {
+  searchData();             // 切換地區時也立即篩選
+});
+
+document.getElementById("searchBtn").addEventListener("click", searchData);
+
 
   // Enter 立即搜尋
   document.getElementById("keyword").addEventListener("keypress", e => {
@@ -503,5 +513,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 });
+
 
 

@@ -518,3 +518,16 @@ footer {
     color: var(--accent);
   }
 }
+
+/* 搜尋高亮（深色模式也好看） */
+mark.hl {
+  background: #ffe58f;
+  color: #d48806;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+body.dark mark.hl {
+  background: #525252;
+  color: #fff;
+}

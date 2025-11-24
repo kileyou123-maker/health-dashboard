@@ -47,31 +47,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentData = allData;
   renderTablePage();
 
-  /* 事件註冊 */
-  /* 城市下拉：重建地區 + 即時篩選 */
-/* ===========================
-   事件註冊（即時篩選版）
-=========================== */
+  /* ===========================
+     事件註冊（即時篩選）
+  ============================ */
+  document.getElementById("citySelect").addEventListener("change", () => {
+    populateDistrictList();
+    searchData();
+  });
 
-/* 城市 → 更新地區 + 立即篩選 */
-document.getElementById("citySelect").addEventListener("change", () => {
-  populateDistrictList();
-  searchData();
-});
+  document.getElementById("districtSelect").addEventListener("change", () => {
+    searchData();
+  });
 
-/* 地區 → 立即篩選 */
-document.getElementById("districtSelect").addEventListener("change", () => {
-  searchData();
-});
+  document.getElementById("searchBtn").addEventListener("click", searchData);
 
-/* 搜尋按鈕還是保留 */
-document.getElementById("searchBtn").addEventListener("click", searchData);
-
-/* Enter 搜尋 */
-document.getElementById("keyword").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") searchData();
-});
-
+  document.getElementById("keyword").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") searchData();
+  });
 
   document.querySelectorAll(".filter-btn").forEach((btn) =>
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
@@ -81,7 +73,7 @@ document.getElementById("keyword").addEventListener("keypress", (e) => {
   document.addEventListener("click", (e) => {
     const row = e.target.closest("#resultTable tbody tr");
     if (!row) return;
-    const name = row.children[0]?.innerText?.trim();
+    const name = row.children[0]?.innerText?.replace(/<[^>]*>/g, "").trim();
     const found = currentData.find((d) => d["醫事機構名稱"] === name);
     if (found) showDetails(found);
   });
@@ -164,7 +156,7 @@ function populateDistrictList() {
 }
 
 /* ===========================
-   搜尋
+   搜尋（帶高亮）
 =========================== */
 function searchData() {
   const city = document.getElementById("citySelect").value;
@@ -225,11 +217,21 @@ function quickFilter(type) {
 }
 
 /* ===========================
-   表格渲染
+   ✨ 搜尋關鍵字高亮
+=========================== */
+function highlight(text, keyword) {
+  if (!keyword) return text;
+  const re = new RegExp(`(${keyword})`, "gi");
+  return text.replace(re, `<mark class="hl">$1</mark>`);
+}
+
+/* ===========================
+   表格渲染（含高亮）
 =========================== */
 function renderTablePage() {
   const tbody = document.querySelector("#resultTable tbody");
   tbody.innerHTML = "";
+  const key = document.getElementById("keyword").value.trim();
 
   if (currentData.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5">查無資料</td></tr>';
@@ -248,10 +250,10 @@ function renderTablePage() {
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${d["醫事機構名稱"]}</td>
-      <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td><a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${d["醫事機構電話"]}</a></td>
-      <td>${d["整合團隊名稱"]}</td>
+      <td>${highlight(d["醫事機構名稱"], key)}</td>
+      <td><a href="${mapUrl}" target="_blank">${highlight(addr, key)}</a></td>
+      <td><a href="tel:${d["醫事機構電話"]}" style="color:${getComputedStyle(document.body).getPropertyValue('--link-color')};text-decoration:none;">${highlight(d["醫事機構電話"], key)}</a></td>
+      <td>${highlight(d["整合團隊名稱"], key)}</td>
       <td>${d["來源"]}</td>
     `;
     tbody.appendChild(row);
@@ -301,13 +303,11 @@ function renderPagination() {
 =========================== */
 function smoothRender(callback) {
   const table = document.getElementById("resultTable");
-
   table.style.opacity = "0";
   table.style.transform = "translateY(15px)";
 
   setTimeout(() => {
     callback();
-
     requestAnimationFrame(() => {
       table.style.opacity = "1";
       table.style.transform = "translateY(0)";
@@ -458,5 +458,3 @@ function setupAutocomplete() {
       suggestionBox.style.display = "none";
   });
 }
-
-

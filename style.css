@@ -522,20 +522,18 @@ footer {
 /* 搜尋高亮（深色模式也好看） */
 /* ====== 搜尋高亮（新版：亮藍色） ====== */
 mark.hl {
-  background: #b3e5ff;
-  color: #004a75;
+  background: #50b7ff;
+  color: #00334d;
   padding: 1px 4px;
   border-radius: 4px;
   font-weight: 600;
 }
 
-/* 深色模式：亮青色 + 深湖藍文字（辨識度最大化） */
 body.dark mark.hl {
   background: #1e90ff;
-  color: #ffffff;
-  padding: 1px 4px;
-  border-radius: 4px;
-  font-weight: 600;
+  color: white;
 }
+
+
 
 

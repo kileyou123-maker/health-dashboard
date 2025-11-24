@@ -45,26 +45,32 @@ function normalizeAddress(list) {
 // =============================================================
 // Part 2/5 — 城市／地區解析 + 下拉選單自動連動
 // =============================================================
+// =============================================================
+// 城市／地區解析 + 下拉選單自動連動（完整修復版）
+// =============================================================
 
 // 全台縣市表
 const allCities = [
-  "台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
-  "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
+  "台北市","新北市","桃園市","台中市","台南市","高雄市",
+  "基隆市","新竹市","嘉義市","新竹縣","苗栗縣","彰化縣",
+  "南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣",
   "台東縣","澎湖縣","金門縣","連江縣"
 ];
 
-// 解析縣市＋區
+// 建立 city → district map
 function buildCityDistrictMap(list) {
+  cityDistrictMap = {}; // 清空避免重複
+
   list.forEach(d => {
     const addr = d["醫事機構地址"];
     if (!addr) return;
 
-    // 找縣市
+    // 判斷城市
     const city = allCities.find(c => addr.startsWith(c)) || "其他";
 
-    // 找區名
+    // 判斷地區（區／鄉／鎮／市）
     const after = addr.replace(city, "");
-    const match = after.match(/[\u4e00-\u9fa5]{1,3}(區|鎮|鄉|市)/);
+    const match = after.match(/[\u4e00-\u9fa5]{1,4}(區|鄉|鎮|市)/);
     const district = match ? match[0] : "其他";
 
     if (!cityDistrictMap[city]) cityDistrictMap[city] = new Set();
@@ -72,10 +78,10 @@ function buildCityDistrictMap(list) {
   });
 }
 
-// 填入縣市
+// 載入縣市
 function populateCityList() {
   const sel = document.getElementById("citySelect");
-  sel.innerHTML = '<option value="全部">全部</option>';
+  sel.innerHTML = `<option value="全部">全部</option>`;
 
   Object.keys(cityDistrictMap).forEach(city => {
     const opt = document.createElement("option");
@@ -84,12 +90,11 @@ function populateCityList() {
   });
 }
 
-// 填入該縣市的地區
+// 載入地區
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const sel = document.getElementById("districtSelect");
-
-  sel.innerHTML = '<option value="全部">全部</option>';
+  sel.innerHTML = `<option value="全部">全部</option>`;
 
   if (city !== "全部" && cityDistrictMap[city]) {
     [...cityDistrictMap[city]].forEach(d => {
@@ -99,6 +104,7 @@ function populateDistrictList() {
     });
   }
 }
+
 
 
 // =============================================================
@@ -497,4 +503,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 });
+
 

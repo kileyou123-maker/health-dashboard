@@ -66,7 +66,7 @@ main {
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 45px;
 }
 
 #controls select, #controls input {
@@ -115,6 +115,10 @@ main {
   background: var(--accent);
   color: white;
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.35);
+}
+/* 讓縣市／地區下拉框往下移一點 */
+#controls {
+  margin-top: 35px !important;  /* 原本 20px → 改成 35px */
 }
 
 /* ========================= 表格 ========================= */
@@ -429,3 +433,4 @@ body.dark mark.hl {
 
 body.dark .yes-icon { background: #60a5fa; }
 body.dark .no-icon { background: #6b7280; }
+

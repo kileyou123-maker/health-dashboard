@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +9,7 @@
 </head>
 
 <body>
+  <header>
   <!-- 深色模式按鈕 -->
   <button id="themeToggle" class="theme-toggle-btn">🌗</button>
 
@@ -19,8 +18,19 @@
     <h1>全台居家醫療查詢系統</h1>
   </header>
 
+  <button id="themeToggle" class="theme-toggle-btn">🌗</button>
+
   <main>
 
+    <!-- ✔ 快速分類按鈕移到 controls 裡面 -->
+    <section id="controls">
+
+      <div id="filterSection" style="width:100%; text-align:center; margin-bottom:10px;">
+        <button class="filter-btn" data-type="全部">全部</button>
+        <button class="filter-btn" data-type="醫院">醫院</button>
+        <button class="filter-btn" data-type="診所">診所</button>
+        <button class="filter-btn" data-type="護理之家">護理之家</button>
+      </div>
     <!-- 🔵 A. 快速分類按鈕（移到搜尋欄上方） -->
     <section id="filterSection" class="animate-fade-delayed">
       <button class="filter-btn ripple" data-type="全部">全部</button>
@@ -33,6 +43,8 @@
     <section id="controls" class="animate-fade-delayed2">
       <select id="citySelect"></select>
       <select id="districtSelect"></select>
+      <input type="text" id="keyword" placeholder="輸入關鍵字（名稱／地址／電話）">
+      <button id="searchBtn" class="main-btn">搜尋</button>
 
       <input
         type="text"
@@ -43,6 +55,7 @@
       <button id="searchBtn" class="main-btn ripple">搜尋</button>
     </section>
 
+    <div id="status"></div>
     <div id="status" class="animate-fade-delayed2"></div>
 
     <!-- 🔵 C. Skeleton（篩選 Loading 動畫） -->
@@ -54,29 +67,27 @@
       <div class="skeleton-row"></div>
     </div>
 
+    <table id="resultTable">
     <!-- 🔵 D. 結果表格 -->
     <table id="resultTable" class="animate-table">
       <thead>
         <tr>
           <th>醫事機構名稱</th>
-          <th>地址</th>
-          <th>電話</th>
-          <th>整合團隊名稱</th>
-          <th>來源</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
+@@ -50,26 +69,30 @@ <h1>全台居家醫療查詢系統</h1>
     </table>
 
     <div id="pagination"></div>
+
   </main>
 
   <footer>
     資料來源：衛生福利部開放資料（A21030000I-D2000H-001.csv）
   </footer>
 
+  <!-- 詳細資料彈窗 -->
   <!-- 🔵 E. 詳細資料 Modal -->
   <div id="detailModal" class="modal">
+    <div class="modal-content">
     <div class="modal-content animate-modal">
       <span id="closeModal" class="close">&times;</span>
 

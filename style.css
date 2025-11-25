@@ -1,7 +1,16 @@
 /* =========================
-   專業醫療系統主題色
+   專業醫療系統風主題配色
 ========================= */
 :root {
+  --bg-color: #f4f8fb;
+  --text-color: #222;
+  --header-bg: #2c7a7b;
+  --table-bg: #fff;
+  --table-th-bg: #319795;
+  --table-border: #e2e8f0;
+  --link-color: #2b6cb0;
+  --footer-bg: #2c7a7b;
+  --accent: #319795;
   --bg-color: #f7fafc;
   --text-color: #1a202c;
   --header-bg: #1a73e8;
@@ -16,20 +25,21 @@
   --modal-border: #d6dce5;
 
   --link-color: #1a73e8;
-
-  --skeleton-light: #e4e7eb;
-  --skeleton-dark: #cbd2d9;
 }
 
 /* 深色模式（科技深藍） */
 body.dark {
   --bg-color: #0f172a;
+  --text-color: #f1f5f9;
+  --header-bg: #1e293b;
   --text-color: #e2e8f0;
   --header-bg: #1e3a8a;
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
 
   --table-bg: #1e293b;
+  --table-th-bg: #334155;
+  --table-border: #475569;
   --table-th-bg: #2d3f58;
   --table-border: #3b4b64;
 
@@ -37,16 +47,15 @@ body.dark {
   --modal-border: #3b4b64;
 
   --link-color: #60a5fa;
-
-  --skeleton-light: #2a3444;
-  --skeleton-dark: #334155;
+  --footer-bg: #1e293b;
+  --accent: #f59e0b;
 }
 
-/* =========================
-   全域過渡動畫
-========================= */
+/* ======== 全域動畫與過渡 ======== */
+/* 全局過渡動畫 */
 * {
-  transition:
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  transition: 
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease,
@@ -56,76 +65,82 @@ body.dark {
 
 body {
   font-family: "Microsoft JhengHei", sans-serif;
+  margin: 0;
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
   text-align: center;
+  overflow-x: hidden;
+  animation: fadeIn 0.8s ease;
 }
 
-
+/* Header 區塊 */
 /* =========================
-   Header + 進場動畫
+   Header
 ========================= */
 header {
   background-color: var(--header-bg);
+  color: white;
+  padding: 25px 10px;
+  font-size: 1.6em;
   padding: 28px;
   font-size: 1.8em;
   font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.6s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 主要內容區 */
+main {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
   color: white;
   box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
-.animate-fade-slide {
-  animation: fadeSlide 0.8s ease both;
-}
-
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-delayed {
-  animation: fadeUp 0.9s ease both;
-}
-
-.animate-fade-delayed2 {
-  animation: fadeUp 1.1s ease both;
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-
-/* =========================
-   main（修復表格不顯示）
-========================= */
-main {
-  display: block;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-
+/* ======== 控制區 ======== */
 /* =========================
    控制區（Material UI 風）
 ========================= */
 #controls {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 12px;
+  margin: 20px 0;
   justify-content: center;
   margin-top: 20px;
 }
 
 #controls select,
 #controls input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   padding: 12px 15px;
   border-radius: 12px;
   border: 1px solid var(--table-border);
   font-size: 16px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   width: 220px;
   background: var(--table-bg);
   color: var(--text-color);
@@ -140,16 +155,33 @@ main {
   padding-left: 40px;
 }
 
+/* Focus 效果 */
 #controls select:focus,
 #controls input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(49, 151, 149, 0.5);
   box-shadow: 0 0 6px rgba(26, 115, 232, 0.35);
   outline: none;
 }
 
+body.dark #controls select,
+body.dark #controls input {
+  background-color: #1f2937;
+  color: #f1f5f9;
+  border: 1px solid #475569;
+}
 
+/* ======== 按鈕樣式 ======== */
+.filter-btn,
+.main-btn {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  margin: 5px;
 /* =========================
-   Filter 按鈕
+   Filter 按鈕（醫療專業感）
 ========================= */
 .filter-btn {
   background: white;
@@ -159,151 +191,191 @@ main {
   font-size: 15px;
   color: var(--accent);
   cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
   font-weight: 600;
-  overflow: hidden;
-  position: relative;
 }
 
-/* Ripple Effect */
-.filter-btn.ripple:active::after,
-.main-btn.ripple:active::after {
-  content: "";
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: 0;
-  height: 0;
-  background: rgba(255,255,255,0.4);
-  border-radius: 50%;
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  to {
-    width: 200px;
-    height: 200px;
-    opacity: 0;
-  }
-}
-
+.filter-btn:hover,
+.main-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 .filter-btn:hover {
   background: var(--accent);
   color: white;
 }
 
 .filter-btn.active {
+  background-color: var(--table-th-bg);
+  box-shadow: 0 3px 8px rgba(49, 151, 149, 0.5);
   background: var(--accent);
   color: white;
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.35);
 }
 
-
+/* ======== 表格樣式 ======== */
 /* =========================
-   Skeleton (載入骨架動畫)
-========================= */
-.skeleton-container {
-  margin: 20px auto;
-  width: 100%;
-}
-
-.skeleton-row {
-  height: 28px;
-  margin: 8px auto;
-  border-radius: 6px;
-  background: linear-gradient(90deg,var(--skeleton-light),var(--skeleton-dark),var(--skeleton-light));
-  background-size: 200% 100%;
-  animation: skeletonMove 1.2s infinite linear;
-}
-
-@keyframes skeletonMove {
-  from { background-position: 200% 0; }
-  to   { background-position: -200% 0; }
-}
-
-
-/* =========================
-   表格（Hover 立體感）
+   表格（專業醫療系統風）
 ========================= */
 #resultTable {
-  display: table;
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   background: var(--table-bg);
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.12);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: tableFade 0.6s ease forwards;
 }
 
-#resultTable tbody { display: table-row-group; }
-
+@keyframes tableFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 #resultTable th {
   background-color: var(--table-th-bg);
   color: white;
   padding: 14px;
   font-size: 16px;
+  letter-spacing: 0.5px;
 }
 
+#resultTable th,
 #resultTable td {
+  border: 1px solid var(--table-border);
   padding: 12px;
+  text-align: center;
   border-bottom: 1px solid var(--table-border);
+  color: var(--text-color);
+}
+
+#resultTable th {
+  background-color: var(--table-th-bg);
+  color: white;
+  font-weight: bold;
+  letter-spacing: 1px;
   text-align: center;
 }
 
-#resultTable tr {
-  transition: transform 0.25s ease, background-color 0.25s ease;
-}
-
 #resultTable tr:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+  transition: background-color 0.3s ease;
   background-color: rgba(26, 115, 232, 0.08);
-  transform: translateY(-3px);
+  transform: translateY(-1px);
 }
 
 body.dark #resultTable tr:hover {
+  background-color: rgba(240, 171, 0, 0.15);
+}
+
+/* Hover 整列亮化 */
+#resultTable tr:hover td {
+  color: #fff;
   background-color: rgba(96,165,250,0.12);
 }
 
-
+/* ======== 分頁控制 ======== */
 /* =========================
-   Modal（Zoom In 動畫）
+   分頁
+========================= */
+#pagination {
+  margin: 15px 0;
+  margin: 18px 0;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.5s ease;
+}
+
+#pagination button {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
+}
+
+#pagination button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  background-color: var(--accent-hover);
+}
+
+#pagination span {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* ======== 彈出視窗 Modal ======== */
+/* =========================
+   Modal（醫療資訊卡）
 ========================= */
 .modal {
   display: none;
   position: fixed;
   z-index: 999;
+  padding-top: 80px;
   padding-top: 70px;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.3s ease;
   background: rgba(0,0,0,0.4);
 }
 
 .modal-content {
+  background-color: var(--table-bg);
+  color: var(--text-color);
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
   margin: auto;
+  padding: 20px;
+  border-radius: 12px;
   padding: 25px;
   border-radius: 16px;
   width: 80%;
+  max-width: 650px;
   max-width: 760px;
   text-align: left;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--table-border);
+  transform: translateY(30px);
+  animation: slideUp 0.3s ease forwards;
   box-shadow: 0 6px 25px rgba(0,0,0,0.25);
+  animation: modalPop 0.25s ease;
 }
 
-.animate-modal {
-  animation: modalZoom 0.35s ease;
-}
-
-@keyframes modalZoom {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: scale(1); }
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+  }
+@keyframes modalPop {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
 .close {
+  color: #aaa;
   float: right;
   font-size: 28px;
   cursor: pointer;
+  transition: color 0.3s ease;
   color: #999;
 }
 
@@ -311,30 +383,114 @@ body.dark #resultTable tr:hover {
   color: var(--accent);
 }
 
-
-/* =========================
-   ✔ ✖ 圖示
-========================= */
-.yes-icon,
-.no-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
+/* ======== 深色模式切換按鈕 ======== */
+.theme-toggle-btn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background-color: var(--accent);
+  color: white;
+  border: none;
   border-radius: 50%;
-  font-weight: bold;
-  font-size: 15px;
-  color: #fff;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
-.yes-icon { background: #1a73e8; }
-.no-icon { background: #9ca3af; }
+.theme-toggle-btn:hover {
+  transform: rotate(20deg) scale(1.1);
+}
 
-body.dark .yes-icon { background: #60a5fa; }
-body.dark .no-icon { background: #6b7280; }
+/* ======== Footer ======== */
+footer {
+  background-color: var(--footer-bg);
+  color: white;
+  padding: 12px 0;
+  font-size: 14px;
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease;
+/* Modal 資訊區 */
+.modal-content p {
+  font-size: 16px;
+  margin: 8px 0;
+}
 
+/* ======== 手機版樣式 ======== */
+@media (max-width: 600px) {
+  #controls {
+    flex-direction: column;
+    align-items: center;
+  }
 
+  #controls select,
+  #controls input,
+  .main-btn {
+    width: 90%;
+  }
+
+  .filter-btn {
+    width: 80%;
+    font-size: 14px;
+  }
+
+  #resultTable th,
+  #resultTable td {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+.modal-content strong {
+  color: var(--accent);
+}
+
+/* ======== 服務項目表格 ======== */
+/* =========================
+   服務項目 Table
+========================= */
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: var(--table-bg);
+  color: var(--text-color);
+  margin-top: 18px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.5s ease;
+  background: var(--table-bg);
+}
+
+.service-table th {
+  background: var(--table-th-bg);
+  color: white;
+  padding: 10px;
+}
+
+.service-table th,
+.service-table td {
+  border: 1px solid var(--table-border);
+  padding: 10px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.service-table th {
+  background-color: var(--table-th-bg);
+  color: white;
+.service-table tr:hover {
+  background-color: rgba(26,115,232,0.08);
+}
+
+.service-table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
 /* =========================
    深色模式切換按鈕
 ========================= */
@@ -353,11 +509,15 @@ body.dark .no-icon { background: #6b7280; }
   box-shadow: 0 3px 10px rgba(0,0,0,0.25);
 }
 
+body.dark .service-table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
 .theme-toggle-btn:hover {
   background: var(--accent-hover);
 }
 
-
+.service-table td:nth-child(2) {
+  font-size: 18px;
+  font-weight: bold;
 /* =========================
    Footer
 ========================= */
@@ -369,7 +529,11 @@ footer {
   color: white;
 }
 
-
+/* hover 動畫 */
+.service-table tr:hover {
+  background-color: rgba(49, 151, 149, 0.15);
+  transition: background-color 0.3s ease;
+}
 /* =========================
    手機版
 ========================= */
@@ -379,40 +543,12 @@ footer {
     width: 90%;
   }
 
+body.dark .service-table tr:hover {
+  background-color: rgba(240, 171, 0, 0.15);
   .filter-btn {
-    width: 48%;
-    margin-bottom: 10px;
+    width: 90%;
   }
 
-  #resultTable thead { display: none; }
-
-  #resultTable,
-  #resultTable tbody,
-  #resultTable tr,
-  #resultTable td {
-    display: block;
-    width: 100%;
+  .modal-content {
+    width: 92%;
   }
-
-  #resultTable tr {
-    background: var(--table-bg);
-    margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-  }
-
-  #resultTable td {
-    border: none;
-    text-align: left;
-    padding: 6px 0;
-  }
-
-  #resultTable td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 2px;
-  }
-}

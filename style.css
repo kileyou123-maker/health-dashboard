@@ -436,7 +436,8 @@ body.dark .no-icon { background: #6b7280; }
 
 /* 讓上面的快速分類（全部／醫院／診所／護理之家）下移 */
 #filterSection {
-  margin-bottom: 35px !important;
+  margin-bottom: 50px !important;
 }
+
 
 

@@ -465,3 +465,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 });
+

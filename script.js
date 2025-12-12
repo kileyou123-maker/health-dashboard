@@ -3,7 +3,7 @@
 // =============================================================
 // 包含：全域變數、CSV parser、地址正規化
 // =============================================================
-
+let currentType = "全部";
 let allData = [];
 let serviceData = [];
 let currentData = [];
@@ -110,26 +110,18 @@ function populateDistrictList() {
 // 快速分類（全部 / 醫院 / 診所 / 護理之家）
 // =========================
 function quickFilter(type) {
-  let keywords = [];
+  currentType = type; // ★ FIX
 
-  if (type === "全部") {
-    currentData = allData;
-  } else if (type === "醫院") {
-    keywords = ["醫院"];
-    currentData = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
-    );
-  } else if (type === "診所") {
-    keywords = ["診所", "醫療"];
-    currentData = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
-    );
-  } else if (type === "護理之家") {
-    keywords = ["護理", "安養", "養護"];
-    currentData = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
-    );
-  }
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.classList.remove("active")
+  );
+  document
+    .querySelector(`.filter-btn[data-type="${type}"]`)
+    .classList.add("active");
+
+  applyAllFilters(); // ★ FIX
+}
+ }
 
   currentPage = 1;
   document.getElementById("status").textContent =
@@ -432,6 +424,59 @@ function setupAutocomplete() {
 // =========================
 // 搜尋（縣市 + 地區 + 關鍵字）
 // =========================
+// ★ FIX：統一所有條件（地區 + 關鍵字 + 類型）
+function applyAllFilters() {
+  const city = document.getElementById("citySelect").value;
+  const dist = document.getElementById("districtSelect").value;
+  const key = document.getElementById("keyword").value.trim();
+
+  let filtered = allData.filter(d => {
+    const addr = d["醫事機構地址"] || "";
+    const name = d["醫事機構名稱"] || "";
+    const phone = d["醫事機構電話"] || "";
+    const team = d["整合團隊名稱"] || "";
+
+    return (
+      (city === "全部" || addr.includes(city)) &&
+      (dist === "全部" || addr.includes(dist)) &&
+      (!key ||
+        addr.includes(key) ||
+        name.includes(key) ||
+        phone.includes(key) ||
+        team.includes(key))
+    );
+  });
+
+  // ★ 類型再篩（重點）
+  if (currentType !== "全部") {
+    if (currentType === "醫院") {
+      filtered = filtered.filter(d =>
+        (d["醫事機構名稱"] || "").includes("醫院")
+      );
+    } else if (currentType === "診所") {
+      filtered = filtered.filter(d =>
+        ["診所", "醫療"].some(k =>
+          (d["醫事機構名稱"] || "").includes(k)
+        )
+      );
+    } else if (currentType === "護理之家") {
+      filtered = filtered.filter(d =>
+        ["護理", "安養", "養護"].some(k =>
+          (d["醫事機構名稱"] || "").includes(k)
+        )
+      );
+    }
+  }
+
+  currentData = filtered;
+  currentPage = 1;
+
+  document.getElementById("status").textContent =
+    `顯示 ${currentType}｜共 ${currentData.length} 筆資料`;
+
+  smoothRender(renderTablePage);
+}
+
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const dist = document.getElementById("districtSelect").value;

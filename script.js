@@ -10,6 +10,7 @@ let currentData = [];
 let cityDistrictMap = {};
 let currentPage = 1;
 const pageSize = 50;
+let currentFilterType = "全部"; // **修正：新增此變數，用於追蹤快速分類的類型**
 
 // ==============================
 // CSV → JSON
@@ -108,33 +109,13 @@ function populateDistrictList() {
 
 // =========================
 // 快速分類（全部 / 醫院 / 診所 / 護理之家）
+// **修正：此函數不再執行資料篩選，僅更新類別狀態並呼叫 searchData**
 // =========================
 function quickFilter(type) {
-  let keywords = [];
+  // 1. 儲存選擇的類別
+  currentFilterType = type; 
 
-  if (type === "全部") {
-    currentData = allData;
-  } else if (type === "醫院") {
-    keywords = ["醫院"];
-    currentData = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
-    );
-  } else if (type === "診所") {
-    keywords = ["診所", "醫療"];
-    currentData = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
-    );
-  } else if (type === "護理之家") {
-    keywords = ["護理", "安養", "養護"];
-    currentData = allData.filter(d =>
-      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
-    );
-  }
-
-  currentPage = 1;
-  document.getElementById("status").textContent =
-    `顯示類別：${type}（${currentData.length} 筆）`;
-
+  // 2. 更新按鈕樣式
   document.querySelectorAll(".filter-btn").forEach(btn =>
     btn.classList.remove("active")
   );
@@ -142,7 +123,8 @@ function quickFilter(type) {
     .querySelector(`.filter-btn[data-type="${type}"]`)
     .classList.add("active");
 
-  smoothRender(renderTablePage);
+  // 3. 呼叫 searchData 執行完整的篩選邏輯（會同時套用縣市/地區/關鍵字和類別）
+  searchData(); 
 }
 
 // =========================
@@ -430,14 +412,16 @@ function setupAutocomplete() {
 }
 
 // =========================
-// 搜尋（縣市 + 地區 + 關鍵字）
+// 搜尋（縣市 + 地區 + 關鍵字 + 快速分類）
+// **修正：將快速分類篩選邏輯移入此函式**
 // =========================
 function searchData() {
   const city = document.getElementById("citySelect").value;
   const dist = document.getElementById("districtSelect").value;
   const key = document.getElementById("keyword").value.trim();
 
-  currentData = allData.filter(d => {
+  // 1. 執行基礎篩選：縣市、地區、關鍵字
+  let filteredByLocationAndKeyword = allData.filter(d => {
     const addr = d["醫事機構地址"] || "";
     const name = d["醫事機構名稱"] || "";
     const phone = d["醫事機構電話"] || "";
@@ -454,9 +438,32 @@ function searchData() {
     );
   });
 
+  // 2. 執行快速分類篩選 (currentFilterType)
+  let finalFilteredData = filteredByLocationAndKeyword;
+
+  if (currentFilterType !== "全部") {
+    let keywords = [];
+
+    if (currentFilterType === "醫院") {
+      keywords = ["醫院"];
+    } else if (currentFilterType === "診所") {
+      keywords = ["診所", "醫療"];
+    } else if (currentFilterType === "護理之家") {
+      keywords = ["護理", "安養", "養護"];
+    }
+
+    // 篩選已經過地點/關鍵字篩選的資料
+    finalFilteredData = filteredByLocationAndKeyword.filter(d =>
+      keywords.some(k => (d["醫事機構名稱"] || "").includes(k))
+    );
+  }
+
+  currentData = finalFilteredData; // 將最終結果存入全域變數
+
   currentPage = 1;
+  // **修正：更新狀態文字，包含快速分類類型**
   document.getElementById("status").textContent =
-    `共 ${currentData.length} 筆資料`;
+    `顯示類別：${currentFilterType}（共 ${currentData.length} 筆資料）`;
 
   smoothRender(renderTablePage);
 }
@@ -519,16 +526,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // =========================
   // 5. 初次渲染列表
+  // **修正：初次渲染時，將 currentData 設定為 allData**
   // =========================
   currentData = allData;
   renderTablePage();
+  // 初次渲染後，設置狀態顯示為「全部」
+  document.getElementById("status").textContent =
+    `顯示類別：全部（共 ${currentData.length} 筆資料）`;
+  
+  // 設置初始的快速分類按鈕狀態
+  document.querySelector(`.filter-btn[data-type="${currentFilterType}"]`).classList.add("active");
+
 
   // =========================
   // 6. 綁定事件（縣市 → 地區 即時刷新）
+  // **修正：當縣市/地區變更時，確保是呼叫 searchData() 來進行篩選**
   // =========================
   document.getElementById("citySelect").addEventListener("change", () => {
     populateDistrictList();
-    searchData();
+    // populateDistrictList 內部會呼叫 searchData()，故此處可省略，但為確保邏輯一致性，仍保留
+    // searchData(); 
   });
 
   document.getElementById("districtSelect").addEventListener("change", () => {
@@ -555,7 +572,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!row) return;
 
     const name = row.children[0].innerText.trim();
-    const found = currentData.find(d => d["醫事機構名稱"] === name);
+    // 透過 currentData 尋找，確保找到的是目前篩選結果中的資料
+    const found = currentData.find(d => d["醫事機構名稱"] === name); 
 
     if (found) showDetails(found);
   });

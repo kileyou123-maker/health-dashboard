@@ -1,15 +1,20 @@
 // =============================================================
-// script.js — Full Final Version (Part 1/6)
+// script.js — FULL VERSION (PART 1 / 3)
+// 說明：全域變數、CSV、地址、城市地區、狀態修正
 // =============================================================
-// 包含：全域變數、CSV parser、地址正規化
-// =============================================================
-let currentType = "全部";
+
+// =========================
+// 全域狀態
+// =========================
 let allData = [];
 let serviceData = [];
 let currentData = [];
 let cityDistrictMap = {};
 let currentPage = 1;
 const pageSize = 50;
+
+// ★ 修正重點：記住目前「快速分類」狀態
+let currentType = "全部";
 
 // ==============================
 // CSV → JSON
@@ -40,11 +45,10 @@ function normalizeAddress(list) {
     }
   });
 }
-// =============================================================
-// Part 2/6 — 城市／地區解析 + 下拉自動連動 + 即時塞選
-// =============================================================
 
-// 全台縣市表
+// =============================================================
+// 城市／地區解析
+// =============================================================
 const allCities = [
   "台北市","新北市","桃園市","台中市","台南市","高雄市",
   "基隆市","新竹市","嘉義市","新竹縣","苗栗縣","彰化縣",
@@ -52,7 +56,6 @@ const allCities = [
   "台東縣","澎湖縣","金門縣","連江縣"
 ];
 
-// 建立 city → district map
 function buildCityDistrictMap(list) {
   cityDistrictMap = {};
 
@@ -60,10 +63,7 @@ function buildCityDistrictMap(list) {
     const addr = d["醫事機構地址"];
     if (!addr) return;
 
-    // 找城市
     const city = allCities.find(c => addr.startsWith(c)) || "其他";
-
-    // 找地區
     const after = addr.replace(city, "");
     const match = after.match(/[\u4e00-\u9fa5]{1,4}(區|鄉|鎮|市)/);
     const district = match ? match[0] : "其他";
@@ -73,7 +73,9 @@ function buildCityDistrictMap(list) {
   });
 }
 
-// 填入縣市
+// ==============================
+// 縣市 / 地區下拉
+// ==============================
 function populateCityList() {
   const sel = document.getElementById("citySelect");
   sel.innerHTML = `<option value="全部">全部</option>`;
@@ -85,10 +87,10 @@ function populateCityList() {
   });
 }
 
-// 填入地區
 function populateDistrictList() {
   const city = document.getElementById("citySelect").value;
   const sel = document.getElementById("districtSelect");
+
   sel.innerHTML = `<option value="全部">全部</option>`;
 
   if (city !== "全部" && cityDistrictMap[city]) {
@@ -99,43 +101,94 @@ function populateDistrictList() {
     });
   }
 
-  // ★ 即時塞選（你說的功能）
-  searchData();
+  // ★ 修正：地區改變後，維持目前快速分類
+  applyAllFilters();
 }
+
 // =============================================================
-// Part 3/6 — 快速分類按鈕 + 表格渲染 + 分頁 + 動畫
+// ★ 統一篩選核心（地區 + 關鍵字 + 類型）
 // =============================================================
+function applyAllFilters() {
+  const city = document.getElementById("citySelect").value;
+  const dist = document.getElementById("districtSelect").value;
+  const key = document.getElementById("keyword").value.trim();
 
-// =========================
-// 快速分類（全部 / 醫院 / 診所 / 護理之家）
-// =========================
-function quickFilter(type) {
-  currentType = type; // ★ FIX
+  let filtered = allData.filter(d => {
+    const addr = d["醫事機構地址"] || "";
+    const name = d["醫事機構名稱"] || "";
+    const phone = d["醫事機構電話"] || "";
+    const team = d["整合團隊名稱"] || "";
 
-  document.querySelectorAll(".filter-btn").forEach(btn =>
-    btn.classList.remove("active")
-  );
-  document
-    .querySelector(`.filter-btn[data-type="${type}"]`)
-    .classList.add("active");
+    return (
+      (city === "全部" || addr.includes(city)) &&
+      (dist === "全部" || addr.includes(dist)) &&
+      (!key ||
+        addr.includes(key) ||
+        name.includes(key) ||
+        phone.includes(key) ||
+        team.includes(key))
+    );
+  });
 
-  applyAllFilters(); // ★ FIX
-}
- }
+  // ★ 類型再篩（關鍵修正）
+  if (currentType !== "全部") {
+    if (currentType === "醫院") {
+      filtered = filtered.filter(d =>
+        (d["醫事機構名稱"] || "").includes("醫院")
+      );
+    } else if (currentType === "診所") {
+      filtered = filtered.filter(d =>
+        ["診所", "醫療"].some(k =>
+          (d["醫事機構名稱"] || "").includes(k)
+        )
+      );
+    } else if (currentType === "護理之家") {
+      filtered = filtered.filter(d =>
+        ["護理", "安養", "養護"].some(k =>
+          (d["醫事機構名稱"] || "").includes(k)
+        )
+      );
+    }
+  }
 
+  currentData = filtered;
   currentPage = 1;
-  document.getElementById("status").textContent =
-    `顯示類別：${type}（${currentData.length} 筆）`;
 
-  document.querySelectorAll(".filter-btn").forEach(btn =>
-    btn.classList.remove("active")
-  );
-  document
-    .querySelector(`.filter-btn[data-type="${type}"]`)
-    .classList.add("active");
+  document.getElementById("status").textContent =
+    `顯示 ${currentType}｜共 ${currentData.length} 筆資料`;
 
   smoothRender(renderTablePage);
 }
+
+// ==============================
+// 搜尋（改成走統一邏輯）
+// ==============================
+function searchData() {
+  applyAllFilters();
+}
+
+// ==============================
+// 快速分類（修正後）
+// ==============================
+function quickFilter(type) {
+  currentType = type;
+
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.classList.remove("active")
+  );
+
+  document
+    .querySelector(`.filter-btn[data-type="${type}"]`)
+    .classList.add("active");
+
+  applyAllFilters();
+}
+
+// ===== END OF PART 1 =====
+// =============================================================
+// script.js — FULL VERSION (PART 2 / 3)
+// 說明：表格渲染、分頁、動畫、Modal、服務項目 ✔✖
+// =============================================================
 
 // =========================
 // 表格渲染
@@ -155,20 +208,24 @@ function renderTablePage() {
   const pageData = currentData.slice(start, end);
 
   for (const d of pageData) {
-    const addr = d["醫事機構地址"];
-    const phone = d["醫事機構電話"];
+    const addr = d["醫事機構地址"] || "";
+    const phone = d["醫事機構電話"] || "";
     const mapUrl =
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${d["醫事機構名稱"]}</td>
+      <td>${d["醫事機構名稱"] || ""}</td>
       <td><a href="${mapUrl}" target="_blank">${addr}</a></td>
-      <td><a href="tel:${phone}" style="color:var(--link-color);text-decoration:none;">
-        ${phone}</a>
+      <td>
+        ${
+          phone
+            ? `<a href="tel:${phone}" style="color:var(--link-color);text-decoration:none;">${phone}</a>`
+            : ""
+        }
       </td>
-      <td>${d["整合團隊名稱"]}</td>
-      <td>${d["來源"]}</td>
+      <td>${d["整合團隊名稱"] || ""}</td>
+      <td>${d["來源"] || ""}</td>
     `;
     tbody.appendChild(tr);
   }
@@ -228,8 +285,9 @@ function smoothRender(callback) {
     });
   }, 200);
 }
+
 // =============================================================
-// Part 4/6 — Modal 詳細視窗 + 服務項目 ✔✖ （專業美化版）
+// Modal 詳細視窗 + 服務項目 ✔✖
 // =============================================================
 
 // Modal 初始化
@@ -257,7 +315,6 @@ function showDetails(d) {
   document.getElementById("modalAddr").textContent =
     d["醫事機構地址"] || "無";
 
-  // 電話
   const phone = d["醫事機構電話"] || "";
   document.getElementById("modalPhone").innerHTML = phone
     ? `<a href="tel:${phone}" style="color:var(--link-color);text-decoration:none;">${phone}</a>`
@@ -266,16 +323,14 @@ function showDetails(d) {
   document.getElementById("modalSource").textContent =
     d["來源"] || "無";
 
-  // ------------------------------
-  // 服務項目（✔ / ✖）
-  // ------------------------------
   const modalContent = modal.querySelector(".modal-content");
 
-  // 清除舊表格
-  modalContent.querySelectorAll(".service-table, .service-msg")
+  // 清除舊服務表
+  modalContent
+    .querySelectorAll(".service-table, .service-msg")
     .forEach(el => el.remove());
 
-  // 找到該機構的服務資料
+  // 對應 services.csv
   const found = serviceData.find(s =>
     s["醫事機構名稱"] &&
     d["醫事機構名稱"] &&
@@ -293,14 +348,10 @@ function showDetails(d) {
         <tbody>
     `;
 
-    // 服務項目（前 4 欄不是項目）
     const keys = Object.keys(found).slice(4);
-
     keys.forEach(k => {
       if (!k.trim()) return;
-
       const value = found[k];
-
       const icon =
         value == 1
           ? "<span class='yes-icon'>✔</span>"
@@ -326,8 +377,11 @@ function showDetails(d) {
   modalContent.appendChild(container);
   modal.style.display = "block";
 }
+
+// ===== END OF PART 2 =====
 // =============================================================
-// Part 5/6 — 深色模式 + Autocomplete + 搜尋邏輯
+// script.js — FULL VERSION (PART 3 / 3)
+// 說明：深色模式、Autocomplete、搜尋、初始化、事件綁定
 // =============================================================
 
 // =========================
@@ -421,92 +475,8 @@ function setupAutocomplete() {
   });
 }
 
-// =========================
-// 搜尋（縣市 + 地區 + 關鍵字）
-// =========================
-// ★ FIX：統一所有條件（地區 + 關鍵字 + 類型）
-function applyAllFilters() {
-  const city = document.getElementById("citySelect").value;
-  const dist = document.getElementById("districtSelect").value;
-  const key = document.getElementById("keyword").value.trim();
-
-  let filtered = allData.filter(d => {
-    const addr = d["醫事機構地址"] || "";
-    const name = d["醫事機構名稱"] || "";
-    const phone = d["醫事機構電話"] || "";
-    const team = d["整合團隊名稱"] || "";
-
-    return (
-      (city === "全部" || addr.includes(city)) &&
-      (dist === "全部" || addr.includes(dist)) &&
-      (!key ||
-        addr.includes(key) ||
-        name.includes(key) ||
-        phone.includes(key) ||
-        team.includes(key))
-    );
-  });
-
-  // ★ 類型再篩（重點）
-  if (currentType !== "全部") {
-    if (currentType === "醫院") {
-      filtered = filtered.filter(d =>
-        (d["醫事機構名稱"] || "").includes("醫院")
-      );
-    } else if (currentType === "診所") {
-      filtered = filtered.filter(d =>
-        ["診所", "醫療"].some(k =>
-          (d["醫事機構名稱"] || "").includes(k)
-        )
-      );
-    } else if (currentType === "護理之家") {
-      filtered = filtered.filter(d =>
-        ["護理", "安養", "養護"].some(k =>
-          (d["醫事機構名稱"] || "").includes(k)
-        )
-      );
-    }
-  }
-
-  currentData = filtered;
-  currentPage = 1;
-
-  document.getElementById("status").textContent =
-    `顯示 ${currentType}｜共 ${currentData.length} 筆資料`;
-
-  smoothRender(renderTablePage);
-}
-
-function searchData() {
-  const city = document.getElementById("citySelect").value;
-  const dist = document.getElementById("districtSelect").value;
-  const key = document.getElementById("keyword").value.trim();
-
-  currentData = allData.filter(d => {
-    const addr = d["醫事機構地址"] || "";
-    const name = d["醫事機構名稱"] || "";
-    const phone = d["醫事機構電話"] || "";
-    const team = d["整合團隊名稱"] || "";
-
-    return (
-      (city === "全部" || addr.includes(city)) &&
-      (dist === "全部" || addr.includes(dist)) &&
-      (!key ||
-        addr.includes(key) ||
-        name.includes(key) ||
-        phone.includes(key) ||
-        team.includes(key))
-    );
-  });
-
-  currentPage = 1;
-  document.getElementById("status").textContent =
-    `共 ${currentData.length} 筆資料`;
-
-  smoothRender(renderTablePage);
-}
 // =============================================================
-// Part 6/6 — 初始化流程（所有功能綁定）
+// 初始化流程（所有功能綁定）
 // =============================================================
 document.addEventListener("DOMContentLoaded", async () => {
   initTheme();
@@ -572,11 +542,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =========================
   document.getElementById("citySelect").addEventListener("change", () => {
     populateDistrictList();
-    searchData();   // ← 即時塞選（你想要的）
   });
 
   document.getElementById("districtSelect").addEventListener("change", () => {
-    searchData();   // ← 即時塞選
+    applyAllFilters();
   });
 
   // =========================
@@ -611,3 +580,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => quickFilter(btn.dataset.type))
   );
 });
+
+// ===== END OF PART 3 =====

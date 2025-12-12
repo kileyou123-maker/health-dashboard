@@ -149,7 +149,6 @@ function applyAllFilters() {
         )
       );
     }
-  }
 
   currentData = filtered;
   currentPage = 1;
@@ -182,7 +181,7 @@ function quickFilter(type) {
     .classList.add("active");
 
   applyAllFilters();
-}
+} 
 
 // ===== END OF PART 1 =====
 // =============================================================
@@ -582,3 +581,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ===== END OF PART 3 =====
+
